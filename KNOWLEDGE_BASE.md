@@ -109,3 +109,21 @@
 | **Cause** | Node 25+ enables a global Web Storage stub without `--localstorage-file`; jsdom skips installing real Storage and the stub shadows it |
 | **Fix** | Vitest `setupFiles: ["src/test/setup-localStorage.ts"]` installs in-memory Storage when `getItem` is missing |
 | **Prevention** | Keep the setup file; do not rely on Node’s experimental `localStorage` in browser-unit tests |
+
+### KB-012 — Nested `apps/mobile/.git` becomes a gitlink on first monorepo commit
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `git add apps/mobile` warns “embedded git repository”; clones only get a gitlink, not Android sources |
+| **Cause** | Fossify tree retained its own `.git` inside the monorepo |
+| **Fix** | Move `apps/mobile/.git` aside (e.g. `.mobile-git-bak/`, gitignored), then `git add apps/mobile` so files are normal blobs |
+| **Prevention** | On vendor/fork import, strip nested VCS metadata before the first commit; no submodules without `[HUMAN]` approval |
+
+### KB-013 — First Continuum push: OAuth dumps + >500KB PNGs block CI
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Push protection rejects `.cursor/auth-prefs.xml`; Trivy HIGH in Fossify holiday-generator lockfile; hygiene fails on neon/screenshot PNGs >500KB |
+| **Cause** | Local Android OAuth prefs accidentally staged; unused Fossify CI deps; marketing assets exceed template size budget |
+| **Fix** | Gitignore auth dumps; bump holiday-generator overrides (`js-yaml`/`nanoid`); compress PNGs under 500KB; enable Actions “create PRs” for Release Please |
+| **Prevention** | Never stage `.cursor/auth-*`; run `check-large-tracked-files` before first push; treat Fossify workflow deps as in-scope for Trivy |

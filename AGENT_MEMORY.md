@@ -33,6 +33,11 @@
 
 Continuum Calendar — FOSS calendar with rolling week (Today = column 1), explicit empty days, Google Calendar/Contacts sync, themes, and Android homescreen widget.
 
+### Public home
+
+- GitHub: https://github.com/edwardlthompson/continuum-calendar
+- Latest template-aligned tag: `v0.16.1` (SBOM assets on the GitHub Release)
+
 ### Key Constraints
 
 - Shared schema/types live in `packages/shared` (Sequential lock before parallel UI work)
