@@ -15,6 +15,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.2](https://github.com/edwardlthompson/continuum-calendar/compare/v0.16.1...v0.16.2) (2026-08-12)
+
+
+### Fixed
+
+* **security:** bump holiday-generator js-yaml and nanoid ([043dd4f](https://github.com/edwardlthompson/continuum-calendar/commit/043dd4f2537e0999b5e7f8a65b6ebbaf6047f86e))
+
+
+### Changed
+
+* **assets:** compress brand PNGs under 500KB hygiene budget ([0e11b69](https://github.com/edwardlthompson/continuum-calendar/commit/0e11b69598602309c7b1df2a3647da686aab4a16))
+* **deps:** Bump the node-dependencies group ([#1](https://github.com/edwardlthompson/continuum-calendar/issues/1)) ([78c1eba](https://github.com/edwardlthompson/continuum-calendar/commit/78c1ebaa72168270dfee2d0508d607192f30f5d5))
+* **main:** release 0.16.1 ([265dd26](https://github.com/edwardlthompson/continuum-calendar/commit/265dd26d9dc1bcc22b97c988b800376636889915))
+* **main:** release 0.16.1 ([673d01e](https://github.com/edwardlthompson/continuum-calendar/commit/673d01e26f8077116366b88ac4d63d8b639ee151))
+* **release:** initial Continuum Calendar public tree ([f1f09ca](https://github.com/edwardlthompson/continuum-calendar/commit/f1f09caee0381f4d01270c539486b0416652f222))
+
 ## [0.16.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.16.0...v0.16.1) (2026-08-12)
 
 
