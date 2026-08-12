@@ -12,7 +12,7 @@
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
 | License | MIT | - | Pure FOSS |
-| Bootstrap | agent-project-bootstrap | 0.16.0 | See `bootstrap-manifest.yaml` |
+| Bootstrap | agent-project-bootstrap | 0.16.1 | See `bootstrap-manifest.yaml` |
 
 ## Active Modules
 
