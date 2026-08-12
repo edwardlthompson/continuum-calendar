@@ -1,0 +1,70 @@
+@import 'tailwindcss';
+@import './styles/brand.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--cc-accent) 18%, transparent), transparent),
+    radial-gradient(900px 400px at 100% 0%, color-mix(in srgb, var(--cc-accent) 10%, transparent), transparent),
+    var(--cc-bg);
+  color: var(--cc-text);
+}
+
+/* FullCalendar theme bridge */
+.fc {
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--cc-surface);
+  --fc-border-color: var(--cc-border);
+  --fc-button-bg-color: var(--cc-accent);
+  --fc-button-border-color: var(--cc-accent);
+  --fc-button-hover-bg-color: color-mix(in srgb, var(--cc-accent) 85%, black);
+  --fc-button-hover-border-color: color-mix(in srgb, var(--cc-accent) 85%, black);
+  --fc-today-bg-color: color-mix(in srgb, var(--cc-today) 12%, transparent);
+  --fc-event-bg-color: var(--cc-accent);
+  --fc-event-border-color: var(--cc-accent);
+  --fc-list-event-hover-bg-color: var(--cc-accent-soft);
+  color: var(--cc-text);
+}
+
+.fc .fc-col-header-cell.fc-day-today a {
+  color: var(--cc-today);
+  font-weight: 700;
+}
+
+.fc .fc-timegrid-slot {
+  height: 2.25rem;
+}
+
+.cc-fab {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cc-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--cc-accent) 35%, transparent);
+}
+
+/* Scheduling conflicts on the rolling week grid */
+.fc-event.cc-conflict-event {
+  box-shadow: inset 0 0 0 2px #facc15;
+}
+.cc-conflict-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 1px;
+  border-radius: 2px;
+  background: #facc15;
+  color: #1c1917;
+  font-weight: 700;
+}

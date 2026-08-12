@@ -1,0 +1,44 @@
+Trött på slarviga kalendrar och orolig för din integritet?
+
+Continuum Calendar är här för att ändra det. Ditt kraftpaket med öppen källkod för att hantera livet, designad med integritet i tanke och packat med användbara egenskaper för att hjälpa dig vara organiserad.
+
+Detta gör Continuum Calendar annorlunda:
+
+🚫 REKLAMFRITT OCH SPÅRNINGSFRITT: 
+Dina händelser är dina. Ingen reklam, ingen obehaglig spårning och inga onödiga behörigheter.
+
+⏰ FLEXIBELT OCH ANPASSNINGSBART: 
+Skapa detaljerade händelser med tider, varaktighet, påminnelser och upprepningsregler.
+
+🔄 SÖMLÖS SYNKRONISERING: 
+Synka smidigt med Google Calendar, Outlook, Nextcloud, Exchange med flera.
+
+🎨 ANPASSA DITT SCHEMA: 
+Välj olika ljud, vibrationer och teman för att matcha din smak.
+
+🌈 FINA WIDGETAR: 
+Förgyll din dag med vackra kalenderwidgetar och teman för din hemskärm.
+
+📅 ENKEL DAGSCHEMALÄGGNING:
+Planerna din dag enkelt, vare sig du är en upptagen affärsman eller en familjeplanerare.
+
+🎉 IMPORTERA FIRANDEN: 
+Missa aldrig en födelse eller högtidsdag! Enkelt importera helgdagar och speciella datum.
+
+🔍 FILTERVY: 
+Hitta snabbt det du letar efter med händelsefilter.
+
+📆 FLERA VYER: 
+Skifta mellan daglig, veckovis, månadsvis, årlig eller händelsevy.
+
+✨ MATERIAL DESIGN-ELEGANS: 
+Upplev ett intuitivt och användarvänligt gränssnitt med dynamiska teman.
+
+Dessutom Continuum Calendar har öppen källkod! Gå med levande gemenskap på GitHub, bidra till projektet och gör det till ditt.
+
+Ladda ner Continuum Calendar nu och upplev kraften med anpassningsbart schema som respekterar din integritet.
+
+Hitta fler appar från Fossify: https://www.fossify.org
+Källkod: https://www.github.com/FossifyOrg
+Gå med i vår Reddit-gemenskap: https://www.reddit.com/r/Fossify
+Nå oss på Telegram: https://t.me/Fossify

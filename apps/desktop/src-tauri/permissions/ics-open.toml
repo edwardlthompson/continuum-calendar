@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-take-pending-open-paths"
+description = "Allow reading queued file/URL open intents from the OS"
+commands.allow = ["take_pending_open_paths"]
+
+[[permission]]
+identifier = "allow-read-text-file-limited"
+description = "Allow reading .ics files opened via OS association (size-capped)"
+commands.allow = ["read_text_file_limited"]

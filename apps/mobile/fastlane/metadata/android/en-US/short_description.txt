@@ -1,0 +1,1 @@
+Private FOSS calendar with Google sync and Continuum desktop peer sync.

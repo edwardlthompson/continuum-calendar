@@ -1,0 +1,25 @@
+{
+  "name": "continuum-calendar",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "FOSS cross-platform calendar with rolling week views, explicit empty days, and Google sync",
+  "workspaces": [
+    "apps/desktop",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev:desktop": "npm run dev -w @continuum/desktop",
+    "build:desktop": "npm run build -w @continuum/desktop",
+    "tauri:dev": "npm run tauri:dev -w @continuum/desktop",
+    "tauri:build": "npm run tauri:build -w @continuum/desktop",
+    "typecheck:shared": "npm run typecheck -w @continuum/shared"
+  },
+  "keywords": [
+    "calendar",
+    "tauri",
+    "foss",
+    "google-calendar",
+    "android"
+  ]
+}

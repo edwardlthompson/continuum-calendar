@@ -1,0 +1,19 @@
+{
+  "name": "@continuum/shared",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/agenda.test.ts src/conflicts.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}

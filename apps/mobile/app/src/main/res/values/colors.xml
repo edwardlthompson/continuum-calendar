@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Continuum brand (see docs/BRAND.md) — not Fossify cyan/amber -->
+    <color name="continuum_brand_teal">#FF0F6E8C</color>
+    <color name="continuum_brand_teal_bright">#FF4EB6D4</color>
+    <color name="continuum_brand_teal_deep">#FF0A4F66</color>
+    <color name="continuum_brand_mist">#FFD7EEF5</color>
+    <color name="continuum_brand_ink">#FF0F172A</color>
+    <color name="continuum_brand_slate">#FF5B6B82</color>
+    <color name="continuum_brand_open">#FF0F6E8C</color>
+    <color name="continuum_brand_now">#FFD32F2F</color>
+    <color name="continuum_brand_mark_bg">#FF0B1220</color>
+    <color name="continuum_brand_on_accent">#FFFFFFFF</color>
+
+    <color name="red_text">@color/md_red_400_dark</color>
+    <color name="default_birthdays_color">@color/md_blue_800</color>
+    <color name="default_holidays_color">@color/md_green_700</color>
+    <color name="default_anniversaries_color">@color/md_red_400_dark</color>
+</resources>

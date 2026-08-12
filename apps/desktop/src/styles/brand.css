@@ -1,0 +1,109 @@
+/**
+ * Continuum Calendar — brand stylesheet (canonical product tokens).
+ *
+ * Product mark: cyan + purple vaporwave infinity (Android launcher) — see
+ * apps/desktop/public/continuum-mark.png / scripts/generate-infinity-mark.py.
+ * UI accents below use teal for chrome; do not swap the mark for a teal “C”
+ * or Material calendar glyph.
+ *
+ * Spec: docs/BRAND.md
+ */
+
+:root {
+  /* Core brand */
+  --cc-brand-ink: #0f172a;
+  --cc-brand-teal: #0f6e8c;
+  --cc-brand-teal-bright: #4eb6d4;
+  --cc-brand-teal-deep: #0a4f66;
+  --cc-brand-mist: #d7eef5;
+  --cc-brand-slate: #5b6b82;
+  --cc-brand-open: #0f6e8c; /* empty-day “Open” — keep in lockstep with CONTINUUM_OPEN_DAY_COLOR */
+  --cc-brand-now: #d32f2f; /* agenda “now” bar */
+  --cc-brand-on-accent: #ffffff;
+
+  /* Light theme surfaces */
+  --cc-bg: #f4f7fb;
+  --cc-surface: #ffffff;
+  --cc-text: var(--cc-brand-ink);
+  --cc-muted: var(--cc-brand-slate);
+  --cc-accent: var(--cc-brand-teal);
+  --cc-accent-soft: var(--cc-brand-mist);
+  --cc-border: #d5dee8;
+  --cc-grid: #e8eef5;
+  --cc-today: var(--cc-brand-teal);
+
+  /* Icon geometry (for CSS / SVG generators) */
+  --cc-mark-stroke: 10;
+  --cc-mark-gap-deg: 52deg;
+  --cc-mark-safe: 12%;
+
+  font-family: 'Segoe UI', 'IBM Plex Sans', system-ui, sans-serif;
+  color: var(--cc-text);
+  background: var(--cc-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark {
+  --cc-bg: #0b1220;
+  --cc-surface: #121a2b;
+  --cc-text: #e8eef8;
+  --cc-muted: #9aabbf;
+  --cc-accent: var(--cc-brand-teal-bright);
+  --cc-accent-soft: #163447;
+  --cc-border: #243044;
+  --cc-grid: #1a2436;
+  --cc-today: var(--cc-brand-teal-bright);
+}
+
+/* Brand wordmark utility (hero / about) */
+.cc-brand-wordmark {
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--cc-text);
+}
+
+.cc-brand-wordmark span {
+  color: var(--cc-accent);
+}
+
+/* Preferred mark sizes (flat 2D app icon) */
+.cc-brand-mark {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.cc-brand-mark--lg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.cc-brand-mark--xl {
+  width: 6rem;
+  height: 6rem;
+}
+
+/* Neon 3D marketing splash (not the launcher icon) */
+.cc-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: #05060e;
+  transition: opacity 0.45s ease;
+}
+
+.cc-splash--out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cc-splash__mark {
+  width: min(42vmin, 320px);
+  height: auto;
+  user-select: none;
+}

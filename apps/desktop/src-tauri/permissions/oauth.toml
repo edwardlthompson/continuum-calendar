@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-start-oauth-loopback"
+description = "Allow starting the one-shot Google OAuth loopback listener"
+commands.allow = ["start_oauth_loopback"]

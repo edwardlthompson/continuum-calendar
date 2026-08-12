@@ -1,0 +1,54 @@
+schema_version: "1.0"
+project:
+  name: Continuum Calendar
+  slug: continuum-calendar
+  description: >
+    FOSS cross-platform calendar with rolling week views (Today as column 1),
+    explicit empty days, Google Calendar/Contacts sync, and Android homescreen widgets.
+  license: MIT
+  distribution: foss
+bootstrap:
+  template: edwardlthompson/agent-project-bootstrap
+  template_version: "0.16.0"
+  initialized_at: "2026-08-10"
+  stack: multi
+  stacks_active:
+    - web
+    - android
+  init_command: >
+    pwsh scripts/init-project.ps1 -NonInteractive -Stack multi
+    -ProjectName "Continuum Calendar"
+    -ProjectPurpose "FOSS cross-platform calendar with rolling week views, explicit empty days, Google Calendar/Contacts sync, and Android homescreen widgets"
+    -Interval weekly -CodeOwner edwardlthompson -NoPrune -DistributionTier foss
+workspace:
+  apps:
+    - path: apps/desktop
+      kind: tauri-react
+      status: scaffolded
+    - path: apps/mobile
+      kind: android-fossify-fork
+      status: documented
+      upstream: https://github.com/FossifyOrg/Calendar
+  packages:
+    - path: packages/shared
+      kind: typescript-types
+      status: scaffolded
+  docs:
+    - docs/GOOGLE_API_SETUP.md
+    - docs/MOBILE_FOSSIFY_FORK.md
+    - docs/ANDROID_WIDGET_SPEC.md
+    - docs/architecture/OVERVIEW.md
+tracking:
+  implementation_tracker: IMPLEMENTATION_TRACKER.md
+  roadmap: ROADMAP.md
+  build_plan: BUILD_PLAN.md
+features:
+  - rolling_week_view
+  - explicit_empty_days
+  - google_calendar_sync
+  - google_contacts_autocomplete
+  - theme_light_dark_system
+  - android_homescreen_widget
+oauth_scopes:
+  - https://www.googleapis.com/auth/calendar
+  - https://www.googleapis.com/auth/contacts.readonly

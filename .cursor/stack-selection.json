@@ -1,0 +1,42 @@
+{
+  "stack": "multi",
+  "pruned": false,
+  "active_modules": [
+    "android",
+    "web",
+    "python",
+    "node",
+    "lightroom",
+    "rust",
+    "go"
+  ],
+  "parallel_scope_note": "Sprint 1 Parallel: one agent per active stack; no overlapping paths",
+  "selected_at": "2026-08-11T01:22:53+00:00",
+  "distribution_tier": "foss",
+  "cursor_features_enabled": [
+    "rules",
+    "commands",
+    "hooks",
+    "skills",
+    "subagents",
+    "modes",
+    "worktrees",
+    "permissions",
+    "parallel_scope",
+    "build_automation",
+    "feature_radar",
+    "plugin_pack",
+    "cli_example",
+    "codex_review_example",
+    "mcp_foss_example"
+  ],
+  "cursor_features_hidden": [
+    "cloud_agents",
+    "bugbot",
+    "automations",
+    "approval_agents",
+    "mcp_commercial_example",
+    "android_commercial_patterns"
+  ],
+  "cursor_features_synced_at": "2026-08-12T02:20:12+00:00"
+}

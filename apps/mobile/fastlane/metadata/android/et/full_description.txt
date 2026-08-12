@@ -1,0 +1,44 @@
+Oled väsinud segastest kalendritest ja privaatsusprobleemidest?
+
+Continuum Calendar on olemas selleks, et seda muuta. Sinu avatud lähtekoodiga jõujaam elu haldamiseks, mis on loodud privaatsust silmas pidades ja täis võimsaid funktsioone, et hoida sinu plaane kenasti organiseerituna.
+
+Continuum Calendar erineb teistest sarnastest rakendustest:
+
+🚫 REKLAAMIVABA JA PRIVAATNE: 
+Sinu sündmused jäävad sinu omaks. Ei reklaame, ei jälgimist, ei rakendusel on minimaalselt lubasid ja õigusi.
+
+⏰ PAINDLIK JA KOHANDATAV: 
+Kujunda sündmusi täpselt kellaaegade, kestuse, meeldetuletuste ja täiustatud kordusreeglitega.
+
+🔄 SUJUV SÜNKROONIMINE: 
+Sünkrooni hõlpsasti Google'i kalendri, Outlooki, Nextcloudi, Exchange'i ja teiste kalendriserveritega.
+
+🎨 ISIKUPÄRASTA OMA AJAPLANEERIJA: 
+Seadista kohandatud helisid, korduvaid helivooge, vibratsiooni ja teemasid vastavalt oma eelistustele.
+
+🌈 ELUJÕULISED VIDINAD: 
+Värskenda oma päeva kaunite nutiseadme avavaate kalendrividinate ja teemadega.
+
+📅 HALDA PÄEVA VAEVATULT:
+Planeeri oma päeva hõlpsasti, olgu sa siis hõivatud professionaal või perekonna korraldaja.
+
+🎉 IMPORDI TÄHTPÄEVI: 
+Ära kunagi jäta sünnipäeva või aastapäeva vahele! Impordi hõlpsasti pühad ja erikuupäevad.
+
+🔍 FILTREERI VAATEID: 
+Leia sündmuste filtrite abil kiiresti üles see, mida otsid.
+
+📆 MITU VAADET: 
+Vaheta vaevata igapäevaste, iganädalaste, igakuiste, aastaste ja sündmuste vaadete vahel.
+
+✨ MATERIAALSE DISAINI ELEGANTS: 
+Naudi intuitiivset ja kasutajasõbralikku kasutajaliidest dünaamiliste teemadega.
+
+Lisaks on Continuum Calendar avatud lähtekoodiga! Kui soovid, siis liitu GitHub'is tegutseva kogukonnaga, anna oma panus projekti ja tee see ainulaadselt enda omaks.
+
+Laadi Continuum Calendar nüüd alla ja tunne isikliku ja kohandatava ajakava mõju.
+
+Tutvu kõikide Fossify rakendustega: https://www.fossify.org
+Avatud lähtekood: https://www.github.com/FossifyOrg
+Liitu meie kogukonnaga Reddit'is: https://www.reddit.com/r/Fossify
+Suhtle Telegram'is: https://t.me/Fossify
