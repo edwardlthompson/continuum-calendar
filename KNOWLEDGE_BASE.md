@@ -127,3 +127,30 @@
 | **Cause** | Local Android OAuth prefs accidentally staged; unused Fossify CI deps; marketing assets exceed template size budget |
 | **Fix** | Gitignore auth dumps; bump holiday-generator overrides (`js-yaml`/`nanoid`); compress PNGs under 500KB; enable Actions “create PRs” for Release Please |
 | **Prevention** | Never stage `.cursor/auth-*`; run `check-large-tracked-files` before first push; treat Fossify workflow deps as in-scope for Trivy |
+
+### KB-014 — Android local delete restored by Drive peer sync
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Deleting a local event (e.g. Doctor) on the phone succeeds, then the row returns in ~2s with a new Room id |
+| **Cause** | `buildLocalPayload` sent empty `deletedIds`; desktop/Drive still had the event; merge upserted it |
+| **Fix** | Record tombstones before Room delete (`ContinuumLocalEventTombstones`); include them in the peer payload |
+| **Prevention** | Never push a local-events snapshot with `deletedIds: []` after a user delete |
+
+### KB-015 — Weekly event conflict badge on an all-day day
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Church on the 16th shows a conflict warning next to an all-day birthday |
+| **Cause** | Badges keyed by series `id`; Fossify all-day is midnight–noon (12h), below the 20h heuristic |
+| **Fix** | Key by `id` + start; treat midnight–noon ≥12h as non-busy |
+| **Prevention** | Do not use repeating event ids alone for per-row UI state |
+
+### KB-016 — Disabled Dependabot alerts fail `pre-release-gate --strict`
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `/ship` hard gate fails: cannot fetch Dependabot alerts, or High alerts appear after enabling |
+| **Cause** | New public repo had alerts off; `extract-zip` has no patch; holiday-generator `nanoid` was 3.3.17 |
+| **Fix** | `PUT .../vulnerability-alerts`; dismiss unused `extract-zip` (LHCI only); bump `nanoid` to 3.3.18 |
+| **Prevention** | Enable Dependabot alerts during repo setup; treat Fossify holiday-generator lockfile as in-scope |

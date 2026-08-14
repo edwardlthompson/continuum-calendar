@@ -62,7 +62,7 @@ grep '\[AUTO\]' BUILD_PLAN.md
 #### Human & device (after automation)
 
 - 🔲 [HUMAN] Privacy Policy + LICENSE copyright for Continuum
-- 🔲 [AGENT] Commons About / thank-you debrand (hide Fossify suite CTAs)
+- ✅ [AGENT] Commons About / thank-you debrand (hide Fossify suite CTAs)
 - 🔲 [ADB] Visual smoke: launcher icon, package id, About screen, no Fossify store wording
 
 ### Sprint CC0 — Bootstrap & Desktop Prototype
@@ -154,5 +154,8 @@ grep '\[AUTO\]' BUILD_PLAN.md
 ## Ongoing Maintenance
 
 - 🔲 [HUMAN] Weekly Dependabot / CVE triage (`docs/SECURITY_TRIAGE.md`)
+- 🔲 [HUMAN] Enable GitHub Pages if a public demo is wanted (404 at `/ship` 2026-08-14)
+- 🔲 [HUMAN] Attach desktop installer / Android APK to GitHub Release (v0.16.2 ships SBOMs only)
+- 🔲 [AUTO] Triage Dependabot medium `glib` in `apps/desktop/src-tauri/Cargo.lock`
 - 🔲 [AUTO] Template update check (`scripts/check-template-updates.ps1`)
 - 🔲 [HUMAN] Quarterly ROADMAP review

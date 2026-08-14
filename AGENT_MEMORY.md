@@ -36,7 +36,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.16.1` (SBOM assets on the GitHub Release)
+- Latest template-aligned tag: `v0.16.2` (SBOM assets on the GitHub Release; no installer/APK)
 
 ### Key Constraints
 
@@ -49,6 +49,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-14 | Ship v0.16.2 | Tombstones + occurrence-key conflicts; Dependabot alerts on; nanoid 3.3.18; Release Please #7 | Enable Pages if a demo is wanted; attach APK/installer (SBOMs only); copy `sdk.dir` only into `examples/android/local.properties` |
 | 2026-08-11 | Audit A1 | Encoding skip `build/`; Android token refresh; desktop notify serialize; agenda local day keys; gates green after restoring example deps post-purge | Avoid `purge-ephemeral --apply` mid-audit without reinstalling examples/* deps; [HUMAN] public OAuth clients + secure token storage |
 | 2026-08-10 | Project bootstrap | Template init + desktop scaffold + trackers | Wire live OAuth after GCP client exists |
 
