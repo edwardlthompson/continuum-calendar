@@ -37,11 +37,19 @@ fun Project.resolveContinuumGoogleClientId(): String {
     return resolveDesktopEnvValue("VITE_GOOGLE_CLIENT_ID")
 }
 
+fun Project.isContinuumPublicRelease(): Boolean {
+    val prop = (findProperty("CONTINUUM_PUBLIC_RELEASE") as String?)?.trim()
+    val env = System.getenv("CONTINUUM_PUBLIC_RELEASE")?.trim()
+    return prop.equals("true", ignoreCase = true) || env.equals("true", ignoreCase = true)
+}
+
 /**
  * Desktop OAuth clients require client_secret on the token endpoint.
  * Keep this in gitignored local.properties / desktop .env only (debug builds).
+ * Public GitHub Release APKs must omit the secret (`-PCONTINUUM_PUBLIC_RELEASE=true`).
  */
 fun Project.resolveContinuumGoogleClientSecret(): String {
+    if (isContinuumPublicRelease()) return ""
     (findProperty("CONTINUUM_GOOGLE_CLIENT_SECRET") as String?)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
     System.getenv("CONTINUUM_GOOGLE_CLIENT_SECRET")?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
 

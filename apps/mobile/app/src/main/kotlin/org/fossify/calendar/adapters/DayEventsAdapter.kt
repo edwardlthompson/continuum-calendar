@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import org.fossify.calendar.R
 import org.fossify.calendar.activities.SimpleActivity
+import org.fossify.calendar.continuum.ContinuumConflict
 import org.fossify.calendar.databinding.EventListItemBinding
 import org.fossify.calendar.databinding.ItemNowMarkerBinding
 import org.fossify.calendar.dialogs.DeleteEventDialog
@@ -46,6 +47,8 @@ class DayEventsAdapter(
     private val dimCompletedTasks = activity.config.dimCompletedTasks
     private var isPrintVersion = false
     private val mediumMargin = activity.resources.getDimension(org.fossify.commons.R.dimen.medium_margin).toInt()
+    private val conflictKeys: Set<String> =
+        ContinuumConflict.conflictingEventKeys(rows.filterIsInstance<Event>())
 
     init {
         setupDragListener(true)
@@ -115,7 +118,10 @@ class DayEventsAdapter(
         EventListItemBinding.bind(view).apply {
             eventItemHolder.isSelected = selectedKeys.contains(event.id?.toInt())
             eventItemHolder.background.applyColorFilter(textColor)
-            eventItemTitle.text = event.title
+            eventItemTitle.text = ContinuumConflict.titleWithConflictWarning(
+                event.title,
+                conflictKeys.contains(ContinuumConflict.occurrenceKey(event)),
+            )
             eventItemTitle.checkViewStrikeThrough(event.shouldStrikeThrough())
             eventItemTime.text = if (event.getIsAllDay()) allDayString else Formatter.getTimeFromTS(activity, event.startTS)
             if (event.startTS != event.endTS) {

@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { CalendarEvent } from './events.ts'
-import { conflictsForEvent, detectConflicts, eventOccurrenceKey, suggestConflictFreeTime } from './conflicts.ts'
+import {
+  conflictsForEvent,
+  detectConflicts,
+  eventOccurrenceKey,
+  isTimedBusyEvent,
+  suggestConflictFreeTime,
+} from './conflicts.ts'
 
 function ev(
   id: string,
@@ -38,8 +44,18 @@ test('all-day and long special-day blocks never conflict with timed events', () 
   const birthday = ev('bday', '2026-08-16', '2026-08-17', { allDay: true })
   const anniversary = ev('ann', '2026-08-16T00:00:00', '2026-08-17T00:00:00') // lost allDay flag
   const fossifyNoon = ev('fossify', '2026-08-16T00:00:00', '2026-08-16T12:00:00')
+  const dstShort = ev('dst', '2026-08-16T00:00:00', '2026-08-16T11:00:00') // midnight → after clocks; still before noon
   assert.equal(detectConflicts([meeting, birthday, anniversary, fossifyNoon]).length, 0)
   assert.equal(conflictsForEvent(meeting, [birthday, anniversary, fossifyNoon]).length, 0)
+  assert.equal(isTimedBusyEvent(fossifyNoon), false)
+  assert.equal(isTimedBusyEvent(dstShort), true)
+})
+
+test('half-day meeting starting at 8am is still busy', () => {
+  const longMeeting = ev('long', '2026-08-16T08:00:00', '2026-08-16T20:00:00')
+  const other = ev('other', '2026-08-16T10:00:00', '2026-08-16T11:00:00')
+  assert.equal(isTimedBusyEvent(longMeeting), true)
+  assert.equal(detectConflicts([longMeeting, other]).length, 1)
 })
 
 test('eventOccurrenceKey distinguishes repeating occurrences', () => {

@@ -3,6 +3,7 @@ package org.fossify.calendar.continuum
 import android.app.Activity
 import androidx.appcompat.app.AlertDialog
 import org.fossify.calendar.R
+import org.fossify.calendar.extensions.seconds
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.models.Event
 import org.fossify.calendar.models.ListEvent
@@ -21,14 +22,15 @@ object ContinuumConflict {
 
     fun occurrenceKey(event: ListEvent): String = "${event.id}:${event.startTS}"
 
-    /** Treat multi-hour “special day” rows as non-busy even if the all-day flag was lost. */
+    fun occurrenceKey(event: Event): String = "${event.id}:${event.startTS}"
+
+    /** Mirrors packages/shared isTimedBusyEvent — all-day / anniversary blocks are never busy. */
     private fun isSpecialDayBlock(startTS: Long, endTS: Long): Boolean {
-        val dur = endTS - startTS
-        if (dur >= 20L * 60L * 60L) return true
-        // Fossify / CalendarContract local all-day is midnight → noon (12h).
-        if (dur < 12L * 60L * 60L) return false
-        val dt = Formatter.getDateTimeFromTS(startTS)
-        return dt.hourOfDay == 0 && dt.minuteOfHour == 0 && dt.secondOfMinute == 0
+        if (endTS <= startTS) return false
+        if (endTS - startTS >= 20L * 60L * 60L) return true
+        val start = Formatter.getDateTimeFromTS(startTS)
+        if (start.hourOfDay != 0 || start.minuteOfHour != 0 || start.secondOfMinute != 0) return false
+        return endTS >= start.withTime(12, 0, 0, 0).seconds()
     }
 
     private fun isTimedBusyListEvent(event: ListEvent): Boolean {
@@ -44,6 +46,33 @@ object ContinuumConflict {
     fun isTimedBusyForConflict(isAllDay: Boolean, startTS: Long, endTS: Long): Boolean {
         if (isAllDay) return false
         return !isSpecialDayBlock(startTS, endTS)
+    }
+
+    /** Occurrence-level overlap — never use repeating series ids alone. */
+    fun eventHasTimedConflict(event: Event, peers: List<Event>): Boolean {
+        if (!isTimedBusyEvent(event)) return false
+        return peers.any { other ->
+            if (other.id != null && other.id == event.id && other.startTS == event.startTS) return@any false
+            isTimedBusyEvent(other) && event.startTS < other.endTS && event.endTS > other.startTS
+        }
+    }
+
+    fun conflictingEventKeys(events: List<Event>): Set<String> {
+        val timed = events.filter { isTimedBusyEvent(it) }.sortedBy { it.startTS }
+        if (timed.size < 2) return emptySet()
+        val keys = HashSet<String>()
+        for (i in timed.indices) {
+            val a = timed[i]
+            for (j in i + 1 until timed.size) {
+                val b = timed[j]
+                if (b.startTS >= a.endTS) break
+                if (a.startTS < b.endTS && a.endTS > b.startTS) {
+                    keys.add(occurrenceKey(a))
+                    keys.add(occurrenceKey(b))
+                }
+            }
+        }
+        return keys
     }
 
     /** Occurrence keys of timed agenda rows that overlap another timed row (skips Open placeholders). */

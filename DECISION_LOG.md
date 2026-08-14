@@ -172,6 +172,13 @@ _Seed template ADR: `docs/adr/0000-template-baseline.md`. Child repos use `docs/
 - **Alternatives considered:** Keep id-only badges (rejected — false positives every Sunday); raise the duration cutoff to 12h without midnight check (rejected — would hide real half-day meetings).
 - **Consequences:** Same-day timed overlaps still warn; repeating events only warn on the occurrence that overlaps.
 
+### 2026-08-14 — Conflict day-blocks are fleet-wide (shared + every Android surface)
+- **Status:** Accepted
+- **Context:** The Aug 16 occurrence-key fix was on `main` and in the v0.16.2 APK, but week view still used series-id collisions, day view had no Continuum badges, and VERSION_CODE stayed 21 so a 1.10.3 device could not tell it was stale.
+- **Decision:** One `isTimedBusyEvent` rule (midnight → local noon or later, or ≥20h) in `@continuum/shared` and `ContinuumConflict`; week/day/agenda/widget all use occurrence times; bump Android to 1.10.4 / 22.
+- **Alternatives considered:** Keep 12h-duration-only heuristic (rejected — DST and Fossify noon); leave VERSION_CODE 21 (rejected — other phones keep the old APK).
+- **Consequences:** Install 1.10.4 on every device; same-day timed overlaps still warn.
+
 ### 2026-08-14 — Dependabot High: extract-zip and nanoid
 - **Status:** Accepted
 - **Context:** Enabling Dependabot alerts on `continuum-calendar` surfaced High `extract-zip` (CVE-2026-56876, no patch) and `nanoid` < 3.3.18.

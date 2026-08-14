@@ -67,6 +67,7 @@ export { formatAgendaSectionTitle, CONTINUUM_OPEN_DAY_COLOR } from './agendaHead
 export {
   detectConflicts,
   eventOccurrenceKey,
+  isTimedBusyEvent,
   conflictsForEvent,
   suggestConflictFreeTime,
 } from './conflicts.js'

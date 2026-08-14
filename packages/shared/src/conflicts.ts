@@ -30,8 +30,13 @@ export function eventOccurrenceKey(e: { id?: string; start: string }): string {
   return `${e.id ?? ''}:${e.start}`
 }
 
-/** All-day / anniversary-style rows never participate in scheduling conflicts. */
-function isTimedBusy(e: { allDay?: boolean; busy?: boolean; start: string; end: string }): boolean {
+/** True when a row should count as a busy timed meeting (not an all-day / anniversary block). */
+export function isTimedBusyEvent(e: {
+  allDay?: boolean
+  busy?: boolean
+  start: string
+  end: string
+}): boolean {
   if (e.allDay || e.busy === false) return false
   // Date-only ISO (YYYY-MM-DD) is all-day even if allDay was omitted.
   if (/^\d{4}-\d{2}-\d{2}$/.test(e.start.trim()) && !e.start.includes('T')) return false
@@ -39,19 +44,23 @@ function isTimedBusy(e: { allDay?: boolean; busy?: boolean; start: string; end: 
   const end = endMs(e)
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return false
   const dur = end - start
-  // >= 20h blocks (lost all-day flag / special days) never conflict with timed meetings.
+  // >= 20h blocks (lost all-day flag / UTC date-only shifted into local TZ).
   if (dur >= 20 * 60 * 60 * 1000) return false
-  // Fossify / CalendarContract local all-day is midnight → noon (12h).
+  // Midnight → local noon or later: Fossify 12h, DST 11h, or end-of-day.
   const d = new Date(start)
   const atMidnight = d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0
-  if (atMidnight && dur >= 12 * 60 * 60 * 1000) return false
+  if (atMidnight) {
+    const noon = new Date(d)
+    noon.setHours(12, 0, 0, 0)
+    if (end >= noon.getTime()) return false
+  }
   return true
 }
 
 /** Detect overlapping timed (non-all-day) events. */
 export function detectConflicts(events: CalendarEvent[]): EventConflict[] {
   const timed = events
-    .filter((e) => isTimedBusy(e))
+    .filter((e) => isTimedBusyEvent(e))
     .sort((a, b) => startMs(a) - startMs(b))
   const out: EventConflict[] = []
   for (let i = 0; i < timed.length; i++) {
@@ -70,12 +79,12 @@ export function conflictsForEvent(
   candidate: ConflictCandidate,
   events: CalendarEvent[],
 ): CalendarEvent[] {
-  if (!isTimedBusy(candidate)) return []
+  if (!isTimedBusyEvent(candidate)) return []
   const start = startMs(candidate)
   const end = endMs(candidate)
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return []
   return events.filter((e) => {
-    if (!isTimedBusy(e)) return false
+    if (!isTimedBusyEvent(e)) return false
     if (candidate.id && e.id === candidate.id) return false
     return overlaps(candidate, e)
   })
@@ -95,13 +104,13 @@ export function suggestConflictFreeTime(
     from?: Date
   } = {},
 ): FreeSlot | null {
-  if (!isTimedBusy(candidate)) return null
+  if (!isTimedBusyEvent(candidate)) return null
   const start = startMs(candidate)
   const end = endMs(candidate)
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return null
   const durationMinutes = Math.max(15, Math.round((end - start) / 60_000))
   const others = (candidate.id ? events.filter((e) => e.id !== candidate.id) : events).filter((e) =>
-    isTimedBusy(e),
+    isTimedBusyEvent(e),
   )
   const slots = proposeMeetingTimes(others, {
     from: options.from ?? new Date(Math.min(start, Date.now())),

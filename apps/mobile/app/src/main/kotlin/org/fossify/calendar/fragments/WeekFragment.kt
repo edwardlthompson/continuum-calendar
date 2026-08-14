@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
 import org.fossify.calendar.R
 import org.fossify.calendar.activities.MainActivity
 import org.fossify.calendar.activities.SimpleActivity
+import org.fossify.calendar.continuum.ContinuumConflict
 import org.fossify.calendar.databinding.AllDayEventsHolderLineBinding
 import org.fossify.calendar.databinding.FragmentWeekBinding
 import org.fossify.calendar.databinding.WeekAllDayEventMarkerBinding
@@ -789,22 +790,8 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                             weekEventTaskImage.applyColorFilter(textColor)
                         }
 
-                        // Only flag conflicts between timed events — all-day / special-day blocks never count.
-                        val hasScheduleConflict =
-                            org.fossify.calendar.continuum.ContinuumConflict.isTimedBusyForConflict(
-                                event.getIsAllDay(),
-                                event.startTS,
-                                event.endTS,
-                            ) &&
-                            (currentEventWeeklyView?.collisions?.any { otherId ->
-                                val other = events.firstOrNull { it.id == otherId }
-                                other != null &&
-                                    org.fossify.calendar.continuum.ContinuumConflict.isTimedBusyForConflict(
-                                        other.getIsAllDay(),
-                                        other.startTS,
-                                        other.endTS,
-                                    )
-                            } == true)
+                        // Occurrence times only — series-id collisions false-flag weekly events next to all-day rows.
+                        val hasScheduleConflict = ContinuumConflict.eventHasTimedConflict(event, events)
 
                         weekEventLabel.apply {
                             setTextColor(textColor)
@@ -815,7 +802,7 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                             }
 
                             text = if (hasScheduleConflict) {
-                                "${org.fossify.calendar.continuum.ContinuumConflict.WARNING_EMOJI} ${event.title}"
+                                "${ContinuumConflict.WARNING_EMOJI} ${event.title}"
                             } else {
                                 event.title
                             }
