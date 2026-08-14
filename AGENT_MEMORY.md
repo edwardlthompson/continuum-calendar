@@ -36,7 +36,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.16.2` (SBOM assets on the GitHub Release; no installer/APK)
+- Latest template-aligned tag: `v0.16.2` (Windows NSIS + Android **1.10.4** / versionCode 22 FOSS APK + SBOMs)
 
 ### Key Constraints
 

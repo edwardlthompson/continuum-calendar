@@ -38,6 +38,11 @@ fun Project.resolveContinuumGoogleClientId(): String {
 }
 
 fun Project.isContinuumPublicRelease(): Boolean {
+    val include = (findProperty("CONTINUUM_INCLUDE_CLIENT_SECRET") as String?)?.trim()
+        ?: System.getenv("CONTINUUM_INCLUDE_CLIENT_SECRET")?.trim()
+    if (include.equals("true", ignoreCase = true)) return false
+    val tasks = gradle.startParameter.taskNames.joinToString(" ").lowercase()
+    if (tasks.contains("release")) return true
     val prop = (findProperty("CONTINUUM_PUBLIC_RELEASE") as String?)?.trim()
     val env = System.getenv("CONTINUUM_PUBLIC_RELEASE")?.trim()
     return prop.equals("true", ignoreCase = true) || env.equals("true", ignoreCase = true)
@@ -46,7 +51,7 @@ fun Project.isContinuumPublicRelease(): Boolean {
 /**
  * Desktop OAuth clients require client_secret on the token endpoint.
  * Keep this in gitignored local.properties / desktop .env only (debug builds).
- * Public GitHub Release APKs must omit the secret (`-PCONTINUUM_PUBLIC_RELEASE=true`).
+ * Release tasks omit the secret unless `-PCONTINUUM_INCLUDE_CLIENT_SECRET=true`.
  */
 fun Project.resolveContinuumGoogleClientSecret(): String {
     if (isContinuumPublicRelease()) return ""

@@ -19,6 +19,7 @@ function envClientId(): string {
 }
 
 function clientSecret(): string {
+  if (import.meta.env.PROD) return ''
   return (import.meta.env.VITE_GOOGLE_CLIENT_SECRET ?? '').trim()
 }
 

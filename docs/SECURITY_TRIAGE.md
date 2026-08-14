@@ -31,9 +31,9 @@ Requires `gh` CLI authenticated with admin access. On API `422` (plan or permiss
 
 `dependabot.yml` schedules version-update PRs; **Dependabot alerts** are a separate GitHub setting for CVE advisories - both are required.
 
-## Audit snapshot (2026-08-11)
+## Audit snapshot (2026-08-14)
 
-Open Dependabot (repo `agent-project-bootstrap` at audit time): **postcss** (medium), **hono** ×3 (medium) + 1 low. Mostly `examples/web` transitive. Prefer bump in examples lockfile or dismiss with documented rationale — see finding F-009 in `CODE_REVIEW.md` (gitignored ephemeral).
+Open Dependabot (`edwardlthompson/continuum-calendar`): **glib** 0.18.5 medium (alert #1, `VariantStrIter` unsoundness; first patch 0.20.0). Transitive via Tauri Linux GTK/webkit2gtk — do not bump to 0.20 on the Windows-first ship (GTK4). postcss in `examples/web` was bumped to 8.5.26. Zero Critical/High. See A2 F-005 in `CODE_REVIEW.md` (gitignored ephemeral).
 
 ## Weekly Triage Pass
 

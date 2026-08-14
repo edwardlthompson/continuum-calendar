@@ -78,6 +78,8 @@ npm run tauri:dev -w @continuum/desktop
 
 Release `applicationId`: `org.continuumcalendar.app` + **release** keystore SHA-1. On that Android client, enable **Custom URI scheme** (Advanced settings). Bake the client id into release builds (CI secret — never commit).
 
+v0.16.2 release keystore SHA-1 (add this fingerprint on the Android OAuth client): `72:40:1C:C3:82:8B:26:80:6A:D2:C1:F3:B9:97:52:76:13:C0:7F:4F`. Keystore files are gitignored at `apps/mobile/keystore.jks` + `keystore.properties` — **back them up off this machine** or you cannot update this APK.
+
 ```text
 [HUMAN] F-002 done: Desktop + Android OAuth clients are public / PKCE; no client_secret in GitHub Release binaries. Consent screen scopes set.
 ```
@@ -148,7 +150,8 @@ Use your usual Release Please / `gh release create` / Actions release workflow. 
 - How to install APK (sideload) and desktop
 
 ```text
-[HUMAN] First GitHub Release published: <tag> with desktop + FOSS APK.
+[HUMAN] First GitHub Release published: v0.16.2 with desktop + FOSS APK.
+https://github.com/edwardlthompson/continuum-calendar/releases/tag/v0.16.2
 ```
 
 ---

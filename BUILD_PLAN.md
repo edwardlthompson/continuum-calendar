@@ -35,6 +35,25 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 ## Continuum Calendar — Active Board
 
+### Sprint A2 — Audit 2026-08-14
+
+> Findings: ephemeral `CODE_REVIEW.md`. HUMAN paste-ready: [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md)
+
+#### Sequential
+
+1. ✅ [AGENT] F-001: Default Android release + desktop production to omit `client_secret` (opt in `CONTINUUM_INCLUDE_CLIENT_SECRET`)
+2. ✅ [AGENT] F-008: Delete duplicate v0.16.1 `continuum-calendar-sbom-assets*` release assets
+3. 🔲 [AGENT] F-009: Commit desktop package/tauri version `0.16.2` alignment
+4. ✅ [AGENT] F-010: Refresh `docs/SECURITY_TRIAGE.md` Dependabot snapshot (`glib` only)
+
+#### Human & device (after automation)
+
+- 🔲 [HUMAN] F-002: Public OAuth clients + consent + release keystore SHA-1 on Android client
+- 🔲 [HUMAN] F-003: Approve or defer secure token storage
+- 🔲 [HUMAN] F-004: LICENSE copyright + Continuum Privacy Policy URL
+- 🔲 [HUMAN] F-007: Approve CodeQL/Actions on Release Please PR #9
+- 🔲 [ADB] Install 1.10.4 APK; About shows 1.10.4; all-day + timed event has no false conflict
+
 ### Sprint A1 — Audit 2026-08-11 (HUMAN backlog)
 
 > **A1 AGENT** work archived in COMPLETED_TASKS.md. See ephemeral `CODE_REVIEW.md`.  
