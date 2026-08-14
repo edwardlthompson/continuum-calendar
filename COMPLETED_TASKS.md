@@ -2,6 +2,13 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint A2 — Audit 2026-08-14 (2026-08-14)
+
+- ✅ [AGENT] F-001: Default Android release + desktop production to omit `client_secret` (opt in `CONTINUUM_INCLUDE_CLIENT_SECRET`)
+- ✅ [AGENT] F-008: Delete duplicate v0.16.1 `continuum-calendar-sbom-assets*` release assets
+- ✅ [AGENT] F-009: Commit desktop package/tauri version `0.16.2` alignment
+- ✅ [AGENT] F-010: Refresh `docs/SECURITY_TRIAGE.md` Dependabot snapshot (`glib` only)
+
 ## Sprint A1 — Audit 2026-08-11 (2026-08-11)
 
 - ✅ [AGENT] F-001: Skip `build`/`.gradle`/`.cxx`/`__pycache__` in `check-file-encoding.py`; purge ephemeral Android build trees; re-green validate-bootstrap --quick

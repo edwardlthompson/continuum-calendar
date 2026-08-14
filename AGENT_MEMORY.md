@@ -49,7 +49,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
-| 2026-08-14 | Ship v0.16.2 | Tombstones + occurrence-key conflicts; Dependabot alerts on; nanoid 3.3.18; Release Please #7 | Enable Pages if a demo is wanted; attach APK/installer (SBOMs only); copy `sdk.dir` only into `examples/android/local.properties` |
+| 2026-08-14 | Audit A2 | Release/PROD omit OAuth secret by default; v0.16.1 duplicate SBOMs removed; desktop version 0.16.2; gates green | HUMAN: OAuth/privacy/LICENSE; approve Actions on RP #9; install 1.10.4 on every device |
 | 2026-08-11 | Audit A1 | Encoding skip `build/`; Android token refresh; desktop notify serialize; agenda local day keys; gates green after restoring example deps post-purge | Avoid `purge-ephemeral --apply` mid-audit without reinstalling examples/* deps; [HUMAN] public OAuth clients + secure token storage |
 | 2026-08-10 | Project bootstrap | Template init + desktop scaffold + trackers | Wire live OAuth after GCP client exists |
 

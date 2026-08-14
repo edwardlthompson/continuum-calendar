@@ -35,16 +35,9 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 ## Continuum Calendar — Active Board
 
-### Sprint A2 — Audit 2026-08-14
+### Sprint A2 — Audit 2026-08-14 (HUMAN backlog)
 
-> Findings: ephemeral `CODE_REVIEW.md`. HUMAN paste-ready: [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md)
-
-#### Sequential
-
-1. ✅ [AGENT] F-001: Default Android release + desktop production to omit `client_secret` (opt in `CONTINUUM_INCLUDE_CLIENT_SECRET`)
-2. ✅ [AGENT] F-008: Delete duplicate v0.16.1 `continuum-calendar-sbom-assets*` release assets
-3. 🔲 [AGENT] F-009: Commit desktop package/tauri version `0.16.2` alignment
-4. ✅ [AGENT] F-010: Refresh `docs/SECURITY_TRIAGE.md` Dependabot snapshot (`glib` only)
+> **A2 AGENT** archived in COMPLETED_TASKS.md @ `fdcd285`. See ephemeral `CODE_REVIEW.md`.
 
 #### Human & device (after automation)
 
@@ -63,7 +56,7 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 - 🔲 [HUMAN] F-002: Confirm desktop/Android Google OAuth clients are **public** (PKCE, no client secret in apps) — Cloud Console
 - 🔲 [HUMAN] F-003: Approve secure token storage approach (Tauri store / EncryptedSharedPreferences)
-- 🔲 [HUMAN] F-009: Triage open Dependabot mediums (postcss, hono) per `docs/SECURITY_TRIAGE.md`
+- 🔲 [HUMAN] F-009: Triage Dependabot medium `glib` (postcss/hono cleared; see A2 F-005)
 - 🔲 [ADB] Smoke agenda now-bar + Continuum notifications toggle after A1 APK install
 
 ### Sprint B1 — Brand & public identity
