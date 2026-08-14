@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { CalendarEvent } from './events.ts'
-import { conflictsForEvent, detectConflicts, suggestConflictFreeTime } from './conflicts.ts'
+import { conflictsForEvent, detectConflicts, eventOccurrenceKey, suggestConflictFreeTime } from './conflicts.ts'
 
 function ev(
   id: string,
@@ -37,8 +37,15 @@ test('all-day and long special-day blocks never conflict with timed events', () 
   const meeting = ev('m', '2026-08-16T10:00:00', '2026-08-16T12:30:00')
   const birthday = ev('bday', '2026-08-16', '2026-08-17', { allDay: true })
   const anniversary = ev('ann', '2026-08-16T00:00:00', '2026-08-17T00:00:00') // lost allDay flag
-  assert.equal(detectConflicts([meeting, birthday, anniversary]).length, 0)
-  assert.equal(conflictsForEvent(meeting, [birthday, anniversary]).length, 0)
+  const fossifyNoon = ev('fossify', '2026-08-16T00:00:00', '2026-08-16T12:00:00')
+  assert.equal(detectConflicts([meeting, birthday, anniversary, fossifyNoon]).length, 0)
+  assert.equal(conflictsForEvent(meeting, [birthday, anniversary, fossifyNoon]).length, 0)
+})
+
+test('eventOccurrenceKey distinguishes repeating occurrences', () => {
+  const sun9 = ev('church', '2026-08-09T10:00:00', '2026-08-09T12:30:00')
+  const sun16 = ev('church', '2026-08-16T10:00:00', '2026-08-16T12:30:00')
+  assert.notEqual(eventOccurrenceKey(sun9), eventOccurrenceKey(sun16))
 })
 
 test('suggestConflictFreeTime returns a non-overlapping work-hours slot', () => {

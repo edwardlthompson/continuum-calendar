@@ -24,7 +24,7 @@ class EventListWidgetAdapter(val context: Context, val intent: Intent) : RemoteV
 
     private val allDayString = context.resources.getString(R.string.all_day)
     private var events = ArrayList<ListItem>()
-    private var conflictIds: Set<Long> = emptySet()
+    private var conflictIds: Set<String> = emptySet()
     private var textColor = context.getProperTextColor()
     private var weakTextColor = textColor.adjustAlpha(MEDIUM_ALPHA)
     private var replaceDescription = context.config.replaceDescription
@@ -85,7 +85,7 @@ class EventListWidgetAdapter(val context: Context, val intent: Intent) : RemoteV
         var curTextColor = textColor
         remoteView.apply {
             setBackgroundColor(R.id.event_item_color_bar, item.color)
-            val conflict = conflictIds.contains(item.id)
+            val conflict = conflictIds.contains(ContinuumConflict.occurrenceKey(item))
             setText(
                 R.id.event_item_title,
                 ContinuumConflict.titleWithConflictWarning(item.title, conflict),

@@ -357,6 +357,11 @@ class EventsHelper(val context: Context) {
 
         ids.chunked(CHOPPED_LIST_DEFAULT_SIZE).forEach {
             val eventsWithImportId = eventsDB.getEventsByIdsWithImportIds(it)
+            try {
+                org.fossify.calendar.continuum.ContinuumLocalEventsSync(context)
+                    .recordLocalDeletes(eventsDB.getEventsOrTasksWithIds(it))
+            } catch (_: Exception) {
+            }
             eventsDB.deleteEvents(it)
 
             it.forEach {

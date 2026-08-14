@@ -3,6 +3,7 @@ import {
   defaultContinuumSettings,
   conflictsForEvent,
   detectConflicts,
+  eventOccurrenceKey,
   isBirthdayCalendarEntry,
   isContactBirthdayEvent,
   proposeMeetingTimes,
@@ -1060,7 +1061,7 @@ export default function App() {
                 density={settings.agendaDensity}
                 use24HourFormat={settings.use24HourFormat}
                 workingHours={settings.workingHours}
-                conflictIds={new Set(conflicts.flatMap((c) => [c.a.id, c.b.id]))}
+                conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
                 onSelectEvent={(ev) => setEditing(ev)}
                 onOpenDay={(dateKey) => {
                   const startHm = (settings.workingHours.start || '09:00').slice(0, 5)
@@ -1083,7 +1084,7 @@ export default function App() {
                 use24HourFormat
                 firstDayOfWeek={settings.firstDayOfWeek}
                 weeklyViewDays={settings.weeklyViewDays}
-                conflictIds={new Set(conflicts.flatMap((c) => [c.a.id, c.b.id]))}
+                conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
                 onSelectEvent={(ev) => setEditing(ev)}
                 onSelectSlot={(start, end) =>
                   openNewEvent({

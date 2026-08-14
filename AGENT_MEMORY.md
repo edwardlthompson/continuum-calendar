@@ -25,7 +25,7 @@
 - ✅ `docs/THREAT_MODEL.md` present from template (refine for OAuth/calendar data)
 - ✅ No proprietary closed-source SDKs required for core FOSS path
 - ✅ Secrets excluded from VCS; `.env.example` documents Google client id only
-- 🔲 `[HUMAN]` Enable Dependabot alerts + private vulnerability reporting on GitHub
+- ✅ Dependabot alerts + security updates enabled on `continuum-calendar` (2026-08-14 `/ship`)
 
 ## Persistent Context
 

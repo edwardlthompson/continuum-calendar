@@ -19,37 +19,50 @@ object ContinuumConflict {
         return if (trimmed.startsWith(WARNING_EMOJI)) title else "$WARNING_EMOJI $title"
     }
 
+    fun occurrenceKey(event: ListEvent): String = "${event.id}:${event.startTS}"
+
     /** Treat multi-hour “special day” rows as non-busy even if the all-day flag was lost. */
+    private fun isSpecialDayBlock(startTS: Long, endTS: Long): Boolean {
+        val dur = endTS - startTS
+        if (dur >= 20L * 60L * 60L) return true
+        // Fossify / CalendarContract local all-day is midnight → noon (12h).
+        if (dur < 12L * 60L * 60L) return false
+        val dt = Formatter.getDateTimeFromTS(startTS)
+        return dt.hourOfDay == 0 && dt.minuteOfHour == 0 && dt.secondOfMinute == 0
+    }
+
     private fun isTimedBusyListEvent(event: ListEvent): Boolean {
         if (event.id <= 0L || event.isAllDay) return false
-        // >= 20h ≈ all-day / anniversary blocks — never conflict with timed meetings.
-        if (event.endTS - event.startTS >= 20L * 60L * 60L) return false
-        return true
+        return !isSpecialDayBlock(event.startTS, event.endTS)
     }
 
     private fun isTimedBusyEvent(event: Event): Boolean {
         if (event.getIsAllDay()) return false
-        if (event.endTS - event.startTS >= 20L * 60L * 60L) return false
-        return true
+        return !isSpecialDayBlock(event.startTS, event.endTS)
     }
 
-    /** Ids of timed agenda rows that overlap another timed row (skips Open placeholders). */
-    fun conflictingListEventIds(events: List<ListEvent>): Set<Long> {
+    fun isTimedBusyForConflict(isAllDay: Boolean, startTS: Long, endTS: Long): Boolean {
+        if (isAllDay) return false
+        return !isSpecialDayBlock(startTS, endTS)
+    }
+
+    /** Occurrence keys of timed agenda rows that overlap another timed row (skips Open placeholders). */
+    fun conflictingListEventIds(events: List<ListEvent>): Set<String> {
         val timed = events.filter { isTimedBusyListEvent(it) }.sortedBy { it.startTS }
         if (timed.size < 2) return emptySet()
-        val ids = HashSet<Long>()
+        val keys = HashSet<String>()
         for (i in timed.indices) {
             val a = timed[i]
             for (j in i + 1 until timed.size) {
                 val b = timed[j]
                 if (b.startTS >= a.endTS) break
                 if (a.startTS < b.endTS && a.endTS > b.startTS) {
-                    ids.add(a.id)
-                    ids.add(b.id)
+                    keys.add(occurrenceKey(a))
+                    keys.add(occurrenceKey(b))
                 }
             }
         }
-        return ids
+        return keys
     }
 
     fun findOverlaps(

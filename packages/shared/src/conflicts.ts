@@ -25,6 +25,11 @@ function overlaps(a: { start: string; end: string }, b: { start: string; end: st
   return startMs(a) < endMs(b) && endMs(a) > startMs(b)
 }
 
+/** Occurrence key so a repeating event is flagged only on the day it actually overlaps. */
+export function eventOccurrenceKey(e: { id?: string; start: string }): string {
+  return `${e.id ?? ''}:${e.start}`
+}
+
 /** All-day / anniversary-style rows never participate in scheduling conflicts. */
 function isTimedBusy(e: { allDay?: boolean; busy?: boolean; start: string; end: string }): boolean {
   if (e.allDay || e.busy === false) return false
@@ -32,8 +37,14 @@ function isTimedBusy(e: { allDay?: boolean; busy?: boolean; start: string; end: 
   if (/^\d{4}-\d{2}-\d{2}$/.test(e.start.trim()) && !e.start.includes('T')) return false
   const start = startMs(e)
   const end = endMs(e)
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return false
+  const dur = end - start
   // >= 20h blocks (lost all-day flag / special days) never conflict with timed meetings.
-  if (Number.isFinite(start) && Number.isFinite(end) && end - start >= 20 * 60 * 60 * 1000) return false
+  if (dur >= 20 * 60 * 60 * 1000) return false
+  // Fossify / CalendarContract local all-day is midnight → noon (12h).
+  const d = new Date(start)
+  const atMidnight = d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0
+  if (atMidnight && dur >= 12 * 60 * 60 * 1000) return false
   return true
 }
 

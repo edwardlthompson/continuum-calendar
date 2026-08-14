@@ -44,7 +44,7 @@ class EventListAdapter(
     private var currentItemsHash = listItems.hashCode()
     private var isPrintVersion = false
     private val mediumMargin = activity.resources.getDimension(org.fossify.commons.R.dimen.medium_margin).toInt()
-    private var conflictIds: Set<Long> =
+    private var conflictIds: Set<String> =
         ContinuumConflict.conflictingListEventIds(listItems.filterIsInstance<ListEvent>())
 
     init {
@@ -149,7 +149,7 @@ class EventListAdapter(
         EventListItemBinding.bind(view).apply {
             eventItemHolder.isSelected = selectedKeys.contains(listEvent.hashCode())
             eventItemHolder.background.applyColorFilter(textColor)
-            val conflict = conflictIds.contains(listEvent.id)
+            val conflict = conflictIds.contains(ContinuumConflict.occurrenceKey(listEvent))
             eventItemTitle.text = ContinuumConflict.titleWithConflictWarning(listEvent.title, conflict)
             eventItemTitle.checkViewStrikeThrough(listEvent.shouldStrikeThrough())
             eventItemTime.text = if (listEvent.isAllDay) allDayString else Formatter.getTimeFromTS(activity, listEvent.startTS)

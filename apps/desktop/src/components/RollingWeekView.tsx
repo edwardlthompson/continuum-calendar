@@ -4,7 +4,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { DateSelectArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core'
-import type { CalendarEvent, CalendarListEntry } from '@continuum/shared'
+import { eventOccurrenceKey, type CalendarEvent, type CalendarListEntry } from '@continuum/shared'
 import { fullCalendarTimeFormats } from '../utils/timeFormat'
 
 function startOfDay(d: Date): Date {
@@ -65,7 +65,7 @@ export function RollingWeekView({
     () =>
       events.map((e) => {
         const calColor = colorByCal.get(e.calendarId)
-        const conflict = conflictIds?.has(e.id)
+        const conflict = conflictIds?.has(eventOccurrenceKey(e))
         return {
           id: e.id,
           title: redactTitles ? '••••••••' : e.title,

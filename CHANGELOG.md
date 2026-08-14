@@ -62,17 +62,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **desktop:** header Refresh control; agenda shows start–end times; Drive peer sync backoff / quiet failures
 * **desktop:** full Google window sync prunes deleted events (fixes stale agenda after Android deletes)
 * **android:** homescreen widget title opens Agenda (event list), not Daily
+* **android:** local-event peer tombstones so device deletes (e.g. Doctor) stay gone after Drive sync
 * **codex:** opt-in third-party Codex review (`/codex-review`, workflow example, `docs/CODEX_REVIEW.md`) folded into expanded `/prerelease` / `/ship`
 * **autofix:** multi-stack `feature-autofix` (Biome, ruff, cargo fmt, gofmt) + allowlisted `apply-suggested-gate-fixes`
 * **tests:** Hypothesis (Python) and fast-check (web/node) Golden Path property tests
 
 ### Fixed
 
+* **android/desktop:** conflict warnings key by occurrence so weekly Church is not flagged next to all-day birthdays; Fossify midnight–noon blocks are non-busy
+* **security:** bump holiday-generator `nanoid` to 3.3.18; dismiss `extract-zip` CVE-2026-56876 (`examples/web` LHCI only, no patched release)
 * **security:** bump `examples/web` npm overrides — `undici` >=7.29.0, `ip-address` >=10.3.1, `nanoid` >=3.3.17 (plus prior `js-yaml` / `brace-expansion`); `examples/node` `postcss` >=8.5.18
 * **gates:** About-without stubs write LF + Biome-normalized imports so `format:check` passes on Windows
 
 ### Changed
 
+* **android:** hide Fossify suite CTAs (More apps, Settings thank-you, About donate)
 * **plan:** require resolved `### Critique` as Issue->Resolution in every plan; single best approach (no unresolved option dumps)
 * **prerelease:** autofix → optional Codex → hard `pre-release-gate` before `/push`
 

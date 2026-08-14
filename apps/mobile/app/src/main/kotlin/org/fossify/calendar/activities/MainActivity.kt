@@ -388,8 +388,8 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             findItem(R.id.go_to_date).isVisible = config.storedView != EVENTS_LIST_VIEW
             findItem(R.id.refresh_caldav_calendars).isVisible = config.caldavSync
             findItem(R.id.add_birthdays).isVisible = config.showContactBirthdays
-            findItem(R.id.more_apps_from_us).isVisible =
-                !resources.getBoolean(org.fossify.commons.R.bool.hide_google_relations)
+            // Continuum is not the Fossify suite — never offer “more apps from us”.
+            findItem(R.id.more_apps_from_us).isVisible = false
         }
     }
 
@@ -1429,7 +1429,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             FAQItem(R.string.faq_4_title, R.string.faq_4_text)
         )
 
-        if (!resources.getBoolean(org.fossify.commons.R.bool.hide_google_relations)) {
+        if (!resources.getBoolean(R.bool.hide_google_relations)) {
             faqItems.add(
                 FAQItem(
                     title = org.fossify.commons.R.string.faq_2_title_commons,

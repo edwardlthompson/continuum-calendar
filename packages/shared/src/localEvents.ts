@@ -1,7 +1,8 @@
 import type { CalendarEvent } from './events.js'
 import type { CalendarListEntry } from './calendars.js'
 import type { SettingsUpdatedBy } from './settings.js'
-import { LOCAL_EVENTS_SCHEMA_VERSION } from './settings.js'
+// .ts suffix keeps Node --experimental-strip-types tests resolvable (value import).
+import { LOCAL_EVENTS_SCHEMA_VERSION } from './settings.ts'
 
 export interface LocalEventTombstone {
   id: string

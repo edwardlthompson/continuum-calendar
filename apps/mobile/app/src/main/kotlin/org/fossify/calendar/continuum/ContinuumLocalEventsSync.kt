@@ -29,12 +29,21 @@ import java.time.ZoneOffset
  * so desktop writes become visible on Android (push-pending used to upload-only).
  */
 class ContinuumLocalEventsSync(private val context: Context) {
-    private val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences(ContinuumLocalEventTombstones.PREFS, Context.MODE_PRIVATE)
     private val auth = ContinuumGoogleAuth(context)
     private val settingsSync = ContinuumSettingsSync(context)
+    private val tombstones = ContinuumLocalEventTombstones(prefs)
 
     fun markPending() {
         prefs.edit().putBoolean(KEY_PENDING, true).apply()
+    }
+
+    /** Record peer tombstones before Room delete so a concurrent pull cannot resurrect the row. */
+    fun recordLocalDeletes(events: List<Event>) {
+        synchronized(lock) {
+            tombstones.recordDeletes(events)
+            markPending()
+        }
     }
 
     private fun clearPending() {
@@ -47,14 +56,22 @@ class ContinuumLocalEventsSync(private val context: Context) {
 
     /** Mark dirty and push immediately when Continuum Google API is signed in. */
     fun notifyLocalChanged() {
-        markPending()
-        pushIfSignedIn()
+        synchronized(lock) {
+            markPending()
+            pushIfSignedInLocked()
+        }
     }
 
     /**
      * @return true when Room or Drive revision changed enough that the UI should refresh.
      */
     fun reconcilePeerRemote(): Boolean {
+        synchronized(lock) {
+            return reconcilePeerRemoteLocked()
+        }
+    }
+
+    private fun reconcilePeerRemoteLocked(): Boolean {
         val tokens = auth.ensureFreshTokens() ?: return false
         return try {
             val remote = pullEnvelope(tokens.accessToken)
@@ -88,6 +105,12 @@ class ContinuumLocalEventsSync(private val context: Context) {
     }
 
     fun pushIfSignedIn() {
+        synchronized(lock) {
+            pushIfSignedInLocked()
+        }
+    }
+
+    private fun pushIfSignedInLocked() {
         markPending()
         val tokens = auth.ensureFreshTokens() ?: return
         try {
@@ -140,20 +163,22 @@ class ContinuumLocalEventsSync(private val context: Context) {
         prefs.edit().putLong(KEY_REVISION, revision).apply()
         clearPending()
         ContinuumDiagnostics.i(
-            "Local events uploaded (revision=$revision, events=${merged.optJSONArray("events")?.length() ?: 0})",
+            "Local events uploaded (revision=$revision, events=${merged.optJSONArray("events")?.length() ?: 0}, deleted=${merged.optJSONArray("deletedIds")?.length() ?: 0})",
         )
         return merged
     }
 
     private fun applyRemote(remote: JSONObject) {
         val fromSelf = remote.optJSONObject("updatedBy")?.optString("deviceId") == settingsSync.deviceId()
-        applyPayload(
-            JSONObject()
-                .put("calendars", remote.optJSONArray("calendars") ?: JSONArray())
-                .put("events", remote.optJSONArray("events") ?: JSONArray())
-                .put("deletedIds", remote.optJSONArray("deletedIds") ?: JSONArray()),
-            notifyNewFromPeer = !fromSelf,
-        )
+        val remotePayload = JSONObject()
+            .put("calendars", remote.optJSONArray("calendars") ?: JSONArray())
+            .put("events", remote.optJSONArray("events") ?: JSONArray())
+            .put("deletedIds", remote.optJSONArray("deletedIds") ?: JSONArray())
+        val localTombs = JSONObject()
+            .put("calendars", JSONArray())
+            .put("events", JSONArray())
+            .put("deletedIds", tombstones.toJsonArray())
+        applyPayload(mergePayloads(remotePayload, localTombs), notifyNewFromPeer = !fromSelf)
         prefs.edit().putLong(KEY_REVISION, remote.optLong("revision", 0)).apply()
         clearPending()
         ContinuumDiagnostics.i(
@@ -213,6 +238,7 @@ class ContinuumLocalEventsSync(private val context: Context) {
             }
         }
         ContinuumDiagnostics.i("Applied $applied peer local events into Room")
+        tombstones.replaceAll(payload.optJSONArray("deletedIds"))
     }
 
     private fun deleteByPeerId(peerId: String) {
@@ -267,16 +293,10 @@ class ContinuumLocalEventsSync(private val context: Context) {
                     it.source == SOURCE_SIMPLE_CALENDAR || it.source == SOURCE_IMPORTED_ICS
                 }
                 .forEach { ev ->
-                    val id = ev.id ?: return@forEach
-                    val peerId = when {
-                        ev.importId.startsWith("local-") -> ev.importId
-                        ev.importId.startsWith("continuum:") -> ev.importId
-                        ev.importId.isNotBlank() -> ev.importId
-                        else -> "continuum:android:$id"
-                    }
+                    if (ev.id == null) return@forEach
+                    val peerId = peerEventId(ev)
                     val allDay = ev.flags and FLAG_ALL_DAY != 0
-                    val calId =
-                        if (ev.calendarId == LOCAL_CALENDAR_ID) "local-default" else ev.calendarId.toString()
+                    val calId = peerCalendarId(ev)
                     evArr.put(
                         JSONObject()
                             .put("id", peerId)
@@ -303,7 +323,7 @@ class ContinuumLocalEventsSync(private val context: Context) {
         return JSONObject()
             .put("calendars", calArr)
             .put("events", evArr)
-            .put("deletedIds", JSONArray())
+            .put("deletedIds", tombstones.toJsonArray())
     }
 
     private fun mergePayloads(remote: JSONObject, local: JSONObject): JSONObject {
@@ -575,7 +595,7 @@ class ContinuumLocalEventsSync(private val context: Context) {
     }
 
     companion object {
-        private const val PREFS = "continuum_local_events"
+        private val lock = Any()
         private const val KEY_REVISION = "revision"
         private const val KEY_PENDING = "pending_peer_push"
         private const val MAX_BYTES = 2_000_000

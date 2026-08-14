@@ -255,6 +255,7 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupSettingItems() {
+        binding.settingsPurchaseThankYouHolder.beGone()
         setupCustomizeColors()
         setupCustomizeNotifications()
         setupUseEnglish()

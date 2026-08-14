@@ -790,13 +790,20 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                         }
 
                         // Only flag conflicts between timed events — all-day / special-day blocks never count.
-                        val hasScheduleConflict = !event.getIsAllDay() &&
-                            (event.endTS - event.startTS < 20L * 60L * 60L) &&
+                        val hasScheduleConflict =
+                            org.fossify.calendar.continuum.ContinuumConflict.isTimedBusyForConflict(
+                                event.getIsAllDay(),
+                                event.startTS,
+                                event.endTS,
+                            ) &&
                             (currentEventWeeklyView?.collisions?.any { otherId ->
                                 val other = events.firstOrNull { it.id == otherId }
                                 other != null &&
-                                    !other.getIsAllDay() &&
-                                    (other.endTS - other.startTS < 20L * 60L * 60L)
+                                    org.fossify.calendar.continuum.ContinuumConflict.isTimedBusyForConflict(
+                                        other.getIsAllDay(),
+                                        other.startTS,
+                                        other.endTS,
+                                    )
                             } == true)
 
                         weekEventLabel.apply {

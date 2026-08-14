@@ -11,7 +11,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/agenda.test.ts src/conflicts.test.ts"
+    "test": "node --experimental-strip-types --test src/agenda.test.ts src/conflicts.test.ts src/localEvents.test.ts"
   },
   "devDependencies": {
     "typescript": "^5.8.0"

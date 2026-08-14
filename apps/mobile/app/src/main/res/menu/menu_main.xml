@@ -77,5 +77,6 @@
         android:id="@+id/more_apps_from_us"
         android:icon="@drawable/ic_google_play_vector"
         android:title="@string/more_fossify_apps"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 </menu>

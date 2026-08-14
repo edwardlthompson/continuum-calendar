@@ -158,3 +158,24 @@ _Seed template ADR: `docs/adr/0000-template-baseline.md`. Child repos use `docs/
 - **Alternatives considered:** Lightroom-only (rejected: Rust/Go stubs are low-cost and popular); defer all optional modules (rejected: COMPLETED_TASKS M3 work already landed)
 - **Consequences:** Template CI runs more jobs on `main`; child repos can delete unused `examples/` folders to skip jobs via `hashFiles` guards
 
+### 2026-08-14 — Android local-delete tombstones
+- **Status:** Accepted
+- **Context:** Deleting local peer events on Android (e.g. Doctor / `mock-3`) vanished for ~2s then Drive merge restored them because `buildLocalPayload` sent empty `deletedIds`.
+- **Decision:** Persist tombstones in `continuum_local_events` prefs, record them before Room delete, include them in the peer payload, and merge them on pull.
+- **Alternatives considered:** Delete-only on Android without Drive tombstones (rejected — desktop copy always wins); wait for desktop-only delete (rejected — phone is the source of truth for that smoke).
+- **Consequences:** Desktop Refresh / next peer poll drops the event; pre-upgrade deletes may need one more delete after install.
+
+### 2026-08-14 — Conflict warnings keyed by occurrence
+- **Status:** Accepted
+- **Context:** Weekly Church inherited a conflict badge on Aug 16 next to an all-day birthday because badges used series `id`, and Fossify all-day is midnight–noon (12h) which missed the 20h heuristic.
+- **Decision:** Key warnings by `id` + start; treat midnight–noon ≥12h blocks as non-busy on Android and in `@continuum/shared`.
+- **Alternatives considered:** Keep id-only badges (rejected — false positives every Sunday); raise the duration cutoff to 12h without midnight check (rejected — would hide real half-day meetings).
+- **Consequences:** Same-day timed overlaps still warn; repeating events only warn on the occurrence that overlaps.
+
+### 2026-08-14 — Dependabot High: extract-zip and nanoid
+- **Status:** Accepted
+- **Context:** Enabling Dependabot alerts on `continuum-calendar` surfaced High `extract-zip` (CVE-2026-56876, no patch) and `nanoid` < 3.3.18.
+- **Decision:** Dismiss `extract-zip` as `not_used` (LHCI / `@puppeteer/browsers` in `examples/web` only). Bump holiday-generator `nanoid` override to 3.3.18.
+- **Alternatives considered:** Remove `@lhci/cli` (rejected — loses Lighthouse gate); wait for an extract-zip release (none expected).
+- **Consequences:** Revisit extract-zip if LHCI drops the transitive; nanoid alert closes after the lockfile lands on `main`.
+

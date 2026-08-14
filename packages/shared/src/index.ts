@@ -66,6 +66,7 @@ export type { TodayAgendaPhase } from './agenda.js'
 export { formatAgendaSectionTitle, CONTINUUM_OPEN_DAY_COLOR } from './agendaHeaders.js'
 export {
   detectConflicts,
+  eventOccurrenceKey,
   conflictsForEvent,
   suggestConflictFreeTime,
 } from './conflicts.js'

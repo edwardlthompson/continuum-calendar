@@ -8,6 +8,7 @@ import {
   localDateKey,
   splitDayEventsAtNow,
   todayAgendaPhase,
+  eventOccurrenceKey,
   type CalendarEvent,
   type CalendarListEntry,
   type WorkingHours,
@@ -110,7 +111,7 @@ export function AgendaView({
                     redactTitles={redactTitles}
                     use24HourFormat={use24HourFormat}
                     dimmed
-                    conflict={conflictIds?.has(ev.id)}
+                    conflict={conflictIds?.has(eventOccurrenceKey(ev))}
                     onSelectEvent={onSelectEvent}
                   />
                 ))}
@@ -128,7 +129,7 @@ export function AgendaView({
                     redactTitles={redactTitles}
                     use24HourFormat={use24HourFormat}
                     dimmed={false}
-                    conflict={conflictIds?.has(ev.id)}
+                    conflict={conflictIds?.has(eventOccurrenceKey(ev))}
                     onSelectEvent={onSelectEvent}
                   />
                 ))}
@@ -151,7 +152,7 @@ export function AgendaView({
                     redactTitles={redactTitles}
                     use24HourFormat={use24HourFormat}
                     dimmed={isEventPast(ev, nowMs)}
-                    conflict={conflictIds?.has(ev.id)}
+                    conflict={conflictIds?.has(eventOccurrenceKey(ev))}
                     onSelectEvent={onSelectEvent}
                   />
                 ))}
