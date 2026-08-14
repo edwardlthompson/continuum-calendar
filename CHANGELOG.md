@@ -15,6 +15,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.2](https://github.com/edwardlthompson/continuum-calendar/compare/v0.16.1...v0.16.2) (2026-08-14)
+
+
+### Changed
+
+* **deps-dev:** Bump postcss from 8.5.21 to 8.5.26 in /examples/web ([#8](https://github.com/edwardlthompson/continuum-calendar/issues/8)) ([629414e](https://github.com/edwardlthompson/continuum-calendar/commit/629414ead82c6226f84136ab70fc833cf39e0a80))
+* **deps:** Bump the android-dependencies group across 1 directory with 2 updates ([#2](https://github.com/edwardlthompson/continuum-calendar/issues/2)) ([03b97e8](https://github.com/edwardlthompson/continuum-calendar/commit/03b97e86e1f62adc5c3524956bd2057720e0e64b))
+* **release:** prepare v0.16.2 release ([ae16328](https://github.com/edwardlthompson/continuum-calendar/commit/ae16328d0093fb43431cc80b17ff9ff802deb503))
+
+
+### Documentation
+
+* record ship learnings and public continuum-calendar home ([ac118a6](https://github.com/edwardlthompson/continuum-calendar/commit/ac118a6c7ccf149b5ce50fd7684230737b2a968f))
+
 ## [0.16.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.16.0...v0.16.1) (2026-08-12)
 
 
