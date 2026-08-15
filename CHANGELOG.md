@@ -15,6 +15,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.16.2...v0.17.0) (2026-08-15)
+
+
+### Added
+
+* **android:** add Settings choices for long event titles ([1f23a9e](https://github.com/edwardlthompson/continuum-calendar/commit/1f23a9eadad7d5503b9b7aed8df28a3d493c20e7))
+
+
+### Fixed
+
+* **calendar:** apply all-day conflict rule on every surface ([6f0ed23](https://github.com/edwardlthompson/continuum-calendar/commit/6f0ed23cc73a046b5373f40c0c890519a13760ae))
+* **security:** omit OAuth client secret from production builds ([fdcd285](https://github.com/edwardlthompson/continuum-calendar/commit/fdcd28547408c6c13471f6285240a60bac762437))
+
+
+### Changed
+
+* **release:** prepare v0.16.3 release ([9531ebf](https://github.com/edwardlthompson/continuum-calendar/commit/9531ebfbac6a2ddc1682e79e01992f8013aa5400))
+
+
+### Documentation
+
+* archive Sprint A2 AGENT rows after audit ([6c33f34](https://github.com/edwardlthompson/continuum-calendar/commit/6c33f34e8276b38030e35c44cf5b0294df0e0107))
+* record v0.16.2 ship regressions ([1171e1e](https://github.com/edwardlthompson/continuum-calendar/commit/1171e1ebba018b57d20b283aba1e1eb87c098d9c))
+
 ## [0.16.2](https://github.com/edwardlthompson/continuum-calendar/compare/v0.16.1...v0.16.2) (2026-08-14)
 
 
