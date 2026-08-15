@@ -220,6 +220,28 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/settings_continuum_title_overflow_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_continuum_title_overflow_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/continuum_title_overflow" />
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_continuum_title_overflow"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_continuum_title_overflow_label"
+                    tools:text="Bounce" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/settings_continuum_error_log_holder"
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"

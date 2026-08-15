@@ -356,4 +356,12 @@ class Config(context: Context) : BaseConfig(context) {
     var widgetShowGrid: Boolean
         get() = prefs.getBoolean(WIDGET_SHOW_GRID, false)
         set(widgetShowGrid) = prefs.edit().putBoolean(WIDGET_SHOW_GRID, widgetShowGrid).apply()
+
+    var titleOverflowMode: Int
+        get() = prefs.getInt(
+            TITLE_OVERFLOW_MODE,
+            org.fossify.calendar.continuum.TitleOverflowMode.BOUNCE.pref,
+        )
+        set(titleOverflowMode) = prefs.edit()
+            .putInt(TITLE_OVERFLOW_MODE, titleOverflowMode).apply()
 }

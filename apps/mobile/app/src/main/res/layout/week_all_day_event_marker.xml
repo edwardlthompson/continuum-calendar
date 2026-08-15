@@ -21,12 +21,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/week_event_label" />
 
-    <TextView
+    <org.fossify.calendar.continuum.ContinuumTickerTextView
         android:id="@+id/week_event_label"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="2"
+        android:maxLines="1"
+        android:requiresFadingEdge="horizontal"
+        android:singleLine="true"
         android:paddingStart="@dimen/tiny_margin"
         android:textColor="@android:color/white"
         android:textSize="@dimen/small_text_size"

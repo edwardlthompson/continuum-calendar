@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="continuum_title_overflow">Long event titles</string>
+    <string name="continuum_title_overflow_bounce">Bounce</string>
+    <string name="continuum_title_overflow_bounce_detail">Pause, scroll left until the end appears, pause, scroll right to the start, pause, repeat</string>
+    <string name="continuum_title_overflow_loop">Loop</string>
+    <string name="continuum_title_overflow_loop_detail">Two copies keep scrolling endlessly</string>
+    <string name="continuum_title_overflow_reset">Reset</string>
+    <string name="continuum_title_overflow_reset_detail">Pause, scroll left, pause at the end, jump to the start, repeat</string>
+    <string name="continuum_title_overflow_shrink">Shrink to fit</string>
+    <string name="continuum_title_overflow_shrink_detail">Scale the title down so the whole line stays visible</string>
+</resources>

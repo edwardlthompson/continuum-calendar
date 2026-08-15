@@ -34,6 +34,7 @@ import org.fossify.calendar.activities.EventActivity
 import org.fossify.calendar.activities.SnoozeReminderActivity
 import org.fossify.calendar.activities.TaskActivity
 import org.fossify.calendar.databases.EventsDatabase
+import org.fossify.calendar.continuum.enableOverflowMarquee
 import org.fossify.calendar.databinding.DayMonthlyEventViewBinding
 import org.fossify.calendar.helpers.ACTION_MARK_COMPLETED
 import org.fossify.calendar.helpers.AUTOMATIC_BACKUP_REQUEST_CODE
@@ -827,9 +828,10 @@ fun Context.addDayEvents(
 
             dayMonthlyEventId.apply {
                 setTextColor(textColor)
-                text = it.title.replace(" ", "\u00A0")  // allow word break by char
+                text = it.title
                 checkViewStrikeThrough(it.shouldStrikeThrough())
                 contentDescription = it.title
+                enableOverflowMarquee()
             }
 
             dayMonthlyTaskImage.beVisibleIf(it.isTask())

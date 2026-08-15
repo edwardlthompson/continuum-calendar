@@ -24,6 +24,7 @@ import org.fossify.calendar.R
 import org.fossify.calendar.activities.MainActivity
 import org.fossify.calendar.activities.SimpleActivity
 import org.fossify.calendar.continuum.ContinuumConflict
+import org.fossify.calendar.continuum.enableOverflowMarquee
 import org.fossify.calendar.databinding.AllDayEventsHolderLineBinding
 import org.fossify.calendar.databinding.FragmentWeekBinding
 import org.fossify.calendar.databinding.WeekAllDayEventMarkerBinding
@@ -795,18 +796,13 @@ class WeekFragment : Fragment(), WeeklyCalendar {
 
                         weekEventLabel.apply {
                             setTextColor(textColor)
-                            maxLines = if (event.isTask() || event.startTS == event.endTS) {
-                                1
-                            } else {
-                                3
-                            }
-
                             text = if (hasScheduleConflict) {
                                 "${ContinuumConflict.WARNING_EMOJI} ${event.title}"
                             } else {
                                 event.title
                             }
                             checkViewStrikeThrough(event.shouldStrikeThrough())
+                            enableOverflowMarquee()
                             contentDescription = if (hasScheduleConflict) {
                                 getString(R.string.continuum_conflict_title) + ": " + event.title
                             } else {
@@ -966,10 +962,10 @@ class WeekFragment : Fragment(), WeeklyCalendar {
 
             weekEventLabel.apply {
                 setTextColor(textColor)
-                maxLines = if (event.isTask()) 1 else 2
                 text = event.title
                 checkViewStrikeThrough(event.shouldStrikeThrough())
                 contentDescription = text
+                enableOverflowMarquee()
             }
 
             weekEventTaskImage.beVisibleIf(event.isTask())

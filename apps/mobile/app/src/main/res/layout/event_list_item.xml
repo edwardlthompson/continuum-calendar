@@ -44,16 +44,17 @@
             app:layout_constraintStart_toEndOf="@+id/event_item_color_bar"
             app:layout_constraintTop_toTopOf="@+id/event_item_title" />
 
-        <TextView
+        <org.fossify.calendar.continuum.ContinuumTickerTextView
             android:id="@+id/event_item_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="1"
             android:paddingTop="@dimen/small_margin"
             android:paddingEnd="@dimen/activity_margin"
             android:paddingBottom="@dimen/tiny_margin"
+            android:requiresFadingEdge="horizontal"
+            android:singleLine="true"
             android:textSize="@dimen/day_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/event_item_task_image"

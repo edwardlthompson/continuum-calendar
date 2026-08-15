@@ -26,6 +26,7 @@ import org.fossify.calendar.continuum.ContinuumGoogleAuth
 import org.fossify.calendar.continuum.ContinuumLocalEventsSync
 import org.fossify.calendar.continuum.ContinuumSettingsOAuth
 import org.fossify.calendar.continuum.ContinuumSettingsSync
+import org.fossify.calendar.continuum.TitleOverflowMode
 import org.fossify.calendar.extensions.calDAVHelper
 import org.fossify.calendar.extensions.calendarsDB
 import org.fossify.calendar.extensions.cancelScheduledAutomaticBackup
@@ -283,6 +284,7 @@ class SettingsActivity : SimpleActivity() {
         setupUseGoogleCalendar()
         setupShowContactBirthdays()
         setupContinuumThemeMode()
+        setupContinuumTitleOverflow()
         setupContinuumErrorLog()
         setupContinuumTravelBuffer()
         setupContinuumWorkingHours()
@@ -819,6 +821,43 @@ class SettingsActivity : SimpleActivity() {
                         )
                     }
                 }
+            }
+        }
+    }
+
+    private fun setupContinuumTitleOverflow() = binding.apply {
+        fun labelFor(mode: Int) = when (TitleOverflowMode.fromPref(mode)) {
+            TitleOverflowMode.LOOP -> getString(R.string.continuum_title_overflow_loop)
+            TitleOverflowMode.RESET -> getString(R.string.continuum_title_overflow_reset)
+            TitleOverflowMode.SHRINK -> getString(R.string.continuum_title_overflow_shrink)
+            else -> getString(R.string.continuum_title_overflow_bounce)
+        }
+        fun refresh() {
+            settingsContinuumTitleOverflow.text = labelFor(config.titleOverflowMode)
+        }
+        refresh()
+        settingsContinuumTitleOverflowHolder.setOnClickListener {
+            val items = arrayListOf(
+                RadioItem(
+                    TitleOverflowMode.BOUNCE.pref,
+                    "${getString(R.string.continuum_title_overflow_bounce)}\n${getString(R.string.continuum_title_overflow_bounce_detail)}",
+                ),
+                RadioItem(
+                    TitleOverflowMode.LOOP.pref,
+                    "${getString(R.string.continuum_title_overflow_loop)}\n${getString(R.string.continuum_title_overflow_loop_detail)}",
+                ),
+                RadioItem(
+                    TitleOverflowMode.RESET.pref,
+                    "${getString(R.string.continuum_title_overflow_reset)}\n${getString(R.string.continuum_title_overflow_reset_detail)}",
+                ),
+                RadioItem(
+                    TitleOverflowMode.SHRINK.pref,
+                    "${getString(R.string.continuum_title_overflow_shrink)}\n${getString(R.string.continuum_title_overflow_shrink_detail)}",
+                ),
+            )
+            RadioGroupDialog(this@SettingsActivity, items, config.titleOverflowMode) { any ->
+                config.titleOverflowMode = any as Int
+                refresh()
             }
         }
     }

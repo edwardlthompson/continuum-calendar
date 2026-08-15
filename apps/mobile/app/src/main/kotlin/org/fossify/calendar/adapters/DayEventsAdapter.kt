@@ -7,6 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import org.fossify.calendar.R
 import org.fossify.calendar.activities.SimpleActivity
 import org.fossify.calendar.continuum.ContinuumConflict
+import org.fossify.calendar.continuum.enableOverflowMarquee
 import org.fossify.calendar.databinding.EventListItemBinding
 import org.fossify.calendar.databinding.ItemNowMarkerBinding
 import org.fossify.calendar.dialogs.DeleteEventDialog
@@ -123,6 +124,7 @@ class DayEventsAdapter(
                 conflictKeys.contains(ContinuumConflict.occurrenceKey(event)),
             )
             eventItemTitle.checkViewStrikeThrough(event.shouldStrikeThrough())
+            eventItemTitle.enableOverflowMarquee()
             eventItemTime.text = if (event.getIsAllDay()) allDayString else Formatter.getTimeFromTS(activity, event.startTS)
             if (event.startTS != event.endTS) {
                 val startDayCode = Formatter.getDayCodeFromTS(event.startTS)
