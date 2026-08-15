@@ -154,3 +154,21 @@
 | **Cause** | New public repo had alerts off; `extract-zip` has no patch; holiday-generator `nanoid` was 3.3.17 |
 | **Fix** | `PUT .../vulnerability-alerts`; dismiss unused `extract-zip` (LHCI only); bump `nanoid` to 3.3.18 |
 | **Prevention** | Enable Dependabot alerts during repo setup; treat Fossify holiday-generator lockfile as in-scope |
+
+### KB-017 — Looping event titles overlap themselves
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Long agenda titles look like two copies stacked in the same slot |
+| **Cause** | Dual-draw ticker cycled by `overflow + gap` (`textW - avail`); gap was smaller than the visible width |
+| **Fix** | Cycle by `textWidth + gap`; Settings offers bounce / loop / reset / shrink |
+| **Prevention** | Never space a second copy by overflow alone; keep widget on end-ellipsis |
+
+### KB-018 — WindowsApps `python3` hangs Git Bash gates
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `feature-gate.sh` / `watch-agent-gates` stall with no output; `python3 -c` never returns |
+| **Cause** | `C:\Users\edwar\AppData\Local\Microsoft\WindowsApps\python3.exe` Store stub is first on PATH |
+| **Fix** | Put `AppData\Local\Python\bin` before WindowsApps; use that interpreter for `agent-run.py` |
+| **Prevention** | Do not rely on `python3` from WindowsApps in Git Bash on this machine |
