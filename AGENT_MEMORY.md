@@ -36,7 +36,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.16.2` (Windows NSIS + Android **1.10.4** / versionCode 22 FOSS APK + SBOMs)
+- Latest template-aligned tag: `v0.16.2` (Windows NSIS + Android **1.10.4** / versionCode 22 FOSS APK + SBOMs); `/ship` 2026-08-15 preparing next Release Please bump (title overflow + omit production client secret)
 
 ### Key Constraints
 
@@ -49,6 +49,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-15 | /ship title overflow | Feature-gate 19 stages; Settings long-title modes; Codex skipped (no key) | HUMAN: public OAuth + install 1.10.4+ on every device; Scorecard/CI wait after push |
 | 2026-08-14 | Audit A2 | Release/PROD omit OAuth secret by default; v0.16.1 duplicate SBOMs removed; desktop version 0.16.2; gates green | HUMAN: OAuth/privacy/LICENSE; approve Actions on RP #9; install 1.10.4 on every device |
 | 2026-08-11 | Audit A1 | Encoding skip `build/`; Android token refresh; desktop notify serialize; agenda local day keys; gates green after restoring example deps post-purge | Avoid `purge-ephemeral --apply` mid-audit without reinstalling examples/* deps; [HUMAN] public OAuth clients + secure token storage |
 | 2026-08-10 | Project bootstrap | Template init + desktop scaffold + trackers | Wire live OAuth after GCP client exists |

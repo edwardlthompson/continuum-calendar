@@ -72,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* **android:** Settings → Long event titles (bounce, loop, reset, or shrink to fit); in-app ticker uses Choreographer so it still moves when animator scale is 0
 * **continuum:** public GitHub home `edwardlthompson/continuum-calendar` (desktop Tauri + Android Fossify fork + `packages/shared`)
 * **desktop:** header Refresh control; agenda shows start–end times; Drive peer sync backoff / quiet failures
 * **desktop:** full Google window sync prunes deleted events (fixes stale agenda after Android deletes)
@@ -83,6 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* **security:** omit OAuth `client_secret` from production/release Android and desktop binaries
+* **android:** endless-loop titles space copies by full text width so they no longer overlap
 * **android/desktop:** conflict warnings key by occurrence so weekly Church is not flagged next to all-day birthdays; Fossify midnight–noon blocks are non-busy
 * **security:** bump holiday-generator `nanoid` to 3.3.18; dismiss `extract-zip` CVE-2026-56876 (`examples/web` LHCI only, no patched release)
 * **security:** bump `examples/web` npm overrides — `undici` >=7.29.0, `ip-address` >=10.3.1, `nanoid` >=3.3.17 (plus prior `js-yaml` / `brace-expansion`); `examples/node` `postcss` >=8.5.18

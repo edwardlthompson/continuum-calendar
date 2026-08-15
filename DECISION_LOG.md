@@ -16,6 +16,13 @@
 
 ## Entries
 
+### 2026-08-15 — Long event title overflow modes
+- **Status:** Accepted
+- **Context:** In-app titles wider than the row need to stay readable when system animator scale is 0; dual-copy loop overlapped because the cycle used overflow width instead of full text width.
+- **Decision:** Add Settings → Long event titles with bounce, loop (text-width + gap), one-way reset, and shrink-to-fit. Drive the ticker with Choreographer. Keep the widget on end-ellipsis (RemoteViews cannot tick). Store the choice in local Fossify prefs (not peer-synced).
+- **Alternatives considered:** System `ellipsize=marquee` (rejected — frozen when animations are off); ValueAnimator (same); peer-sync the mode (rejected — desktop has no ticker).
+- **Consequences:** Default is bounce. Loop no longer stacks two copies. Users pick the motion in Continuum settings.
+
 _Seed template ADR: `docs/adr/0000-template-baseline.md`. Child repos use `docs/adr/0001-core-architecture.md`._
 
 ### 2026-08-12 — Public GitHub home continuum-calendar
