@@ -19,7 +19,8 @@ function envClientId(): string {
 }
 
 function clientSecret(): string {
-  if (import.meta.env.PROD) return ''
+  // Desktop/installed OAuth clients: Google does not treat this value as confidential
+  // and the token endpoint rejects the code without it. Keep it out of git (.env).
   return (import.meta.env.VITE_GOOGLE_CLIENT_SECRET ?? '').trim()
 }
 
@@ -152,8 +153,8 @@ export async function exchangeCodeForTokens(code: string, state: string): Promis
     const detail = await parseGoogleOAuthError(res)
     if (/client_secret is missing|Could not determine client ID/i.test(detail)) {
       throw new Error(
-        `${detail} Ensure apps/desktop/.env has VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_CLIENT_SECRET ` +
-          '(python scripts/set-desktop-google-client-id.py …), then restart the app.',
+        `${detail} This build is missing the Desktop OAuth client secret. ` +
+          'Rebuild the installer with apps/desktop/.env set (never commit that file).',
       )
     }
     throw new Error(detail)

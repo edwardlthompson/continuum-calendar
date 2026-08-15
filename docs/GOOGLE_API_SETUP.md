@@ -30,7 +30,7 @@ Until Continuum ships its published client ID in release binaries:
 2. Enable APIs: Calendar, People, Drive (App Data), Tasks.
 3. OAuth consent screen: External, scopes listed below.
 4. Create OAuth clients: Desktop + Android (package + SHA-1) in the **same** Google Cloud project (Drive App Data is per project — different projects = settings never sync across devices).
-5. Ship **public** client IDs in release builds (`VITE_GOOGLE_CLIENT_ID` / `CONTINUUM_GOOGLE_CLIENT_ID` / Android client). Prefer **Android + Desktop public clients with PKCE** — do **not** bake `client_secret` into Vite (`VITE_GOOGLE_CLIENT_SECRET`) or Android `BuildConfig` for production; secrets in client binaries are extractable (audit F-002). Desktop-type clients that still require a secret must keep it only in gitignored local maintainer `.env` / `local.properties`, never in committed source.
+5. Ship Continuum’s **Desktop client ID + client secret** in the Windows EXE (Google’s installed-app type; the “secret” is not confidential and the token endpoint requires it). Ship the **Android client ID only** in the APK (no `BuildConfig` secret). Keep `.env` / `local.properties` gitignored — never commit secrets.
 6. Continuum peer remotes (desktop ↔ Android) live in Drive App Data (same GCP project Client ID on both — `scripts/set-desktop-google-client-id.py` also writes `apps/mobile/local.properties`):
    - `continuum-settings.json` — Continuum preferences (24h, first day of week, privacy, etc.)
    - `continuum-local-events.json` — Continuum-owned local calendars/events (privacy path)
@@ -65,6 +65,6 @@ VITE_GOOGLE_REDIRECT_URI=http://localhost:5173/oauth/callback
 python scripts/set-desktop-google-client-id.py YOUR_CLIENT_ID.apps.googleusercontent.com YOUR_CLIENT_SECRET
 ```
 
-Google’s token endpoint currently requires the client secret even for Desktop clients (`invalid_request — client_secret is missing` without it). Keep `.env` gitignored.
+Google’s token endpoint requires the Desktop client secret (`invalid_request — client_secret is missing` without it). Vite bakes `VITE_GOOGLE_*` into release EXEs from this gitignored `.env`. Do not strip the secret in `PROD`.
 
 4. Restart `npm run tauri:dev` so Vite picks up the env var.

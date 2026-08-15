@@ -16,6 +16,13 @@
 
 ## Entries
 
+### 2026-08-15 — Desktop release EXE must include OAuth client secret
+- **Status:** Accepted
+- **Context:** v0.17.0 GitHub EXE opened Google consent, then failed after the unverified-app step. `clientSecret()` returned empty in `PROD` (audit F-001).
+- **Decision:** Bake the Desktop/installed-app client secret into Windows release builds from gitignored `.env`. Android release APKs still omit `client_secret`.
+- **Alternatives considered:** PKCE-only Desktop token exchange (rejected — Google returns `client_secret is missing`); leave secret out of GH artifacts (rejected — Sign in is broken for end users).
+- **Consequences:** Re-upload Continuum-Calendar-0.17.0-x64-setup.exe after rebuild. Never commit `.env`.
+
 ### 2026-08-15 — Long event title overflow modes
 - **Status:** Accepted
 - **Context:** In-app titles wider than the row need to stay readable when system animator scale is 0; dual-copy loop overlapped because the cycle used overflow width instead of full text width.
