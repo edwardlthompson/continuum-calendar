@@ -9,6 +9,7 @@
     "core:default",
     "opener:default",
     "allow-start-oauth-loopback",
+    "allow-google-oauth-token",
     "allow-take-pending-open-paths",
     "allow-read-text-file-limited"
   ]

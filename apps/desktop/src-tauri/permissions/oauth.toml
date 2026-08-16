@@ -2,3 +2,8 @@
 identifier = "allow-start-oauth-loopback"
 description = "Allow starting the one-shot Google OAuth loopback listener"
 commands.allow = ["start_oauth_loopback"]
+
+[[permission]]
+identifier = "allow-google-oauth-token"
+description = "Allow native POST to Google's OAuth token endpoint"
+commands.allow = ["google_oauth_token"]

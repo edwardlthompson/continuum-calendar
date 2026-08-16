@@ -19,10 +19,12 @@ import { AgendaView } from './components/AgendaView'
 import { EventEditor } from './components/EventEditor'
 import { CalendarSidebar } from './components/CalendarSidebar'
 import { ContinuumSplash } from './components/ContinuumSplash'
+import { AppTitle } from './components/AppTitle'
 import { useTheme } from './theme/ThemeContext'
 import {
   exchangeCodeForTokens,
   getStoredTokens,
+  humanizeOAuthFailure,
   isGoogleConfigured,
   parseOAuthCallback,
   signInWithGoogle,
@@ -593,6 +595,22 @@ export default function App() {
       return
     }
     try {
+      const openAudience = window.confirm(
+        [
+          'Google will warn that Continuum is unverified. That is expected.',
+          '',
+          'If Continue then shows “An unknown error has occurred”, Google is blocking this account — Continuum never gets a login code.',
+          '',
+          'Add this exact Gmail as a Test user first (Google Cloud → Audience), wait one minute, then sign in again.',
+          '',
+          'OK = open the Test users page now. Cancel = I already added this account, continue sign-in.',
+        ].join('\n'),
+      )
+      if (openAudience) {
+        window.open('https://console.cloud.google.com/auth/audience', '_blank', 'noopener,noreferrer')
+        flash('Add your Gmail as a Test user, then click Sign in again')
+        return
+      }
       flash('Opening Google sign-in…')
       const result = await signInWithGoogle()
       if (result === 'pending-redirect') return
@@ -602,7 +620,7 @@ export default function App() {
       await runMultiSync()
     } catch (e) {
       continuumLogger.error('Google sign-in failed', e)
-      const msg = e instanceof Error ? e.message : 'Sign-in failed'
+      const msg = humanizeOAuthFailure(e)
       flash(msg)
       window.alert(msg)
     }
@@ -900,7 +918,7 @@ export default function App() {
       <ContinuumSplash />
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Continuum Calendar</h1>
+          <AppTitle />
           <p className="text-sm text-[var(--cc-muted)]">
             Agenda · Multi-calendar ·{' '}
             {syncInfo.lastSyncedAt

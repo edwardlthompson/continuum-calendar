@@ -96,6 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* **desktop:** show installed version next to the app name; live location suggestions while typing
+* **android:** live map/geocoder suggestions in the event location field
 * **android:** Settings → Long event titles (bounce, loop, reset, or shrink to fit); in-app ticker uses Choreographer so it still moves when animator scale is 0
 * **continuum:** public GitHub home `edwardlthompson/continuum-calendar` (desktop Tauri + Android Fossify fork + `packages/shared`)
 * **desktop:** header Refresh control; agenda shows start–end times; Drive peer sync backoff / quiet failures
@@ -108,6 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* **desktop:** exchange Google tokens from native Rust (WebView CORS) and request Calendar scope only so unverified Continue is less likely to fail
+* **android:** persist edited events off the UI thread (Room crash when saving a timed event)
 * **security:** omit OAuth `client_secret` from production/release Android and desktop binaries
 * **android:** endless-loop titles space copies by full text width so they no longer overlap
 * **android/desktop:** conflict warnings key by occurrence so weekly Church is not flagged next to all-day birthdays; Fossify midnight–noon blocks are non-busy

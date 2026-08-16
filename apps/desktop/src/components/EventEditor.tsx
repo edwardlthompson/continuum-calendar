@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { CalendarEvent, CalendarListEntry, ContactSummary, EventReminder } from '@continuum/shared'
 import { searchGoogleContacts } from '../services/googleCalendar'
+import { suggestLocations } from '../services/locationSuggest'
 
 interface EventEditorProps {
   initial?: Partial<CalendarEvent>
@@ -46,6 +47,7 @@ export function EventEditor({
   const [attendeeQuery, setAttendeeQuery] = useState('')
   const [attendees, setAttendees] = useState(initial?.attendees ?? [])
   const [suggestions, setSuggestions] = useState<ContactSummary[]>([])
+  const [locationHits, setLocationHits] = useState<string[]>([])
 
   const selectedCal = writable.find((c) => c.id === calendarId) ?? writable[0]
 
@@ -61,6 +63,18 @@ export function EventEditor({
     }, 250)
     return () => window.clearTimeout(t)
   }, [attendeeQuery, googleSignedIn])
+
+  useEffect(() => {
+    const q = location.trim()
+    if (q.length < 2) {
+      setLocationHits([])
+      return
+    }
+    const t = window.setTimeout(() => {
+      void suggestLocations(q).then(setLocationHits).catch(() => setLocationHits([]))
+    }, 250)
+    return () => window.clearTimeout(t)
+  }, [location])
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
@@ -161,7 +175,26 @@ export function EventEditor({
           className="rounded border border-[var(--cc-border)] bg-transparent px-2 py-1.5"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          autoComplete="off"
         />
+        {locationHits.length > 0 && (
+          <ul className="max-h-36 overflow-auto rounded border border-[var(--cc-border)] bg-[var(--cc-surface)] text-sm">
+            {locationHits.map((hit) => (
+              <li key={hit}>
+                <button
+                  type="button"
+                  className="w-full px-2 py-1.5 text-left hover:bg-[var(--cc-accent)]/15"
+                  onClick={() => {
+                    setLocation(hit)
+                    setLocationHits([])
+                  }}
+                >
+                  {hit}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </label>
       <label className="flex flex-col gap-1 text-sm">
         Description

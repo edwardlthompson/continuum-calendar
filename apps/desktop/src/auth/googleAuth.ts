@@ -1,8 +1,12 @@
 import {
+  GOOGLE_SCOPES,
   GOOGLE_SCOPE_STRING,
   isTokenExpired,
   type GoogleOAuthTokens,
 } from '@continuum/shared'
+
+/** Calendar only — extra sensitive scopes often break Google's unverified-app Continue. */
+const SIGNIN_SCOPE = GOOGLE_SCOPES.calendar
 import { createPkcePair, randomString } from './pkce'
 import { loadTokens, saveTokens } from './tokenStore'
 
@@ -106,9 +110,8 @@ export async function beginGoogleSignIn(redirectUri = configuredRedirectUri()): 
     client_id: id,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: GOOGLE_SCOPE_STRING,
+    scope: SIGNIN_SCOPE,
     access_type: 'offline',
-    prompt: 'consent',
     state,
     code_challenge: challenge,
     code_challenge_method: 'S256',
@@ -144,28 +147,7 @@ export async function exchangeCodeForTokens(code: string, state: string): Promis
       redirect_uri: redirectUri,
     }),
   )
-  const res = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  })
-  if (!res.ok) {
-    const detail = await parseGoogleOAuthError(res)
-    if (/client_secret is missing|Could not determine client ID/i.test(detail)) {
-      throw new Error(
-        `${detail} This build is missing the Desktop OAuth client secret. ` +
-          'Rebuild the installer with apps/desktop/.env set (never commit that file).',
-      )
-    }
-    throw new Error(detail)
-  }
-  const data = (await res.json()) as {
-    access_token: string
-    refresh_token?: string
-    expires_in: number
-    scope?: string
-    token_type?: string
-  }
+  const data = await postGoogleToken(body)
   rememberClientId(id)
   const tokens: GoogleOAuthTokens = {
     accessToken: data.access_token,
@@ -190,26 +172,7 @@ export async function refreshAccessToken(tokens: GoogleOAuthTokens): Promise<Goo
       grant_type: 'refresh_token',
     }),
   )
-  const res = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  })
-  if (!res.ok) {
-    const detail = await parseGoogleOAuthError(res)
-    if (/Could not determine client ID|invalid_request/i.test(detail)) {
-      throw new Error(
-        `${detail} Restart after setting apps/desktop/.env (VITE_GOOGLE_CLIENT_ID + SECRET), then Sign in again.`,
-      )
-    }
-    throw new Error(detail)
-  }
-  const data = (await res.json()) as {
-    access_token: string
-    expires_in: number
-    scope?: string
-    token_type?: string
-  }
+  const data = await postGoogleToken(body)
   rememberClientId(id)
   const next: GoogleOAuthTokens = {
     ...tokens,
@@ -262,6 +225,76 @@ export function parseOAuthCallback(url: string): { code: string; state: string }
   return null
 }
 
+type GoogleTokenJson = {
+  access_token: string
+  refresh_token?: string
+  expires_in: number
+  scope?: string
+  token_type?: string
+}
+
+async function postGoogleToken(body: URLSearchParams): Promise<GoogleTokenJson> {
+  if (await isTauri()) {
+    const { invoke } = await import('@tauri-apps/api/core')
+    try {
+      const text = await invoke<string>('google_oauth_token', { body: body.toString() })
+      return parseTokenJson(text)
+    } catch (e) {
+      const raw = typeof e === 'string' ? e : e instanceof Error ? e.message : 'Token exchange failed'
+      throw new Error(raw)
+    }
+  }
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  })
+  if (!res.ok) throw new Error(await parseGoogleOAuthError(res))
+  return parseTokenJson(await res.text())
+}
+
+function parseTokenJson(text: string): GoogleTokenJson {
+  let data: GoogleTokenJson
+  try {
+    data = JSON.parse(text) as GoogleTokenJson
+  } catch {
+    throw new Error('Token exchange failed: Google returned an invalid response')
+  }
+  if (!data.access_token || !Number.isFinite(data.expires_in)) {
+    throw new Error('Token exchange failed: Google returned an empty token')
+  }
+  return data
+}
+
+export function humanizeOAuthFailure(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err)
+  if (/access_denied|verification process|403:access_denied/i.test(raw)) {
+    return (
+      'Google blocked this account. Open Google Cloud → OAuth consent screen and add this ' +
+      'Google address as a test user (or publish the app), then try Sign in again.'
+    )
+  }
+  if (/client_secret is missing/i.test(raw)) {
+    return 'This installer cannot finish Google sign-in. Install Continuum Calendar 0.17.2 from GitHub Releases.'
+  }
+  if (/Failed to fetch|NetworkError|Load failed|error sending request/i.test(raw)) {
+    return 'Continuum could not reach Google to finish sign-in. Check the network and try again.'
+  }
+  if (/unknown error/i.test(raw)) {
+    return (
+      'Google returned an unknown error after the unverified-app warning. Add this Google account as an ' +
+      'OAuth test user, retry in a window without ad blockers, and install Continuum Calendar 0.17.2.'
+    )
+  }
+  if (/redirect_uri_mismatch/i.test(raw)) {
+    return 'Google rejected the sign-in redirect. The OAuth client must be type Desktop app, not Web.'
+  }
+  if (/invalid_grant/i.test(raw)) {
+    return 'The Google sign-in code expired or was reused. Click Sign in with Google again and finish in one try.'
+  }
+  return raw
+}
+
 /**
  * Tauri: system browser + loopback redirect (Desktop OAuth client).
  * Browser/Vite: in-window navigation to Google, callback on localhost:5173.
@@ -277,29 +310,45 @@ export async function signInWithGoogle(): Promise<'pending-redirect' | GoogleOAu
     const { openUrl } = await import('@tauri-apps/plugin-opener')
 
     const port = await invoke<number>('start_oauth_loopback')
-    const redirectUri = `http://127.0.0.1:${port}/`
+    const redirectUri = `http://127.0.0.1:${port}`
     const authUrl = await beginGoogleSignIn(redirectUri)
 
     const tokens = await new Promise<GoogleOAuthTokens>((resolve, reject) => {
-      let unlisten: (() => void) | undefined
+      let unlistenOk: (() => void) | undefined
+      let unlistenErr: (() => void) | undefined
+      const finish = () => {
+        unlistenOk?.()
+        unlistenErr?.()
+      }
       const timer = window.setTimeout(() => {
-        unlisten?.()
+        finish()
         reject(new Error('Sign-in timed out — complete Google consent in your browser'))
       }, 300_000)
 
       void (async () => {
         try {
-          unlisten = await listen<{ code: string; state: string }>('oauth-callback', (event) => {
+          unlistenOk = await listen<{ code: string; state: string }>('oauth-callback', (event) => {
             window.clearTimeout(timer)
-            unlisten?.()
+            finish()
             void exchangeCodeForTokens(event.payload.code, event.payload.state)
               .then(resolve)
-              .catch(reject)
+              .catch((e) => reject(new Error(humanizeOAuthFailure(e))))
           })
+          unlistenErr = await listen<{ error: string; errorDescription: string }>(
+            'oauth-error',
+            (event) => {
+              window.clearTimeout(timer)
+              finish()
+              const raw = [event.payload.error, event.payload.errorDescription]
+                .filter(Boolean)
+                .join(' — ')
+              reject(new Error(humanizeOAuthFailure(raw)))
+            },
+          )
           await openUrl(authUrl)
         } catch (e) {
           window.clearTimeout(timer)
-          unlisten?.()
+          finish()
           reject(e instanceof Error ? e : new Error('Failed to open system browser'))
         }
       })()

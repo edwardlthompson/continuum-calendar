@@ -18,7 +18,6 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.graphics.drawable.toDrawable
@@ -38,6 +37,7 @@ import org.fossify.calendar.dialogs.ReminderWarningDialog
 import org.fossify.calendar.dialogs.RepeatLimitTypePickerDialog
 import org.fossify.calendar.dialogs.RepeatRuleWeeklyDialog
 import org.fossify.calendar.continuum.ContinuumConflict
+import org.fossify.calendar.continuum.ContinuumLocationAdapter
 import org.fossify.calendar.continuum.ContinuumScheduling
 import org.fossify.calendar.continuum.ContinuumSettingsSync
 import org.fossify.calendar.dialogs.SelectCalendarDialog
@@ -235,8 +235,8 @@ class EventActivity : SimpleActivity() {
             val locations = eventsDB.getAllLocations()
 
             runOnUiThread {
-                val adapter = ArrayAdapter(this, R.layout.item_dropdown, locations)
-                binding.eventLocation.setAdapter(adapter)
+                binding.eventLocation.threshold = 2
+                binding.eventLocation.setAdapter(ContinuumLocationAdapter(this, locations))
             }
 
             val event = eventsDB.getEventWithId(eventId)
@@ -1769,22 +1769,28 @@ class EventActivity : SimpleActivity() {
 
     private fun finishSaveEvent(wasRepeatable: Boolean) {
         mAllowConflictSave = false
-        if (mEvent.getReminders().isNotEmpty()) {
-            handleNotificationPermission { granted ->
-                if (granted) {
-                    ensureBackgroundThread {
-                        storeEvent(wasRepeatable)
-                    }
-                } else {
-                    PermissionRequiredDialog(
-                        activity = this,
-                        textId = org.fossify.commons.R.string.allow_notifications_reminders,
-                        positiveActionCallback = { openNotificationSettings() }
-                    )
+        // Conflict-check callbacks run on the UI thread; Room forbids main-thread writes.
+        runOnUiThread {
+            val persist = {
+                ensureBackgroundThread {
+                    storeEvent(wasRepeatable)
                 }
             }
-        } else {
-            storeEvent(wasRepeatable)
+            if (mEvent.getReminders().isNotEmpty()) {
+                handleNotificationPermission { granted ->
+                    if (granted) {
+                        persist()
+                    } else {
+                        PermissionRequiredDialog(
+                            activity = this,
+                            textId = org.fossify.commons.R.string.allow_notifications_reminders,
+                            positiveActionCallback = { openNotificationSettings() }
+                        )
+                    }
+                }
+            } else {
+                persist()
+            }
         }
     }
 
