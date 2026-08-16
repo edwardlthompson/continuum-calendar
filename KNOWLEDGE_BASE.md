@@ -172,3 +172,21 @@
 | **Cause** | `C:\Users\edwar\AppData\Local\Microsoft\WindowsApps\python3.exe` Store stub is first on PATH |
 | **Fix** | Put `AppData\Local\Python\bin` before WindowsApps; use that interpreter for `agent-run.py` |
 | **Prevention** | Do not rely on `python3` from WindowsApps in Git Bash on this machine |
+
+### KB-019 — Google Continue → “unknown error” for non-test users
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Desktop Sign in: pick account → Continue on unverified warning → Google page “An unknown error has occurred”; no `code` hits loopback |
+| **Cause** | OAuth consent is Testing; Google blocks accounts that are not listed as test users. Four sensitive scopes made Continue even more brittle |
+| **Fix** | Add the exact Gmail under Audience → Test users; desktop requests Calendar only; native Rust token POST; never set empty `VITE_GOOGLE_CLIENT_SECRET=` in `.env.production` |
+| **Prevention** | Confirm header version is 0.17.3+; do not treat this as an app crash until the account is a test user |
+
+### KB-020 — Room `Cannot access database on the main thread` after overlap save
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `EventActivity` crash on save: `IllegalStateException` from Room after tapping OK on overlap |
+| **Cause** | `runOnUiThread { finishSaveEvent() }` then `storeEvent()` on UI when the event had no reminders |
+| **Fix** | Always `ensureBackgroundThread { storeEvent(...) }` after the UI hop for notification permission |
+| **Prevention** | After any `runOnUiThread` hop, do not call Room/DAO on that same stack |

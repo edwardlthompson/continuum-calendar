@@ -16,6 +16,20 @@
 
 ## Entries
 
+### 2026-08-16 — Desktop sign-in uses Calendar-only scopes and native token POST
+- **Status:** Accepted
+- **Context:** After the unverified-app Continue step, Google showed “An unknown error has occurred” and the WebView token exchange could fail on CORS. Four sensitive scopes made Testing-mode consent brittle.
+- **Decision:** Request Calendar only for desktop sign-in; exchange the code in Rust (`google_oauth_token` via `ureq`); humanize `access_denied` / missing secret / unknown error. Users still must be OAuth test users while the app is Testing.
+- **Alternatives considered:** Keep Contacts + Calendar scopes (rejected — Continue often dies before a code returns); browser-only token POST (rejected — WebView CORS).
+- **Consequences:** Contacts sync stays off desktop until consent is In production or scopes are re-added. Header must show 0.17.3 so a stale 0.17.0 EXE is obvious.
+
+### 2026-08-16 — Event save must not touch Room on the UI thread
+- **Status:** Accepted
+- **Context:** Overlap confirm hopped to the UI thread (`runOnUiThread { finishSaveEvent() }`); events with no reminders then called `storeEvent()` on main and Room threw.
+- **Decision:** After the UI hop for notification permission, always `ensureBackgroundThread { storeEvent(...) }`.
+- **Alternatives considered:** Allow main-thread Room reads (rejected — Room default forbids it); keep the old path for no-reminder events (rejected — that was the crash).
+- **Consequences:** Save stays async after overlap OK. Pair with FOSS location suggestions (Geocoder, then Photon) — no Play Services SDK.
+
 ### 2026-08-15 — Desktop release EXE must include OAuth client secret
 - **Status:** Accepted
 - **Context:** v0.17.0 GitHub EXE opened Google consent, then failed after the unverified-app step. `clientSecret()` returned empty in `PROD` (audit F-001).

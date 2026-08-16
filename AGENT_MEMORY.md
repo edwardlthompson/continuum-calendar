@@ -7,8 +7,8 @@
 
 | Layer | Technology | Version | Notes |
 |-------|-----------|---------|-------|
-| Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 0.1.0 | `apps/desktop` |
-| Mobile | FossifyOrg/Calendar fork (Kotlin) | active | `apps/mobile` (`org.continuumcalendar.app`) |
+| Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 0.17.3 | `apps/desktop` |
+| Mobile | FossifyOrg/Calendar fork (Kotlin) | 1.10.7 / 25 | `apps/mobile` (`org.continuumcalendar.app`) |
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
 | License | MIT | - | Pure FOSS |
@@ -36,7 +36,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.17.0` (SBOMs on GitHub Release; upload Windows EXE + signed FOSS APK separately)
+- Latest template-aligned tag: `v0.17.1` (SBOMs on GitHub Release; Windows EXE 0.17.3 + signed FOSS APK 1.10.7 attached)
 
 ### Key Constraints
 
@@ -49,6 +49,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-16 | /ship v0.17.1 | RP #10 merged; SBOMs + 1.10.7 APK + 0.17.3 EXE on release; Calendar-only desktop OAuth + native token POST | HUMAN: add exact Gmail as OAuth test user; public consent / LICENSE / Privacy URL; Pages still 404 |
 | 2026-08-15 | /ship title overflow | Feature-gate 19 stages; Settings long-title modes; Codex skipped (no key) | HUMAN: public OAuth + install 1.10.4+ on every device; Scorecard/CI wait after push |
 | 2026-08-14 | Audit A2 | Release/PROD omit OAuth secret by default; v0.16.1 duplicate SBOMs removed; desktop version 0.16.2; gates green | HUMAN: OAuth/privacy/LICENSE; approve Actions on RP #9; install 1.10.4 on every device |
 | 2026-08-11 | Audit A1 | Encoding skip `build/`; Android token refresh; desktop notify serialize; agenda local day keys; gates green after restoring example deps post-purge | Avoid `purge-ephemeral --apply` mid-audit without reinstalling examples/* deps; [HUMAN] public OAuth clients + secure token storage |
