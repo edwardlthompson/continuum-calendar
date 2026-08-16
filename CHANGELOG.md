@@ -15,6 +15,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.17.0...v0.17.1) (2026-08-16)
+
+
+### Fixed
+
+* **desktop:** include Desktop OAuth secret in release EXE ([8cabcf6](https://github.com/edwardlthompson/continuum-calendar/commit/8cabcf644eb4845e6d3f55d8591765fb83c048aa))
+* stabilize Google sign-in and Android event save ([bd40c4d](https://github.com/edwardlthompson/continuum-calendar/commit/bd40c4d79d217fa95f5922e75543600d9a3fb2b0))
+
+
+### Changed
+
+* **release:** bump Android 1.10.5 and desktop 0.17.0 ([0565719](https://github.com/edwardlthompson/continuum-calendar/commit/05657192735945136ec171aea4cc876913b970a6))
+
+
+### Documentation
+
+* point agent memory at v0.17.0 ([b11cf28](https://github.com/edwardlthompson/continuum-calendar/commit/b11cf286145ebc4234824ff6f1b7c8b7d07f26cd))
+* record v0.17.0 ship regressions ([a63f88e](https://github.com/edwardlthompson/continuum-calendar/commit/a63f88e0d1669f8be7cdfa06833f4441e3b8e60b))
+
 ## [0.17.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.16.2...v0.17.0) (2026-08-15)
 
 
