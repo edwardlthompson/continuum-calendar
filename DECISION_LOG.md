@@ -12,9 +12,17 @@
 - **Decision:** ...
 - **Alternatives considered:** ...
 - **Consequences:** ...
+
 ```
 
 ## Entries
+
+### 2026-08-16 — Adopt agent-project-bootstrap v0.18.3
+- **Status:** Accepted
+- **Context:** Child repo was on template 0.17.1; upstream latest is v0.18.3 (M34 thin steals, Windows `resolve-python.sh`, Scorecard TokenPermissions, exemplar dep bumps).
+- **Decision:** Cherry-pick Canon/Mixed per `docs/UPGRADING_FROM_TEMPLATE.md`. Keep Sacred product paths (`apps/`, living memory boards, `.env`/keystore). Renumber Continuum KB-012+ so upstream KB-012/013 can land.
+- **Alternatives considered:** Merge upstream `main` wholesale (rejected — would overwrite product BUILD_PLAN and apps); skip examples (rejected — feature-gate runs Golden Path).
+- **Consequences:** Next `/ship` cuts GitHub tag v0.18.3. Desktop stays 0.17.3 and Android 1.10.7 until a product bump.
 
 ### 2026-08-16 — Desktop sign-in uses Calendar-only scopes and native token POST
 - **Status:** Accepted
@@ -213,4 +221,3 @@ _Seed template ADR: `docs/adr/0000-template-baseline.md`. Child repos use `docs/
 - **Decision:** Dismiss `extract-zip` as `not_used` (LHCI / `@puppeteer/browsers` in `examples/web` only). Bump holiday-generator `nanoid` override to 3.3.18.
 - **Alternatives considered:** Remove `@lhci/cli` (rejected — loses Lighthouse gate); wait for an extract-zip release (none expected).
 - **Consequences:** Revisit extract-zip if LHCI drops the transitive; nanoid alert closes after the lockfile lands on `main`.
-

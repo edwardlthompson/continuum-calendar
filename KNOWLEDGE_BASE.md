@@ -19,7 +19,6 @@
 | **Cause** | Cursor `StrReplace` or Windows editor saves text as UTF-16 LE (NUL bytes between ASCII chars) |
 | **Fix** | Rewrite affected files with Python `Path.write_text(..., encoding='utf-8')`; re-run `scripts/check-file-encoding.sh` |
 | **Prevention** | Bulk edits on Windows via Python/PowerShell UTF-8 write; include root `.gitignore` in encoding scan |
-
 ### KB-002 — Invalid `trivy-action@0.28.0` ref
 
 | Field | Detail |
@@ -28,7 +27,6 @@
 | **Cause** | Bare semver `@0.28.0` is not a valid GitHub Action ref tag |
 | **Fix** | Pin to full SHA: `aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0` |
 | **Prevention** | Run `validate-workflow-actions.sh` pre-push; use `check-workflow-action-ref-format.sh` locally |
-
 ### KB-003 — `gh api --silent` false CI failures
 
 | Field | Detail |
@@ -37,7 +35,6 @@
 | **Cause** | `gh api` has no `--silent` flag; stderr not suppressed correctly |
 | **Fix** | Redirect to `/dev/null` instead: `gh api ... >/dev/null 2>&1` |
 | **Prevention** | Test validation scripts in CI job with `GH_TOKEN`; avoid undocumented `gh` flags |
-
 ### KB-004 — Lighthouse performance flake on shared runners
 
 | Field | Detail |
@@ -46,7 +43,6 @@
 | **Cause** | GitHub-hosted runner CPU variance; single-run assertion is noisy |
 | **Fix** | Set `numberOfRuns: 3` in `.lighthouserc.json`; LHCI uses median; keep `minScore: 0.9` |
 | **Prevention** | Do not lower performance budget for CI flake; use multi-run median in `modules/web/MODULE.md` |
-
 ### KB-005 — Playwright webServer duplicate build
 
 | Field | Detail |
@@ -55,7 +51,6 @@
 | **Cause** | `webServer` runs build while CI already built; wrong host binding |
 | **Fix** | Use `vite preview` on `127.0.0.1`; CI runs `npm run build` once before Playwright |
 | **Prevention** | Golden Path `examples/web/playwright.config.ts` documents preview-only webServer |
-
 ### KB-006 — TypeScript strict null in render handlers
 
 | Field | Detail |
@@ -64,7 +59,6 @@
 | **Cause** | `strictNullChecks` + `document.getElementById` return type includes null |
 | **Fix** | Assign narrowed ref at module scope: `const root = document.getElementById('root')!` or guard once |
 | **Prevention** | Module-level `const root = app` pattern in `examples/web/src/main.ts` |
-
 ### KB-007 — npm/pip overrides policy for transitive CVEs
 
 | Field | Detail |
@@ -73,7 +67,6 @@
 | **Cause** | Parent package pins or bundles a vulnerable sub-dependency; fix not yet published upstream |
 | **Fix** | **npm:** add `overrides` in `package.json` to force patched semver (see `examples/web` `@lhci/cli` overrides). **Python:** prefer `uv`/`pip` constraint or bump direct dep; document in DECISION_LOG if override is temporary |
 | **Prevention** | Prefer overrides over `--force` installs; remove overrides when upstream ships fix; weekly triage per `docs/SECURITY_TRIAGE.md`; see KB-007 before dismissing Dependabot alerts |
-
 ### KB-009 — Release Please `pr` output is JSON, not a PR number
 
 | Field | Detail |
@@ -82,7 +75,6 @@
 | **Cause** | `steps.release.outputs.pr` is empty when `release_created == 'true'` (post-merge push) or stale PR metadata |
 | **Fix** | Skip sync when `release_created`; resolve PR number in shell from `PR_JSON` or `gh pr list --head release-please--branches--main` |
 | **Prevention** | Never use bare `fromJSON(steps.release.outputs.pr)` in workflow `env:` without a non-empty guard |
-
 ### KB-008 — `android-release` APK hash compare policy
 
 | Field | Detail |
@@ -91,7 +83,6 @@
 | **Cause** | Usually a reproducibility regression (non-hermetic timestamp, path, or dependency drift). Rare runner flakes are possible but treated as failures to catch real regressions early |
 | **Fix** | Rebuild locally with `SOURCE_DATE_EPOCH=1700000000 ./gradlew clean assembleRelease` twice; compare `sha256sum` of release APK. Align `build.gradle.kts`, `gradle.properties`, and dependency lockfiles with `modules/android/MODULE.md` |
 | **Prevention** | Keep `SOURCE_DATE_EPOCH` pinned in CI; use `scripts/verify-reproducible-apk.sh --strict` before release tags. Do not downgrade the job to WARN — strict compare is intentional (M17 P2) |
-
 ### KB-010 — Agent shell opens `.sh` files and steals editor focus
 
 | Field | Detail |
@@ -100,7 +91,6 @@
 | **Cause** | Agent runs `bash scripts/*.sh`; Cursor reveals script paths. `beforeShellExecution` hooks used to run `.sh` wrappers on every shell command |
 | **Fix** | Use `python3 scripts/agent-run.py <name> [args]` in agent commands; hooks migrated to `.cursor/hooks/*.py`; workspace `.vscode/settings.json` sets `workbench.editor.autoReveal: false` |
 | **Prevention** | Agents follow `.cursor/commands/` and `scripts/agent-run.py`; pin active editor tab; optional `<!-- cursor-hooks: off -->` in `BUILD_PLAN.md` disables hooks entirely |
-
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |
@@ -109,8 +99,23 @@
 | **Cause** | Node 25+ enables a global Web Storage stub without `--localstorage-file`; jsdom skips installing real Storage and the stub shadows it |
 | **Fix** | Vitest `setupFiles: ["src/test/setup-localStorage.ts"]` installs in-memory Storage when `getItem` is missing |
 | **Prevention** | Keep the setup file; do not rely on Node’s experimental `localStorage` in browser-unit tests |
+### KB-012 — Cursor hooks fail-open (not a hard guarantee)
 
-### KB-012 — Nested `apps/mobile/.git` becomes a gitlink on first monorepo commit
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Agent runs `git push` or another denylisted command even though `destructive-ops.mdc` says it is blocked |
+| **Cause** | `before_shell_guard.py` and `after_edit_encoding.py` fail-open: parse errors, empty command, missing denylist, or `<!-- cursor-hooks: off -->` in `BUILD_PLAN.md` return allow. `/push` approval of `git push` also matches `git push --force` via substring |
+| **Fix** | Treat hooks as **instructed-with-best-effort**. Require `[HUMAN]` or `/push` / `/ship` for destructive-ops. Do not label fail-open hooks as hard denies |
+| **Prevention** | Honesty table in `.cursor/rules/destructive-ops.mdc` and `docs/CURSOR_INTEGRATIONS.md`; keep `shell-denylist.txt` in sync with the rule |
+### KB-013 — `npm ci` fails after `@puppeteer/browsers` override
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | CI `npm ci` in `examples/web`: Missing `proxy-agent@8` from lock file after overriding `@puppeteer/browsers` >=3.2.0 |
+| **Cause** | Browsers 3.2.0 optional peer `proxy-agent` >=8.0.1. Local `npm install` on Node 26 can omit that tree; Actions Node 22 `npm ci` requires it |
+| **Fix** | Add `"proxy-agent": ">=8.0.2"` to web overrides; run `npm ci` locally before push |
+| **Prevention** | After puppeteer/LHCI overrides, verify with `npm ci` (not only `npm install`) |
+### KB-021 — Nested `apps/mobile/.git` becomes a gitlink on first monorepo commit
 
 | Field | Detail |
 |-------|--------|
@@ -118,8 +123,7 @@
 | **Cause** | Fossify tree retained its own `.git` inside the monorepo |
 | **Fix** | Move `apps/mobile/.git` aside (e.g. `.mobile-git-bak/`, gitignored), then `git add apps/mobile` so files are normal blobs |
 | **Prevention** | On vendor/fork import, strip nested VCS metadata before the first commit; no submodules without `[HUMAN]` approval |
-
-### KB-013 — First Continuum push: OAuth dumps + >500KB PNGs block CI
+### KB-022 — First Continuum push: OAuth dumps + >500KB PNGs block CI
 
 | Field | Detail |
 |-------|--------|
@@ -127,8 +131,7 @@
 | **Cause** | Local Android OAuth prefs accidentally staged; unused Fossify CI deps; marketing assets exceed template size budget |
 | **Fix** | Gitignore auth dumps; bump holiday-generator overrides (`js-yaml`/`nanoid`); compress PNGs under 500KB; enable Actions “create PRs” for Release Please |
 | **Prevention** | Never stage `.cursor/auth-*`; run `check-large-tracked-files` before first push; treat Fossify workflow deps as in-scope for Trivy |
-
-### KB-014 — Android local delete restored by Drive peer sync
+### KB-023 — Android local delete restored by Drive peer sync
 
 | Field | Detail |
 |-------|--------|
@@ -136,8 +139,7 @@
 | **Cause** | `buildLocalPayload` sent empty `deletedIds`; desktop/Drive still had the event; merge upserted it |
 | **Fix** | Record tombstones before Room delete (`ContinuumLocalEventTombstones`); include them in the peer payload |
 | **Prevention** | Never push a local-events snapshot with `deletedIds: []` after a user delete |
-
-### KB-015 — Weekly event conflict badge on an all-day day
+### KB-024 — Weekly event conflict badge on an all-day day
 
 | Field | Detail |
 |-------|--------|
@@ -145,8 +147,7 @@
 | **Cause** | Badges keyed by series `id`; Fossify all-day is midnight–noon (12h), below the 20h heuristic |
 | **Fix** | Key by `id` + start; treat midnight–noon ≥12h as non-busy |
 | **Prevention** | Do not use repeating event ids alone for per-row UI state |
-
-### KB-016 — Disabled Dependabot alerts fail `pre-release-gate --strict`
+### KB-025 — Disabled Dependabot alerts fail `pre-release-gate --strict`
 
 | Field | Detail |
 |-------|--------|
@@ -154,8 +155,7 @@
 | **Cause** | New public repo had alerts off; `extract-zip` has no patch; holiday-generator `nanoid` was 3.3.17 |
 | **Fix** | `PUT .../vulnerability-alerts`; dismiss unused `extract-zip` (LHCI only); bump `nanoid` to 3.3.18 |
 | **Prevention** | Enable Dependabot alerts during repo setup; treat Fossify holiday-generator lockfile as in-scope |
-
-### KB-017 — Looping event titles overlap themselves
+### KB-026 — Looping event titles overlap themselves
 
 | Field | Detail |
 |-------|--------|
@@ -163,17 +163,15 @@
 | **Cause** | Dual-draw ticker cycled by `overflow + gap` (`textW - avail`); gap was smaller than the visible width |
 | **Fix** | Cycle by `textWidth + gap`; Settings offers bounce / loop / reset / shrink |
 | **Prevention** | Never space a second copy by overflow alone; keep widget on end-ellipsis |
-
-### KB-018 — WindowsApps `python3` hangs Git Bash gates
+### KB-027 — WindowsApps `python3` hangs Git Bash gates
 
 | Field | Detail |
 |-------|--------|
 | **Symptom** | `feature-gate.sh` / `watch-agent-gates` stall with no output; `python3 -c` never returns |
 | **Cause** | `C:\Users\edwar\AppData\Local\Microsoft\WindowsApps\python3.exe` Store stub is first on PATH |
-| **Fix** | Put `AppData\Local\Python\bin` before WindowsApps; use that interpreter for `agent-run.py` |
+| **Fix** | Source `scripts/lib/resolve-python.sh` (skips WindowsApps; prefers `py -3`); use `AppData\Local\Python\bin` for `agent-run.py` |
 | **Prevention** | Do not rely on `python3` from WindowsApps in Git Bash on this machine |
-
-### KB-019 — Google Continue → “unknown error” for non-test users
+### KB-028 — Google Continue → “unknown error” for non-test users
 
 | Field | Detail |
 |-------|--------|
@@ -181,8 +179,7 @@
 | **Cause** | OAuth consent is Testing; Google blocks accounts that are not listed as test users. Four sensitive scopes made Continue even more brittle |
 | **Fix** | Add the exact Gmail under Audience → Test users; desktop requests Calendar only; native Rust token POST; never set empty `VITE_GOOGLE_CLIENT_SECRET=` in `.env.production` |
 | **Prevention** | Confirm header version is 0.17.3+; do not treat this as an app crash until the account is a test user |
-
-### KB-020 — Room `Cannot access database on the main thread` after overlap save
+### KB-029 — Room `Cannot access database on the main thread` after overlap save
 
 | Field | Detail |
 |-------|--------|

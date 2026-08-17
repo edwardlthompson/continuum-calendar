@@ -13,7 +13,6 @@
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
 | License | MIT | - | Pure FOSS |
 | Bootstrap | agent-project-bootstrap | 0.16.1 | See `bootstrap-manifest.yaml` |
-
 ## Active Modules
 
 - ✅ Web / desktop UI (`modules/web/MODULE.md` patterns; app in `apps/desktop`)
@@ -54,9 +53,8 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 | 2026-08-14 | Audit A2 | Release/PROD omit OAuth secret by default; v0.16.1 duplicate SBOMs removed; desktop version 0.16.2; gates green | HUMAN: OAuth/privacy/LICENSE; approve Actions on RP #9; install 1.10.4 on every device |
 | 2026-08-11 | Audit A1 | Encoding skip `build/`; Android token refresh; desktop notify serialize; agenda local day keys; gates green after restoring example deps post-purge | Avoid `purge-ephemeral --apply` mid-audit without reinstalling examples/* deps; [HUMAN] public OAuth clients + secure token storage |
 | 2026-08-10 | Project bootstrap | Template init + desktop scaffold + trackers | Wire live OAuth after GCP client exists |
-
 ## Template Provenance
 
 - **Source template:** `edwardlthompson/agent-project-bootstrap`
-- **Template version:** `0.17.1` (see `.template-version`)
+- **Template version:** `0.18.3` (see `.template-version`)
 - **Last update check:** See `.template-update.json`

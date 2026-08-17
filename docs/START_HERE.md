@@ -31,7 +31,8 @@ Type **`/`** in Cursor Agent chat for shortcut workflows. Start with **[docs/hel
 8. Active `examples/{stack}/` only
 9. `docs/WEB_PROJECT_LAYOUT.md` when stack includes web (folder roles, GitHub Pages)
 10. `docs/DESIGN_GUIDE.md` when stack includes web or Android UI (tokens, themes, i18n)
-11. `docs/FEATURE_MODULES.md` when implementing Sprint 2+ incremental features (vertical slices)
+11. `branding/BRANDING.md` for logos, official colors, and pitch README generation
+12. `docs/FEATURE_MODULES.md` when implementing Sprint 2+ incremental features (vertical slices)
 
 ## Reference Read Order
 
@@ -42,17 +43,21 @@ Type **`/`** in Cursor Agent chat for shortcut workflows. Start with **[docs/hel
 5. `AGENTS.md`
 6. Matching `modules/{stack}/MODULE.md` only
 
+## CRITICAL NOTES (phase transitions)
+
+- After **Sprint 0** sign-off: stop treating `docs/INITIALIZATION_PROMPT.md` as the daily read. Follow BUILD_PLAN Sequential, then `/feature` for Sprint 2+ (`docs/features/{name}.md` from `_template.md`, locked API, then Parallel slices).
+- Working notes go in gitignored `scratchpad.md` (copy `scratchpad.md.example`). **Reset** on sprint/phase change. Persistent memory stays in `AGENT_MEMORY.md`.
+- Child playbook: [`BUILD_PLAN.md`](../BUILD_PLAN.md) — same phase notes under Child Repo Playbook.
+
 ## Do Not Read Yet
 
 - Inactive `examples/` folders
-- `KNOWLEDGE_BASE.md` — reference when debugging (KB-001–KB-008)
+- `KNOWLEDGE_BASE.md` — reference when debugging (KB-001–KB-012)
 - `docs/MAINTAINING_THE_TEMPLATE.md` (maintainers only)
 
 ## BUILD_PLAN Labels
 
 `AGENT` | `HUMAN` | `ADB` | `AUTO` — filter with `grep '\[AGENT\]' BUILD_PLAN.md`
-
-**Open HUMAN steps (paste scripts):** [`docs/HUMAN_REMAINING.md`](HUMAN_REMAINING.md)
 
 **Status markers:** 🔲 open · ✅ done · ❌ blocked — emoji only (not `- [ ]` checkboxes). Applies to all repo checklists; see legend in `BUILD_PLAN.md`.
 

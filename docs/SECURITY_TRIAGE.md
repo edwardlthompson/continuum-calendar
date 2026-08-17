@@ -15,6 +15,7 @@ Weekly CVE triage playbook for Dependabot alerts and release security gates.
 bash scripts/setup-github-repo.sh
 # Windows:
 pwsh scripts/setup-github-repo.ps1
+
 ```
 
 Requires `gh` CLI authenticated with admin access. On API `422` (plan or permission limits), the script prints a manual UI checklist. Re-run after fixing permissions.
@@ -31,10 +32,6 @@ Requires `gh` CLI authenticated with admin access. On API `422` (plan or permiss
 
 `dependabot.yml` schedules version-update PRs; **Dependabot alerts** are a separate GitHub setting for CVE advisories - both are required.
 
-## Audit snapshot (2026-08-14)
-
-Open Dependabot (`edwardlthompson/continuum-calendar`): **glib** 0.18.5 medium (alert #1, `VariantStrIter` unsoundness; first patch 0.20.0). Transitive via Tauri Linux GTK/webkit2gtk — do not bump to 0.20 on the Windows-first ship (GTK4). postcss in `examples/web` was bumped to 8.5.26. Zero Critical/High. See A2 F-005 in `CODE_REVIEW.md` (gitignored ephemeral).
-
 ## Weekly Triage Pass
 
 Recommended cadence: **Monday** (aligned with scheduled security scans and `health-check.yml`).
@@ -48,7 +45,6 @@ Recommended cadence: **Monday** (aligned with scheduled security scans and `heal
 | 5 | HUMAN | Merge PR or escalate deferred items |
 | 6 | AUTO | Review `weekly-health-check.yml` weekly run (Monday 07:00 UTC); confirm CI + Security Scan + CodeQL green on main |
 | 7 | AUTO | Run `bash scripts/check-security-triage.sh --wait-ci 300` (Dependabot + workflows + OpenSSF Scorecard) |
-
 ## OpenSSF Scorecard
 
 - Workflow: `.github/workflows/scorecard.yml` (`name: OpenSSF Scorecard`)
@@ -56,6 +52,15 @@ Recommended cadence: **Monday** (aligned with scheduled security scans and `heal
 - Pre-release: `pre-release-gate.sh` invokes `check-security-triage.sh --strict` (fails on missing/failed Scorecard)
 - SARIF: Scorecard uploads findings to **Security → Code scanning**; triage open items into BUILD_PLAN `[AGENT]` rows or dismiss with rationale in DECISION_LOG.md
 
+### SARIF triage (M35 / 2026-08-15)
+
+| Check | Decision | Rationale |
+|-------|----------|-----------|
+| PinnedDependencies (GitHub-owned `@vX`) | Dismiss | Allowed by the pin policy below (`@vX.Y.Z` or SHA + comment). Mass SHA-pin conflicts with `validate-workflow-actions.sh`. Third-party scanners stay SHA-pinned. |
+| TokenPermissions (workflow-level write) | Fix | Workflows default to `permissions: read-all`; write scopes live on the job that needs them. |
+| VulnerabilitiesID (hono / nanoid / postcss GHSAs) | Dismiss | Already patched in v0.18.0 (`hono` ≥4.12.34, `nanoid` ≥3.3.18, `postcss` ≥8.5.23). Re-run Scorecard after lockfile merges; alert is stale vs HEAD. |
+| CodeReview / Maintained / CIIBestPractices / Fuzzing | Defer | Process scores, not product CVEs. No BUILD_PLAN row. |
+| BinaryArtifacts | Defer | Gradle wrapper JAR is the expected Android wrapper binary (`examples/android/gradle/wrapper/`). |
 ## Triage Decisions
 
 | Decision | When | Action |
@@ -63,7 +68,6 @@ Recommended cadence: **Monday** (aligned with scheduled security scans and `heal
 | **Fix** | Patch available, low risk | Merge Dependabot PR or [AGENT] applies bump |
 | **Defer** | No fix yet, acceptable risk window | Open issue with expiry date; log in DECISION_LOG.md |
 | **Dismiss** | False positive or not applicable | Document rationale in issue or ADR |
-
 After triage, confirm Trivy and CodeQL workflows are green on `main`.
 
 ## GitHub Actions Pin Policy
@@ -79,7 +83,6 @@ Third-party workflow actions must use **immutable refs** to reduce supply-chain 
 | **Post-push** | `scripts/check-github-ci.sh --wait 300` - required workflows: **CI**, **Security Scan**, **CodeQL** |
 | **Missing runs** | `scripts/check-github-ci.sh --wait 600 --dispatch-if-missing` — `workflow_dispatch` CI/Security/CodeQL when HEAD has no run (covers Dependabot merges that used `GITHUB_TOKEN`) |
 | **Automerge token** | Optional repo secret `AUTOMERGE_TOKEN` (PAT with `contents` + `workflow`) so Dependabot auto-merge triggers `push` workflows; without it, weekly health dispatches missing runs. Set via `scripts/setup-automerge-token.sh` (uses `AUTOMERGE_TOKEN` env or `gh auth token`) |
-
 ## Release Gate (mandatory before tag)
 
 Before any version bump or GitHub Release:
@@ -97,13 +100,20 @@ Before any version bump or GitHub Release:
 | `workflow_dispatch` (with `tag` input) | SBOM upload only — backfill assets on an existing release |
 | `release` published | Polls full CI rollup (`check-github-ci.sh --wait 3600`) then SBOM + Winget stub upload |
 | Tag push `v*` | Lightweight gate only: tag must match `.template-version`; polls **Repo Hygiene** + **Feature Gate** via `check-github-ci.sh --skip-workflows` (does **not** wait on CI/CodeQL rollup or emulator jobs) |
-
 Release Please publishes the GitHub Release; the `release` published event attaches SBOM assets. Use `workflow_dispatch` (no tag input) for maintainer dry-runs before merging the Release Please PR.
 
 If a Critical/High alert has no upstream fix, release may proceed only when:
 
 1. A linked issue documents the advisory, impact, and mitigation
 2. [HUMAN] explicitly approves in the release notes or DECISION_LOG.md
+
+## OWASP LLM walk (agents / tools / MCP)
+
+When the product exposes agents, run the compact walk in [`THREAT_MODEL.md`](THREAT_MODEL.md) (prompt injection, insecure output, supply chain, over-agency). Map findings to BUILD_PLAN `[AGENT]` rows. No new scanner — Dependabot, CodeQL, Trivy, and Gitleaks remain the automated gates.
+
+1. **Prompt injection / insecure output** — untrusted content cannot become shell or system prompts (destructive-ops Prompt Injection Defense).
+2. **Supply chain** — no unsigned marketplace plugins on the default FOSS path.
+3. **Excessive agency** — honesty table; hooks fail-open is not a hard deny (KB-012).
 
 ## Related Files
 

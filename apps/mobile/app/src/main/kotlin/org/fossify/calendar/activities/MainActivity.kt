@@ -77,6 +77,7 @@ import org.fossify.calendar.helpers.WEEK_START_DATE_TIME
 import org.fossify.calendar.helpers.YEAR
 import org.fossify.calendar.helpers.YEARLY_VIEW
 import org.fossify.calendar.helpers.YEAR_TO_OPEN
+import org.fossify.calendar.continuum.ContinuumAboutActivity
 import org.fossify.calendar.continuum.ContinuumDiagnostics
 import org.fossify.calendar.continuum.ContinuumGoogleAuth
 import org.fossify.calendar.continuum.ContinuumHttp
@@ -1450,7 +1451,8 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             )
         }
 
-        startAboutActivity(
+        ContinuumAboutActivity.start(
+            activity = this,
             appNameId = R.string.app_name,
             licenseMask = licenses,
             versionName = org.fossify.calendar.BuildConfig.VERSION_NAME,

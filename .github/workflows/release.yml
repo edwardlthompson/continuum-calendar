@@ -13,16 +13,16 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: write
-  id-token: write
-  attestations: write
+permissions: read-all
 
 jobs:
   tag-gate:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     name: Tag gate
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v7
 
@@ -44,6 +44,10 @@ jobs:
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     name: SBOM and release assets
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     steps:
       - name: Resolve release tag
         id: tag
@@ -150,7 +154,7 @@ jobs:
         run: bash scripts/generate-winget-manifest.sh "AgentProjectBootstrap.Template" "$(cat .template-version | tr -d '[:space:]')"
 
       - name: Generate provenance attestation
-        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v2.2.0
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v2.2.0
         with:
           subject-path: sbom.cyclonedx.json
 
