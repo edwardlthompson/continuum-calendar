@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-17 — Release Please published v0.19.0 after a 0.18.3 prep commit
+- **Status:** Accepted
+- **Context:** `/ship` committed `.template-version` 0.18.3 to match upstream bootstrap. Release Please #11 then cut **v0.19.0** (no `v0.18.3` tag).
+- **Decision:** Treat `v0.19.0` as the shipped GitHub tag. Attach the current product binaries (desktop 0.17.3, Android 1.10.7) to that release.
+- **Alternatives considered:** Force a v0.18.3 tag (rejected — would rewrite published RP history).
+- **Consequences:** Compare links may mention v0.18.3 without that tag existing. Next prep should not pre-bump the manifest to a version RP has not tagged.
+
 ### 2026-08-16 — Adopt agent-project-bootstrap v0.18.3
 - **Status:** Accepted
 - **Context:** Child repo was on template 0.17.1; upstream latest is v0.18.3 (M34 thin steals, Windows `resolve-python.sh`, Scorecard TokenPermissions, exemplar dep bumps).

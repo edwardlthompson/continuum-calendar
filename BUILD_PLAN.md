@@ -167,8 +167,8 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 - 🔲 [HUMAN] Weekly Dependabot / CVE triage (`docs/SECURITY_TRIAGE.md`)
 - 🔲 [HUMAN] Enable GitHub Pages if a public demo is wanted (404 at `/ship` 2026-08-14)
-- ✅ [HUMAN] Attach desktop installer / Android APK to GitHub Release (v0.17.1: EXE 0.17.3 + APK 1.10.7)
+- ✅ [HUMAN] Attach desktop installer / Android APK to GitHub Release (v0.19.0: EXE 0.17.3 + APK 1.10.7)
 - 🔲 [AUTO] Triage Dependabot medium `glib` in `apps/desktop/src-tauri/Cargo.lock` (do not bump to 0.20 — GTK4)
-- ✅ [AUTO] Confirm v0.17.1 GitHub Release has SBOMs + product binaries (2026-08-16 `/ship`)
+- ✅ [AUTO] Confirm v0.19.0 GitHub Release has SBOMs + product binaries (2026-08-17 `/ship`)
 - 🔲 [AUTO] Template update check (`scripts/check-template-updates.ps1`)
 - 🔲 [HUMAN] Quarterly ROADMAP review

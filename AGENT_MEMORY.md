@@ -12,7 +12,7 @@
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
 | License | MIT | - | Pure FOSS |
-| Bootstrap | agent-project-bootstrap | 0.16.1 | See `bootstrap-manifest.yaml` |
+| Bootstrap | agent-project-bootstrap | 0.19.0 | See `bootstrap-manifest.yaml` |
 ## Active Modules
 
 - ✅ Web / desktop UI (`modules/web/MODULE.md` patterns; app in `apps/desktop`)
@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.17.1` (SBOMs on GitHub Release; Windows EXE 0.17.3 + signed FOSS APK 1.10.7 attached)
+- Latest template-aligned tag: `v0.19.0` (SBOMs + Windows EXE 0.17.3 + signed FOSS APK 1.10.7 on GitHub Release)
 
 ### Key Constraints
 
@@ -48,6 +48,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-17 | /ship v0.19.0 | Template 0.18.3 parity + About Fossify CTAs removed; RP #11 cut **v0.19.0**; APK/EXE attached | HUMAN: OAuth test users; Pages 404 |
 | 2026-08-16 | /ship v0.17.1 | RP #10 merged; SBOMs + 1.10.7 APK + 0.17.3 EXE on release; Calendar-only desktop OAuth + native token POST | HUMAN: add exact Gmail as OAuth test user; public consent / LICENSE / Privacy URL; Pages still 404 |
 | 2026-08-15 | /ship title overflow | Feature-gate 19 stages; Settings long-title modes; Codex skipped (no key) | HUMAN: public OAuth + install 1.10.4+ on every device; Scorecard/CI wait after push |
 | 2026-08-14 | Audit A2 | Release/PROD omit OAuth secret by default; v0.16.1 duplicate SBOMs removed; desktop version 0.16.2; gates green | HUMAN: OAuth/privacy/LICENSE; approve Actions on RP #9; install 1.10.4 on every device |

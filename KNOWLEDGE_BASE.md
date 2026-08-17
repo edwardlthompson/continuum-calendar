@@ -187,3 +187,12 @@
 | **Cause** | `runOnUiThread { finishSaveEvent() }` then `storeEvent()` on UI when the event had no reminders |
 | **Fix** | Always `ensureBackgroundThread { storeEvent(...) }` after the UI hop for notification permission |
 | **Prevention** | After any `runOnUiThread` hop, do not call Room/DAO on that same stack |
+
+### KB-030 — Pre-bumping `.template-version` makes Release Please skip that tag
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `/ship` prepared 0.18.3; Release Please published **v0.19.0** and never tagged v0.18.3 |
+| **Cause** | Manifest was set to 0.18.3 in the prep commit; RP then computed the next MINOR from that baseline |
+| **Fix** | Ship the published tag (`v0.19.0`). Attach current APK/EXE to that release |
+| **Prevention** | Do not write a future template version into `.release-please-manifest.json` before RP has tagged it |
