@@ -6,28 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.22.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.0...v0.22.1) (2026-08-20)
-
-
-### Fixed
-
-* **changelog:** keep a single leading Unreleased heading ([0f02d8d](https://github.com/edwardlthompson/continuum-calendar/commit/0f02d8db66a59bc6c21a4874f5f54949f8b49e54))
-
-
-### Changed
-
-* **release:** prepare v0.23.0 release ([300cd93](https://github.com/edwardlthompson/continuum-calendar/commit/300cd939ae9958af2acb212a47dc447d202fed70))
-
-
-### Documentation
-
-* record v0.22.0 ship regressions ([d0ecd46](https://github.com/edwardlthompson/continuum-calendar/commit/d0ecd46997735b66bd37193a0c7d1e434bd11068))
-
 ## [Unreleased]
+
+## [0.22.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.0...v0.22.1) (2026-08-20)
 
 ### Added
 
-* **desktop:** Testing-mode guidance when Google OAuth returns access_denied or “unknown error”
+* **desktop:** Testing-mode guidance when Google OAuth returns access_denied or "unknown error"
 * **desktop:** CalDAV calendar-query REPORT sync (Nextcloud / Fastmail / iCloud-style servers)
 * **desktop:** ICS URL subscribe with refresh on each sync (not only one-shot import)
 * **desktop:** banner when local/peer events overlap Google
@@ -41,6 +26,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **docs:** distinguish `apps/mobile` product app from `examples/android` Golden Path
 * **scripts:** large-tracked-file gate uses one `git ls-tree` (Windows)
 * **repo:** GitHub Pages enabled for the web Golden Path demo
+* **release:** prepare v0.23.0 release ([300cd93](https://github.com/edwardlthompson/continuum-calendar/commit/300cd939ae9958af2acb212a47dc447d202fed70))
+
+### Fixed
+
+* **changelog:** keep a single leading Unreleased heading ([0f02d8d](https://github.com/edwardlthompson/continuum-calendar/commit/0f02d8db66a59bc6c21a4874f5f54949f8b49e54))
+
+### Documentation
+
+* record v0.22.0 ship regressions ([d0ecd46](https://github.com/edwardlthompson/continuum-calendar/commit/d0ecd46997735b66bd37193a0c7d1e434bd11068))
 
 ## [0.22.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.21.0...v0.22.0) (2026-08-20)
 

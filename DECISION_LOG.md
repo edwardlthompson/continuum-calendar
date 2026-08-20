@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — /ship published v0.22.1
+- **Status:** Accepted
+- **Context:** `/push` used `chore(release): prepare v0.23.0`. Release Please #14 treated that as a patch and tagged **v0.22.1**. The I1 feature bullets stayed under Unreleased below the new version heading.
+- **Decision:** Treat **v0.22.1** as the shipped GitHub tag. Fold I1 Added/Changed into `## [0.22.1]`, restore a leading empty `## [Unreleased]`, copy desktop 0.17.3 EXE and Android 1.10.7 APK from v0.22.0, and keep product versions unchanged.
+- **Alternatives considered:** Force a v0.23.0 tag (rejected — would rewrite published RP history). Leave features under Unreleased (rejected — changelog gate + honest release notes).
+- **Consequences:** Compare links say 0.22.0…0.22.1 even though the prep commit named 0.23.0. Next `/ship` that wants a minor must land `feat:` commits (not only `chore(release)`).
+
 ### 2026-08-20 — /ship published v0.22.0
 - **Status:** Accepted
 - **Context:** Template sync set the RP manifest to 0.21.0; `/ship` added Android high-refresh and merged RP #12.

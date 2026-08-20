@@ -2,6 +2,12 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## /ship v0.22.1 (2026-08-20)
+
+- ✅ [AUTO] Release Please #14 published tag v0.22.1 (SBOMs via Release workflow)
+- ✅ [AGENT] Restore leading Unreleased and fold I1 notes into 0.22.1 (KB-032/033)
+- ✅ [HUMAN] Copy desktop 0.17.3 EXE + Android 1.10.7 APK onto the v0.22.1 GitHub Release
+
 ## Sprint I1 — Ideas 1–6 (2026-08-20)
 
 - ✅ [AGENT] In-app Google Testing-mode guidance (desktop + Android OAuth errors)

@@ -213,4 +213,14 @@
 | **Symptom** | Post-merge `check-changelog-unreleased.sh` fails: Unreleased is not the first heading |
 | **Cause** | RP writes `## [0.22.0]` and does not restore an empty Unreleased section |
 | **Fix** | Add an empty `## [Unreleased]` above the new version heading immediately after merge |
-| **Prevention** | After every RP merge, restore Unreleased before other post-release docs commits |
+| **Prevention** | After every RP merge, restore Unreleased *first* and move leftover Added/Changed bullets into the new version section before other post-release docs |
+
+### KB-033 — `chore(release)` prep commit becomes a patch
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `/push` prepares v0.23.0 but Release Please tags **v0.22.1**; GitHub notes list only the chore line |
+| **Cause** | Conventional Commits: `chore` is patch (or skipped). Features in the same prep commit do not bump minor |
+| **Fix** | Accept the published patch tag; fold real feature bullets into that version in CHANGELOG + `gh release edit` |
+| **Prevention** | Land `feat:` commits before the prep commit when a minor is intended; do not name a version RP has not computed |
+

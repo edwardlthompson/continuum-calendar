@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.22.0` (SBOMs + Windows EXE 0.17.3 + signed FOSS APK 1.10.7 on GitHub Release)
+- Latest template-aligned tag: `v0.22.1` (SBOMs + Windows EXE 0.17.3 + signed FOSS APK 1.10.7 on GitHub Release)
 
 ### Key Constraints
 
@@ -48,6 +48,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-20 | /ship v0.22.1 | RP #14 cut **v0.22.1** (chore prep → patch); I1 features in 300cd93; Unreleased restored after fold (KB-032/033) | Next minor needs `feat:` commits; copy product binaries onto each template tag |
 | 2026-08-20 | /ship v0.22.0 | Template 0.21.0 + high-refresh Android; RP #12 cut **v0.22.0**; branch protection includes Windows upgrade-sim | HUMAN: OAuth test users; Pages 404; reinstall APK for high-refresh |
 | 2026-08-20 | Template sync v0.21.0 | Canon commands/help/scripts + Windows upgrade-sim; adapters from AGENTS.md | Do not treat this as a product /ship; RP may skip a 0.21.0 tag (KB-030) |
 | 2026-08-17 | /ship v0.19.0 | Template 0.18.3 parity + About Fossify CTAs removed; RP #11 cut **v0.19.0**; APK/EXE attached | HUMAN: OAuth test users; Pages 404 |
