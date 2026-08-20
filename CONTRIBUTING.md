@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for contributing to **agent-project-bootstrap** — a Cursor agent-oriented FOSS project template.
+Thank you for contributing to **Continuum Calendar**.
 
 ## Who contributes what
 
@@ -13,25 +13,32 @@ Thank you for contributing to **agent-project-bootstrap** — a Cursor agent-ori
 
 ## Getting started
 
-1. Fork the repository and create a feature branch.
-2. Read `docs/START_HERE.md`, `docs/CURSOR_MODES.md`, `CODE_OF_CONDUCT.md`, and `docs/MAINTAINING_THE_TEMPLATE.md`.
+1. Fork the repository and create a feature branch from `main`.
+2. Read `docs/START_HERE.md`, `docs/CURSOR_MODES.md`, `CODE_OF_CONDUCT.md`, and `docs/help/TOUR.md` (Cursor: `/tour`).
 3. Report security issues via `SECURITY.md` (private reporting preferred).
-4. Make changes; ensure CI passes locally where possible.
+4. Make changes; run `bash scripts/verify.sh` locally (or the VS Code **Verify** task).
 5. Open a PR using the provided template.
+
+## Recommended branching (GitHub Flow)
+
+Short-lived branches, one concern per PR, merge to `main` when required checks are green. Do not force-push `main`. Required checks (via `scripts/setup-github-repo.sh`): **CI**, **Security Scan**, **CodeQL**, **Repo Hygiene**, **Feature Gate**, **Template Upgrade Simulation (Windows)**.
 
 ## Commit messages
 
-Use [Conventional Commits](https://www.conventionalcommits.org/).
+Use [Conventional Commits](https://www.conventionalcommits.org/). Enforced by a `commit-msg` hook:
 
-## Template improvements
+```bash
+pre-commit install --hook-type commit-msg
+```
 
-Use the **Template Improvement** issue template for feedback.
+Subjects must match `type(scope)?: description` (`feat`, `fix`, `docs`, `chore`, `ci`, `test`, `refactor`, `perf`, `style`, `build`, `revert`). Merge and Revert subjects are allowed.
 
 ## Pre-commit hooks
 
 ```bash
 pip install pre-commit
 pre-commit install
+pre-commit install --hook-type commit-msg
 pre-commit run --all-files
 ```
 

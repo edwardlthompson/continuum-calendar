@@ -12,7 +12,7 @@
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
 | License | MIT | - | Pure FOSS |
-| Bootstrap | agent-project-bootstrap | 0.19.0 | See `bootstrap-manifest.yaml` |
+| Bootstrap | agent-project-bootstrap | 0.21.0 | See `bootstrap-manifest.yaml` |
 ## Active Modules
 
 - ✅ Web / desktop UI (`modules/web/MODULE.md` patterns; app in `apps/desktop`)
@@ -48,6 +48,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-20 | Template sync v0.21.0 | Canon commands/help/scripts + Windows upgrade-sim; adapters from AGENTS.md | Do not treat this as a product /ship; RP may skip a 0.21.0 tag (KB-030) |
 | 2026-08-17 | /ship v0.19.0 | Template 0.18.3 parity + About Fossify CTAs removed; RP #11 cut **v0.19.0**; APK/EXE attached | HUMAN: OAuth test users; Pages 404 |
 | 2026-08-16 | /ship v0.17.1 | RP #10 merged; SBOMs + 1.10.7 APK + 0.17.3 EXE on release; Calendar-only desktop OAuth + native token POST | HUMAN: add exact Gmail as OAuth test user; public consent / LICENSE / Privacy URL; Pages still 404 |
 | 2026-08-15 | /ship title overflow | Feature-gate 19 stages; Settings long-title modes; Codex skipped (no key) | HUMAN: public OAuth + install 1.10.4+ on every device; Scorecard/CI wait after push |
@@ -57,5 +58,5 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ## Template Provenance
 
 - **Source template:** `edwardlthompson/agent-project-bootstrap`
-- **Template version:** `0.19.0` (see `.template-version`)
+- **Template version:** `0.21.0` (see `.template-version`)
 - **Last update check:** See `.template-update.json`

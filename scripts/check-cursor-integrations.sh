@@ -11,4 +11,6 @@ while [ $# -gt 0 ]; do
   esac
 done
 ARGS+=(--tier "$TIER")
-python3 "$ROOT/scripts/lib/check_cursor_integrations.py" "${ARGS[@]}"
+# shellcheck source=lib/resolve-python.sh
+. "$ROOT/scripts/lib/resolve-python.sh"
+"$PY" "$ROOT/scripts/lib/check_cursor_integrations.py" "${ARGS[@]}"

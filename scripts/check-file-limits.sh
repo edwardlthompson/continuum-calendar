@@ -28,8 +28,6 @@ check_static_data_paths() {
 }
 
 echo "Checking static data file limits (max $STATIC_DATA_LIMIT lines)..."
-# Composition roots (App.tsx / main entry) aggregate features and are exempt from the
-# 300-line static-data cap; feature containers still must stay within budget.
 check_static_data_paths "static-data" < <(find "$ROOT" -type f \( \
   -name "*.tsx" -o -name "*.jsx" -o -name "*.vue" -o -name "*_view.*" \
   -o -path "*/examples/web/src/components/*.ts" \
@@ -40,10 +38,35 @@ check_static_data_paths "static-data" < <(find "$ROOT" -type f \( \
   -o -path "*/examples/*/res/values/strings.xml" \
   -o -path "*/examples/*/res/values-*/strings.xml" \
   \) "${EXCLUDE_PATHS[@]}" \
-  ! -name "App.tsx" ! -name "App.jsx" ! -name "main.tsx" ! -name "main.jsx" \
   ! -name "package.json" ! -name "package-lock.json" \
   ! -name "tsconfig.json" ! -name ".lighthouserc.json" \
   -print0 2>/dev/null)
+
+# New scripts/lib/*.py must stay <= 150. Keep this empty unless a split is in flight.
+LIB_ALLOWLIST=()
+
+echo "Checking scripts/lib logic file limits (max $LOGIC_LIMIT lines)..."
+while IFS= read -r -d '' file; do
+  rel="${file#"$ROOT"/}"
+  rel="${rel//\\//}"
+  skip=false
+  for allowed in "${LIB_ALLOWLIST[@]}"; do
+    case "$rel" in
+      "$allowed"|*/"$allowed") skip=true ;;
+    esac
+    if [ "$skip" = true ]; then
+      break
+    fi
+  done
+  if [ "$skip" = true ]; then
+    continue
+  fi
+  lines=$(wc -l < "$file" | tr -d ' ')
+  if [ "$lines" -gt "$LOGIC_LIMIT" ]; then
+    echo "FAIL [logic] $file: $lines lines (max $LOGIC_LIMIT)"
+    ERRORS=$((ERRORS + 1))
+  fi
+done < <(find "$ROOT/scripts/lib" -type f -name "*.py" -print0 2>/dev/null)
 
 echo "Checking pure logic file limits (max $LOGIC_LIMIT lines)..."
 while IFS= read -r -d '' file; do

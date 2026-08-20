@@ -9,6 +9,8 @@ on:
     - cron: "0 6 * * 1"
   workflow_dispatch:
 
+# Do not add jobs.<id>.environment — Environments block Release Please bot PRs.
+
 permissions:
   contents: read
 

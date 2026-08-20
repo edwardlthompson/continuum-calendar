@@ -7,6 +7,15 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
 
+# Python 3.14+ pyrepl on Windows can hang during pwsh init (KB-014).
+export PYTHON_BASIC_REPL="${PYTHON_BASIC_REPL:-1}"
+export PYTHONUNBUFFERED="${PYTHONUNBUFFERED:-1}"
+export PYTHONIOENCODING="${PYTHONIOENCODING:-utf-8}"
+# Child init validates workflow refs; CI must pass github.token as GH_TOKEN.
+if [ -n "${GITHUB_TOKEN:-}" ] && [ -z "${GH_TOKEN:-}" ]; then
+  export GH_TOKEN="$GITHUB_TOKEN"
+fi
+
 echo "==> Simulating template upgrade in $WORKDIR"
 
 git clone --quiet "file://$ROOT" "$WORKDIR/child"
@@ -41,7 +50,44 @@ bash scripts/init-project.sh \
   --stack web \
   --project-name "Upgrade Sim" \
   --purpose "Cherry-pick validation" \
-  --no-prune
+  --no-prune \
+  --license MIT
+
+for path in \
+  bootstrap.config.json \
+  PROJECT_CHECKLIST.md \
+  CLAUDE.md \
+  GEMINI.md \
+  CONVENTIONS.md \
+  .clinerules \
+  .github/copilot-instructions.md \
+  .cursor/rules/main.mdc \
+  .windsurf/rules/agents-pointer.md \
+  .continue/rules/agents.md \
+  docs/spec.md \
+  docs/plan.md \
+  docs/BEST_PRACTICES.md \
+  docs/FIRST_30_DAYS.md \
+  docs/help/TOUR.md \
+  docs/AGENT_PORTABILITY.md \
+  SUPPORT.md \
+  CITATION.cff \
+  env.schema.json \
+  .devcontainer/Dockerfile \
+  .agent/memory/decisions.md \
+  .agent/memory/pitfalls.md \
+  scripts/verify.sh
+do
+  if [ ! -e "$path" ]; then
+    echo "FAIL: missing after init: $path"
+    exit 1
+  fi
+done
+python3 -c "import json; json.load(open('bootstrap.config.json', encoding='utf-8'))"
+if ! grep -q 'Upgrade Sim' AGENTS.md; then
+  echo "FAIL: AGENTS.md was not stamped with project name"
+  exit 1
+fi
 
 bash scripts/validate-bootstrap.sh --quick
 
@@ -73,18 +119,23 @@ bash scripts/validate-bootstrap.sh --quick
 echo "Prune-optional smoke passed"
 
 echo "==> Non-interactive init smoke (PowerShell)"
-git clone --quiet "file://$ROOT" "$WORKDIR/child-ps"
-cd "$WORKDIR/child-ps"
+if ! command -v pwsh >/dev/null 2>&1; then
+  echo "SKIP PowerShell init smoke (pwsh not on PATH)"
+else
+  git clone --quiet "file://$ROOT" "$WORKDIR/child-ps"
+  cd "$WORKDIR/child-ps"
 
-pwsh -NoProfile -File scripts/init-project.ps1 \
-  -NonInteractive \
-  -Stack web \
-  -ProjectName "Upgrade Sim PS" \
-  -ProjectPurpose "PS init smoke" \
-  -Prune \
-  -PruneOptional
+  PYTHON_BASIC_REPL=1 PYTHONUNBUFFERED=1 PYTHONIOENCODING=utf-8 \
+    pwsh -NoProfile -File scripts/init-project.ps1 \
+    -NonInteractive \
+    -Stack web \
+    -ProjectName "Upgrade Sim PS" \
+    -ProjectPurpose "PS init smoke" \
+    -Prune \
+    -PruneOptional
 
-bash scripts/validate-bootstrap.sh --quick
-echo "PowerShell init smoke passed"
+  bash scripts/validate-bootstrap.sh --quick
+  echo "PowerShell init smoke passed"
+fi
 
 echo "Upgrade simulation passed"

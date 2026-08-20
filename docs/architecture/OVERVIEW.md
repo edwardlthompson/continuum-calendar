@@ -28,7 +28,7 @@ docs/             Agent docs, API setup, architecture, widget specs
 
 ## Mobile
 
-See [MOBILE_FOSSIFY_FORK.md](./MOBILE_FOSSIFY_FORK.md) and [ANDROID_WIDGET_SPEC.md](./ANDROID_WIDGET_SPEC.md).
+See [MOBILE_FOSSIFY_FORK.md](../MOBILE_FOSSIFY_FORK.md) and [ANDROID_WIDGET_SPEC.md](../ANDROID_WIDGET_SPEC.md).
 
 ## Trust boundaries
 

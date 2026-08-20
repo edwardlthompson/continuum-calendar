@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+* sync agent-project-bootstrap standards to v0.21.0
+
 ## [0.19.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.18.3...v0.19.0) (2026-08-17)
 
 
@@ -138,7 +144,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **changelog:** note postcss override in Unreleased security fix ([96c8fd0](https://github.com/edwardlthompson/agent-project-bootstrap/commit/96c8fd07892051df0e8ccff0ebcb7932b59c9ba3))
 
-## [Unreleased]
+## [Historical — Continuum pre-0.19.0]
 
 ### Added
 

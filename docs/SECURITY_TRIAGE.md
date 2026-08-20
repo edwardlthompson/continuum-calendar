@@ -20,13 +20,13 @@ pwsh scripts/setup-github-repo.ps1
 
 Requires `gh` CLI authenticated with admin access. On API `422` (plan or permission limits), the script prints a manual UI checklist. Re-run after fixing permissions.
 
-5. Configure branch protection on `main` requiring status checks: **CI**, **Security Scan**, **CodeQL**, **Repo Hygiene**, **Feature Gate** (`scripts/setup-github-repo.sh` sets these via API; verify in Settings -> Branches)
+5. Configure branch protection on `main` requiring status checks: **CI**, **Security Scan**, **CodeQL**, **Repo Hygiene**, **Feature Gate**, **Template Upgrade Simulation (Windows)** (`scripts/setup-github-repo.sh` sets these via API; verify in Settings -> Branches)
 
 **Verify after setup:** `bash scripts/verify-branch-protection.sh` asserts required check contexts, `strict: true`, and `allow_force_pushes: false`. Override expected checks with `GITHUB_REQUIRED_CHECKS` when workflow job names differ.
 
 **Rulesets fallback:** GitHub repos using **rulesets** instead of classic branch protection return `404` from `repos/{owner}/{repo}/branches/{branch}/protection`. In that case, confirm equivalent rules in **Settings → Rules → Rulesets** (required status checks, block force pushes, require linear history). Rulesets **Bypass list** (Add bypass → GitHub Actions) lives there — not under **Settings → Branches**. Classic branch protection on **personal** repos has no bypass list; admins bypass by default unless "Do not allow bypassing the above settings" is enabled.
 
-**Note:** Workflow rollup names (`CI`, `Security Scan`, `CodeQL`) and CI job names (`Repo Hygiene`, `Feature Gate`) must match GitHub check contexts exactly. Override with `GITHUB_REQUIRED_CHECKS` if your repo uses different names.
+**Note:** Workflow rollup names (`CI`, `Security Scan`, `CodeQL`) and CI job names (`Repo Hygiene`, `Feature Gate`, `Template Upgrade Simulation (Windows)`) must match GitHub check contexts exactly. Override with `GITHUB_REQUIRED_CHECKS` if your repo uses different names.
 
 **Public repos:** Dependabot alerts are free.
 

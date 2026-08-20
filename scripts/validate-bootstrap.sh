@@ -4,6 +4,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+# shellcheck source=lib/resolve-python.sh
+. "$ROOT/scripts/lib/resolve-python.sh"
 
 QUICK=false
 for arg in "$@"; do
@@ -49,12 +51,45 @@ REQUIRED=(
   RELEASE_NOTES.md.example
   scratchpad.md.example
   docs/features/_handoff.md
+  docs/spec.md
+  docs/plan.md
+  docs/BEST_PRACTICES.md
+  docs/FIRST_30_DAYS.md
+  docs/AGENT_PORTABILITY.md
+  docs/help/TOUR.md
+  docs/help/IDEAS.md
+  docs/help/GLOSSARY.md
+  docs/help/COACH.md
+  scripts/check-doc-links.sh
+  bootstrap.config.json.example
+  PROJECT_CHECKLIST.md
+  CLAUDE.md
+  GEMINI.md
+  CONVENTIONS.md
+  .clinerules
+  .github/copilot-instructions.md
+  .cursor/rules/main.mdc
+  .windsurf/rules/agents-pointer.md
+  .continue/rules/agents.md
+  templates/licenses/Apache-2.0.txt
+  env.schema.json
+  .devcontainer/Dockerfile
+  .devcontainer/devcontainer.json
+  .agent/memory/decisions.md
+  .agent/memory/pitfalls.md
+  .agent/skills/README.md
+  scripts/verify.sh
+  scripts/check-agent-adapters.sh
+  SUPPORT.md
+  CITATION.cff
+  .vscode/tasks.json
+  .vscode/extensions.json
 )
 
 BATCH_COMMANDS=(
   audit cleanup debug gates triage dependabot push prerelease regress
   feature fix init prune ci docs upgrade setup plan restore compact scope
-  bootstrap verify build ship maintain
+  bootstrap verify build ship maintain coach tour ideas
 )
 
 for cmd in "${BATCH_COMMANDS[@]}"; do
@@ -107,7 +142,7 @@ fi
 run_check bash scripts/sync-exemplar-config.sh
 
 # Independent read-only checks — use local CPU (BOOTSTRAP_CHECK_JOBS overrides)
-if ! python3 scripts/lib/run_checks_parallel.py \
+if ! "$PY" scripts/lib/run_checks_parallel.py \
   check-file-encoding.sh \
   check-design-cohesion.sh \
   check-markdown-tables.sh \
@@ -117,17 +152,21 @@ if ! python3 scripts/lib/run_checks_parallel.py \
   check-cursor-hooks.sh \
   check-build-plan-parallel.sh \
   check-template-version-sync.sh \
-  validate-template-index.sh
+  validate-template-index.sh \
+  check-bootstrap-engine.sh \
+  check-agent-adapters.sh \
+  check-env.sh \
+  check-doc-links.sh
 then
   ERRORS=$((ERRORS + 1))
 fi
 
 TIER="foss"
 if [ -f .cursor/stack-selection.json ]; then
-  TIER="$(python3 -c "import json;print(json.load(open('.cursor/stack-selection.json')).get('distribution_tier','foss'))" 2>/dev/null || echo foss)"
+  TIER="$("$PY" -c "import json;print(json.load(open('.cursor/stack-selection.json')).get('distribution_tier','foss'))" 2>/dev/null || echo foss)"
 fi
 # Writes manifest — before integrations check
-python3 scripts/sync-cursor-features.py --root "$ROOT" --tier "$TIER"
+"$PY" scripts/sync-cursor-features.py --root "$ROOT" --tier "$TIER"
 run_check bash scripts/check-cursor-integrations.sh --tier "$TIER"
 
 if [ "$QUICK" = false ]; then

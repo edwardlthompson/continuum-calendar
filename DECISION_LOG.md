@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — Sync child repo to agent-project-bootstrap v0.21.0
+- **Status:** Accepted
+- **Context:** Child was on template 0.19.0; upstream HEAD is v0.21.0 (first-run backlog, Windows upgrade-sim, Unreleased fold, doc-link/env gates).
+- **Decision:** Cherry-pick Canon (commands, help, scripts, tests) and merge Mixed (workflows, gitignore, env schema). Keep Sacred product paths. Bump `.template-version` / `TEMPLATE_INDEX` / Release Please manifest / `CITATION.cff` together so version-sync gates pass.
+- **Alternatives considered:** Leave the RP manifest at 0.19.0 (rejected — `check-template-version-sync.sh` requires a match).
+- **Consequences:** Next `/ship` may publish **v0.22.0** rather than tagging v0.21.0 (KB-030). Product binaries stay desktop 0.17.3 / Android 1.10.7 until a product bump.
+
 ### 2026-08-17 — Release Please published v0.19.0 after a 0.18.3 prep commit
 - **Status:** Accepted
 - **Context:** `/ship` committed `.template-version` 0.18.3 to match upstream bootstrap. Release Please #11 then cut **v0.19.0** (no `v0.18.3` tag).

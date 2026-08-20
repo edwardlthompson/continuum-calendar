@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: Continuum Calendar
+message: If you use this software, please cite it using these metadata.
+type: software
+authors:
+  - name: Edward L. Thompson
+repository-code: https://github.com/edwardlthompson/continuum-calendar
+url: https://github.com/edwardlthompson/continuum-calendar
+abstract: >-
+  FOSS calendar with rolling week views, explicit empty days, optional
+  Google Calendar sync, and Android homescreen widgets.
+keywords:
+  - foss
+  - calendar
+  - tauri
+  - android
+  - google-calendar
+license: MIT
+version: 0.21.0
+date-released: 2026-08-20

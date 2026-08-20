@@ -1,10 +1,10 @@
 # Start Here
 
-> **Read this file first** — whether you are a human or a Cursor agent.
+> **Read this file first** — whether you are a human or any coding agent.
 
 ## What is this?
 
-`agent-project-bootstrap` is a **GitHub Template Repository** for bootstrapping FOSS projects with Cursor agents.
+`agent-project-bootstrap` is a **GitHub Template Repository** for bootstrapping FOSS projects with coding agents (Cursor, Windsurf, Antigravity, Claude Code, Copilot, and others). Shared contract: [`AGENTS.md`](../AGENTS.md). Tool map: [`AGENT_PORTABILITY.md`](AGENT_PORTABILITY.md). Word list: [`help/GLOSSARY.md`](help/GLOSSARY.md).
 
 ## Which repo mode are you in?
 
@@ -17,22 +17,37 @@ See [`docs/CURSOR_MODES.md`](CURSOR_MODES.md) — pick the Cursor mode before ed
 
 ## Agent shortcuts (Bootstrap)
 
-Type **`/`** in Cursor Agent chat for shortcut workflows. Start with **[docs/help/BATCH_COMMANDS.md](help/BATCH_COMMANDS.md)** — try `/bootstrap` on a new project or `/verify` before merge.
+In Cursor, type **`/`** in Agent chat. Start with **[docs/help/BATCH_COMMANDS.md](help/BATCH_COMMANDS.md)** — try `/tour` (10 minutes) or `/bootstrap` on a new project, `/verify` before merge.
+
+In Windsurf, Antigravity, or any other agent: ask it to read [`docs/help/TOUR.md`](help/TOUR.md) (first run) or [`docs/help/COACH.md`](help/COACH.md) (what next).
 
 ## Bootstrap Read Order
 
 1. `README.md`
 2. `docs/START_HERE.md`
 3. `docs/CURSOR_MODES.md`
-4. `docs/INITIALIZATION_PROMPT.md`
-5. `AGENTS.md`
-6. `BUILD_PLAN.md` Sequential lane
-7. Active `modules/{stack}/MODULE.md` only
-8. Active `examples/{stack}/` only
-9. `docs/WEB_PROJECT_LAYOUT.md` when stack includes web (folder roles, GitHub Pages)
-10. `docs/DESIGN_GUIDE.md` when stack includes web or Android UI (tokens, themes, i18n)
-11. `branding/BRANDING.md` for logos, official colors, and pitch README generation
-12. `docs/FEATURE_MODULES.md` when implementing Sprint 2+ incremental features (vertical slices)
+4. `docs/BEST_PRACTICES.md` (why each convention exists) + `docs/FIRST_30_DAYS.md`
+5. `docs/INITIALIZATION_PROMPT.md`
+6. `AGENTS.md` (thin adapters via `--sync-adapters`; see `docs/AGENT_PORTABILITY.md`)
+7. `docs/spec.md` + `docs/plan.md` (product spec and milestone stub)
+8. `BUILD_PLAN.md` Sequential lane
+9. Active `modules/{stack}/MODULE.md` only
+10. Active `examples/{stack}/` only
+11. `docs/WEB_PROJECT_LAYOUT.md` when stack includes web (folder roles, GitHub Pages)
+12. `docs/DESIGN_GUIDE.md` when stack includes web or Android UI (tokens, themes, i18n)
+13. `branding/BRANDING.md` for logos, official colors, and pitch README generation
+14. `docs/FEATURE_MODULES.md` when implementing Sprint 2+ incremental features (vertical slices)
+
+```mermaid
+flowchart TD
+  Readme[README] --> Start[START_HERE]
+  Start --> Modes[CURSOR_MODES]
+  Modes --> Why[BEST_PRACTICES]
+  Why --> Init[INITIALIZATION_PROMPT]
+  Init --> Agents[AGENTS.md]
+  Agents --> Board[BUILD_PLAN]
+
+```
 
 ## Reference Read Order
 
@@ -52,12 +67,12 @@ Type **`/`** in Cursor Agent chat for shortcut workflows. Start with **[docs/hel
 ## Do Not Read Yet
 
 - Inactive `examples/` folders
-- `KNOWLEDGE_BASE.md` — reference when debugging (KB-001–KB-012)
+- `KNOWLEDGE_BASE.md` — reference when debugging (KB-001–KB-014)
 - `docs/MAINTAINING_THE_TEMPLATE.md` (maintainers only)
 
 ## BUILD_PLAN Labels
 
-`AGENT` | `HUMAN` | `ADB` | `AUTO` — filter with `grep '\[AGENT\]' BUILD_PLAN.md`
+`AGENT` | `HUMAN` | `ADB` | `AUTO` — filter with `grep '\[AGENT\]' BUILD_PLAN.md`. Definitions: [`help/GLOSSARY.md`](help/GLOSSARY.md).
 
 **Status markers:** 🔲 open · ✅ done · ❌ blocked — emoji only (not `- [ ]` checkboxes). Applies to all repo checklists; see legend in `BUILD_PLAN.md`.
 
