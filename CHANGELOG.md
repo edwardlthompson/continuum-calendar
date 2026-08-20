@@ -67,17 +67,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * record v0.17.1 ship regressions ([c97e6fc](https://github.com/edwardlthompson/continuum-calendar/commit/c97e6fcb1493a1d455e6ed48c87e7cb9bd448db2))
 * record v0.19.0 ship regressions ([8a01728](https://github.com/edwardlthompson/continuum-calendar/commit/8a017282437970cf78a892b74183a92bd6889950))
 
-## [Unreleased]
-
-### Added
-
-* **android:** request the display's fastest same-resolution mode and mark fling surfaces high-refresh
-
-### Changed
-
-* sync agent-project-bootstrap standards to v0.21.0
-* restore composition-root `App.tsx` exemption in `check-file-limits.sh`
-
 ## [0.19.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.18.3...v0.19.0) (2026-08-17)
 
 
