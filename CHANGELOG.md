@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.0...v0.22.1) (2026-08-20)
+
+
+### Fixed
+
+* **changelog:** keep a single leading Unreleased heading ([0f02d8d](https://github.com/edwardlthompson/continuum-calendar/commit/0f02d8db66a59bc6c21a4874f5f54949f8b49e54))
+
+
+### Changed
+
+* **release:** prepare v0.23.0 release ([300cd93](https://github.com/edwardlthompson/continuum-calendar/commit/300cd939ae9958af2acb212a47dc447d202fed70))
+
+
+### Documentation
+
+* record v0.22.0 ship regressions ([d0ecd46](https://github.com/edwardlthompson/continuum-calendar/commit/d0ecd46997735b66bd37193a0c7d1e434bd11068))
+
 ## [Unreleased]
 
 ### Added
