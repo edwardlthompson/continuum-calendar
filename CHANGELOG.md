@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.2](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.1...v0.22.2) (2026-08-20)
+
+
+### Documentation
+
+* **changelog:** restore Unreleased and fold I1 notes into 0.22.1 ([2aa4a32](https://github.com/edwardlthompson/continuum-calendar/commit/2aa4a32a9c2b2ff827f69867cfa0f9bd887abb99))
+
 ## [Unreleased]
 
 ## [0.22.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.0...v0.22.1) (2026-08-20)
