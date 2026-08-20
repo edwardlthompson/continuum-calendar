@@ -8,14 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.22.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.21.0...v0.22.0) (2026-08-20)
+### Added
 
+* **desktop:** Testing-mode guidance when Google OAuth returns access_denied or “unknown error”
+* **desktop:** CalDAV calendar-query REPORT sync (Nextcloud / Fastmail / iCloud-style servers)
+* **desktop:** ICS URL subscribe with refresh on each sync (not only one-shot import)
+* **desktop:** banner when local/peer events overlap Google
+* **android:** TalkBack labels for agenda/widget Open days and list-widget header actions
+* **android:** list-widget configure preview shows Open empty days
+
+### Changed
+
+* **android:** Google sign-in errors explain Testing-mode Test users
+* **calendar:** conflict dialog names the source (Google vs local / ICS / CalDAV)
+* **docs:** distinguish `apps/mobile` product app from `examples/android` Golden Path
+* **scripts:** large-tracked-file gate uses one `git ls-tree` (Windows)
+* **repo:** GitHub Pages enabled for the web Golden Path demo
+
+## [0.22.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.21.0...v0.22.0) (2026-08-20)
 
 ### Added
 
 * **android:** add Settings choices for long event titles ([1f23a9e](https://github.com/edwardlthompson/continuum-calendar/commit/1f23a9eadad7d5503b9b7aed8df28a3d493c20e7))
 * **android:** request high-refresh display mode for flings ([9d181a9](https://github.com/edwardlthompson/continuum-calendar/commit/9d181a9ed215f5dc3d8ff359d09afc2cc40367ea))
-
 
 ### Fixed
 
@@ -24,7 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **security:** bump holiday-generator js-yaml and nanoid ([043dd4f](https://github.com/edwardlthompson/continuum-calendar/commit/043dd4f2537e0999b5e7f8a65b6ebbaf6047f86e))
 * **security:** omit OAuth client secret from production builds ([fdcd285](https://github.com/edwardlthompson/continuum-calendar/commit/fdcd28547408c6c13471f6285240a60bac762437))
 * stabilize Google sign-in and Android event save ([bd40c4d](https://github.com/edwardlthompson/continuum-calendar/commit/bd40c4d79d217fa95f5922e75543600d9a3fb2b0))
-
 
 ### Changed
 
@@ -56,7 +70,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * sync template version files for release PR ([aa9ddc6](https://github.com/edwardlthompson/continuum-calendar/commit/aa9ddc6da37788d71b7248b05c263cffdbcb9615))
 * **template:** sync agent-project-bootstrap v0.21.0 ([9611fc6](https://github.com/edwardlthompson/continuum-calendar/commit/9611fc64704b3ad3460185a64f9b4f77973ede03))
 
-
 ### Documentation
 
 * archive Sprint A2 AGENT rows after audit ([6c33f34](https://github.com/edwardlthompson/continuum-calendar/commit/6c33f34e8276b38030e35c44cf5b0294df0e0107))
@@ -69,11 +82,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.19.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.18.3...v0.19.0) (2026-08-17)
 
-
 ### Added
 
 * **android:** add Settings choices for long event titles ([1f23a9e](https://github.com/edwardlthompson/continuum-calendar/commit/1f23a9eadad7d5503b9b7aed8df28a3d493c20e7))
-
 
 ### Fixed
 
@@ -82,7 +93,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **security:** bump holiday-generator js-yaml and nanoid ([043dd4f](https://github.com/edwardlthompson/continuum-calendar/commit/043dd4f2537e0999b5e7f8a65b6ebbaf6047f86e))
 * **security:** omit OAuth client secret from production builds ([fdcd285](https://github.com/edwardlthompson/continuum-calendar/commit/fdcd28547408c6c13471f6285240a60bac762437))
 * stabilize Google sign-in and Android event save ([bd40c4d](https://github.com/edwardlthompson/continuum-calendar/commit/bd40c4d79d217fa95f5922e75543600d9a3fb2b0))
-
 
 ### Changed
 
@@ -107,7 +117,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * sync template version files for release PR ([93e11d8](https://github.com/edwardlthompson/continuum-calendar/commit/93e11d8ee27055fb5aaf0e04a4a58c79bc496f0e))
 * sync template version files for release PR ([562ffb5](https://github.com/edwardlthompson/continuum-calendar/commit/562ffb51d8c70aaf4adbc5c6e8261d4723ef5983))
 * sync template version files for release PR ([aa9ddc6](https://github.com/edwardlthompson/continuum-calendar/commit/aa9ddc6da37788d71b7248b05c263cffdbcb9615))
-
 
 ### Documentation
 

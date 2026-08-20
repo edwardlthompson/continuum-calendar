@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import org.fossify.calendar.R
+import org.fossify.calendar.continuum.AgendaEmptyDays
 import org.fossify.calendar.adapters.EventListAdapter
 import org.fossify.calendar.databinding.WidgetConfigListBinding
 import org.fossify.calendar.dialogs.CustomPeriodPickerDialog
@@ -307,6 +308,17 @@ class WidgetListConfigureActivity : SimpleActivity() {
             )
         )
 
-        return listItems
+        val start = DateTime.now().withTime(0, 0, 0, 0)
+        return AgendaEmptyDays.fill(
+            context = this,
+            items = listItems,
+            showEmptyDays = true,
+            rangeStartCode = Formatter.getDayCodeFromTS(start.seconds()),
+            rangeEndCode = Formatter.getDayCodeFromTS(start.plusDays(3).seconds()),
+            todayCode = Formatter.getDayCodeFromTS(start.seconds()),
+            nowTs = DateTime.now().seconds(),
+            openTitle = getString(R.string.continuum_open_day),
+            includeMonthSections = false,
+        )
     }
 }

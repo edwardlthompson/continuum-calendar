@@ -11,7 +11,6 @@
 | `HUMAN` | Human developer | Approvals, credentials, GitHub settings, product decisions |
 | `ADB`   | Human (Android) | Android SDK, emulator/device testing, F-Droid submission   |
 | `AUTO`  | CI/scripts/bots | GitHub Actions, Dependabot, pre-commit, update checker     |
-
 ## Status markers
 
 | Marker | State   | Agent action                                                          |
@@ -19,7 +18,6 @@
 | 🔲     | Open    | Default for new tasks; work or leave queued                           |
 | ✅      | Done    | Replace 🔲 when complete; archive sprint rows to `COMPLETED_TASKS.md` |
 | ❌      | Blocked | Replace 🔲 when blocked; add brief reason after the description       |
-
 **Task format:** `🔲 [OWNER] Description` · done: `✅ [OWNER] Description` · blocked: `❌ [OWNER] Description — reason`
 
 ```bash
@@ -27,6 +25,7 @@ grep '\[AGENT\]' BUILD_PLAN.md
 grep '\[HUMAN\]' BUILD_PLAN.md
 grep '\[ADB\]' BUILD_PLAN.md
 grep '\[AUTO\]' BUILD_PLAN.md
+
 ```
 
 **Agent rule:** Execute all `[AGENT]` **Sequential** items first, then dispatch **Parallel** agents with isolated file scopes. Shared schema/types are Sequential-only.
@@ -49,7 +48,7 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 ### Sprint A1 — Audit 2026-08-11 (HUMAN backlog)
 
-> **A1 AGENT** work archived in COMPLETED_TASKS.md. See ephemeral `CODE_REVIEW.md`.  
+> **A1 AGENT** work archived in COMPLETED_TASKS.md. See ephemeral `CODE_REVIEW.md`.
 > **Paste-ready HUMAN steps (GitHub-only public ship):** [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md)
 
 #### Human & device (after automation)
@@ -96,11 +95,10 @@ grep '\[AUTO\]' BUILD_PLAN.md
 | Desktop rolling week + theme + free slots (prototype) | AGENT | `apps/desktop/**` |
 | Google API setup + architecture docs | AGENT | `docs/GOOGLE_API_SETUP.md`, `docs/architecture/**`, `docs/adr/**` |
 | Mobile fork + widget specs | AGENT | `docs/MOBILE_FOSSIFY_FORK.md`, `docs/ANDROID_WIDGET_SPEC.md`, `apps/mobile/**` |
-
 #### Human & device (after automation)
 
 - 🔲 [HUMAN] Enable Dependabot alerts + private vulnerability reporting
-- 🔲 [HUMAN] `scripts/setup-github-repo.ps1` branch protection
+- ✅ [HUMAN] `scripts/setup-github-repo.ps1` branch protection
 - 🔲 [ADB] Emulator QA after mobile fork lands
 
 ### Sprint CC1 — Google Sync MVP (blocked on OAuth credentials)
@@ -118,7 +116,6 @@ grep '\[AUTO\]' BUILD_PLAN.md
 |------|-------|----------------|
 | Calendar CRUD UI + sync | AGENT | `apps/desktop/src/services/**`, `apps/desktop/src/components/**` |
 | Contacts autocomplete UI | AGENT | `apps/desktop/src/components/attendees/**` |
-
 ### Sprint CC2 — Scheduling parity (desktop ↔ Android)
 
 <!-- agent_count_target: 2 | sequential_lock_step: 1 -->
@@ -142,34 +139,22 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 ## Child Repo Playbook (template)
 
-### Sprint 0 — Template Customization
+> **Sprint 0** archived in COMPLETED_TASKS.md @ `0f02d8d`.
+> **Sprint I1** archived in COMPLETED_TASKS.md @ `0f02d8d`.
 
-#### Sequential
-
-1. ✅ [AGENT] Run `scripts/init-project.ps1` (`-Stack multi`, Continuum Calendar)
-2. 🔲 [AGENT] Run `scripts/setup-github-repo.ps1` (requires `gh` auth with admin)
-3. 🔲 [AUTO] Sprint 0 sign-off (all green on `main`):
-  - `validate-bootstrap.sh --quick`
-  - `feature-gate.sh --stack multi`
-  - `check-github-ci.sh --wait 300` after first push
-  - `check-license-compliance.sh`
-
-#### Parallel (safe after Sequential step 1)
-
-| Task | Owner | Isolated scope |
-|------|-------|----------------|
-| Keep web Golden Path examples healthy | AGENT | `examples/web/**` |
-| Keep android module docs aligned | AGENT | `modules/android/**`, `examples/android/**` |
-
+| Sprint | Complete | Archive |
+|--------|----------|---------|
+| Sprint 0 — Template Customization | 2026-08-20 | `COMPLETED_TASKS.md` |
+| Sprint I1 — Ideas 1–6 | 2026-08-20 | `COMPLETED_TASKS.md` |
 ---
 
 ## Ongoing Maintenance
 
-- 🔲 [HUMAN] Weekly Dependabot / CVE triage (`docs/SECURITY_TRIAGE.md`)
-- 🔲 [HUMAN] Enable GitHub Pages if a public demo is wanted (404 at `/ship` 2026-08-14)
+- ✅ [HUMAN] Weekly Dependabot / CVE triage (`docs/SECURITY_TRIAGE.md`) — 2026-08-20: 0 Critical/High; medium `glib` stays (AUTO row)
+- ✅ [HUMAN] Enable GitHub Pages if a public demo is wanted — https://edwardlthompson.github.io/continuum-calendar/ (2026-08-20)
 - ✅ [HUMAN] Attach desktop installer / Android APK to GitHub Release (v0.22.0: EXE 0.17.3 + APK 1.10.7)
-- 🔲 [AUTO] Triage Dependabot medium `glib` in `apps/desktop/src-tauri/Cargo.lock` (do not bump to 0.20 — GTK4)
+- ✅ [AUTO] Triage Dependabot medium `glib` in `apps/desktop/src-tauri/Cargo.lock` (do not bump to 0.20 — GTK4) — deferred 2026-08-20
 - ✅ [AUTO] Confirm v0.22.0 GitHub Release has SBOMs + product binaries (2026-08-20 `/ship`)
 - ✅ [AUTO] Branch protection requires Template Upgrade Simulation (Windows) (2026-08-20 `/ship`)
-- 🔲 [AUTO] Template update check (`scripts/check-template-updates.ps1`)
+- ✅ [AUTO] Template update check (`scripts/check-template-updates.ps1`) — 2026-08-20 weekly throttle; child at 0.22.0
 - 🔲 [HUMAN] Quarterly ROADMAP review

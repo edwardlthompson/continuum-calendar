@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   defaultContinuumSettings,
   conflictsForEvent,
+  crossSourceConflicts,
   detectConflicts,
   eventOccurrenceKey,
+  formatConflictSources,
   isBirthdayCalendarEntry,
   isContactBirthdayEvent,
   proposeMeetingTimes,
@@ -63,6 +65,13 @@ import { copyFreeSlotsToClipboard } from './utils/freeSlots'
 import { downloadIcsFile } from './services/ics'
 import { importIcsFromUrl, importIcsText, looksLikeIcsFileName } from './services/icsImport'
 import { discoverCalDavCalendars, loadCalDavAccounts, saveCalDavAccounts, type CalDavAccount } from './services/caldav'
+import { syncCalDavEvents } from './services/caldavSync'
+import { refreshDesktopOverlays } from './services/overlaySync'
+import {
+  loadIcsSubscriptions,
+  subscribeIcsUrl,
+  unsubscribeIcs,
+} from './services/icsSubscribe'
 import { createGoogleEvent, deleteGoogleEvent, updateGoogleEvent } from './services/googleCalendar'
 import {
   noteLocalEventsChanged,
@@ -119,6 +128,7 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [settingsQuery, setSettingsQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [hideCrossBanner, setHideCrossBanner] = useState(false)
 
   const settingsMatch = useCallback((...labels: string[]) => {
     const q = settingsQuery.trim().toLowerCase()
@@ -170,6 +180,7 @@ export default function App() {
     })
   }, [events, visibleIds, calendars, settings.showContactBirthdays, settings.useGoogleCalendar])
   const conflicts = useMemo(() => detectConflicts(visibleEvents), [visibleEvents])
+  const crossConflicts = useMemo(() => crossSourceConflicts(visibleEvents), [visibleEvents])
 
   const flash = useCallback((msg: string) => {
     setStatusMsg(msg)
@@ -311,24 +322,26 @@ export default function App() {
   }, [flash, settings.showContactBirthdays])
 
   const runMultiSync = useCallback(async () => {
-    if (!settings.useGoogleCalendar) {
-      setSyncInfo(getSyncStatus())
-      await runLocalEventsPeer({ quiet: true })
-      return { calendars: loadCalendars(), events: loadEvents(), errors: [] as string[] }
-    }
-    const result = await syncAllVisibleGoogleCalendars()
-    const base = result.calendars.length ? result.calendars : loadCalendars()
-    setCalendars(applyBirthdayCalendarVisibility(base, settings.showContactBirthdays))
-    setEvents(result.events.length ? result.events : ensureSeededEvents())
-    setSyncInfo(getSyncStatus())
-    if (result.errors.length) {
-      flash(`Partial sync: ${result.errors[0]}`)
+    const errors: string[] = []
+    if (settings.useGoogleCalendar) {
+      const result = await syncAllVisibleGoogleCalendars()
+      errors.push(...result.errors)
+      if (result.errors.length) flash(`Partial sync: ${result.errors[0]}`)
+      else {
+        const googleCount = result.events.filter((e) => e.source === 'google').length
+        flash(`Google sync · ${googleCount} events`)
+      }
     } else {
-      const googleCount = result.events.filter((e) => e.source === 'google').length
-      flash(`Google sync · ${googleCount} events`)
+      setSyncInfo(getSyncStatus())
     }
     await runLocalEventsPeer({ quiet: true })
-    return result
+    const overlay = await refreshDesktopOverlays()
+    errors.push(...overlay.errors)
+    setCalendars(applyBirthdayCalendarVisibility(overlay.calendars, settings.showContactBirthdays))
+    setEvents(overlay.events.length ? overlay.events : ensureSeededEvents())
+    setSyncInfo(getSyncStatus())
+    if (overlay.errors.length) flash(`Calendar overlay: ${overlay.errors[0]}`)
+    return { calendars: overlay.calendars, events: overlay.events, errors }
   }, [flash, settings.showContactBirthdays, settings.useGoogleCalendar, runLocalEventsPeer])
 
   const onRefresh = useCallback(async () => {
@@ -360,7 +373,9 @@ export default function App() {
         })
         .catch((e) => {
           continuumLogger.error('OAuth callback failed', e)
-          flash(e instanceof Error ? e.message : 'Sign-in failed')
+          const msg = humanizeOAuthFailure(e)
+          flash(msg)
+          window.alert(msg)
         })
     }
   }, [flash, runMultiSync, hydrateSettingsFromDrive])
@@ -869,6 +884,20 @@ export default function App() {
     }
   }
 
+  async function onSubscribeIcs() {
+    const raw = window.prompt('Subscribe to a webcal:// or https://…ics URL (refreshes on each sync)')
+    if (!raw?.trim()) return
+    try {
+      const { events: next, count } = await subscribeIcsUrl(raw.trim())
+      setEvents(next)
+      setCalendars(loadCalendars())
+      flash(`Subscribed · ${count} events (will refresh on sync)`)
+    } catch (e) {
+      continuumLogger.error('ICS subscribe failed', e)
+      flash(e instanceof Error ? e.message : 'Subscribe failed')
+    }
+  }
+
   async function onAddCalDav() {
     const serverUrl = window.prompt('CalDAV server URL', 'https://example.com/remote.php/dav/')
     if (!serverUrl) return
@@ -888,7 +917,9 @@ export default function App() {
       const nextCals = [...calendars, ...discovered]
       setCalendars(nextCals)
       saveCalendars(nextCals)
-      flash('CalDAV account added')
+      const synced = await syncCalDavEvents(account)
+      setEvents(synced)
+      flash(`CalDAV account added · ${synced.filter((e) => e.source === 'caldav').length} events`)
     } catch (e) {
       flash(e instanceof Error ? e.message : 'CalDAV failed')
     }
@@ -931,6 +962,8 @@ export default function App() {
           <button
             type="button"
             className={`rounded px-2 py-1 text-sm ${view === 'agenda' ? 'bg-[var(--cc-accent)] text-white' : 'border border-[var(--cc-border)]'}`}
+            aria-pressed={view === 'agenda'}
+            aria-label="Agenda (event list)"
             onClick={() => setView('agenda')}
           >
             Agenda (event list)
@@ -938,6 +971,8 @@ export default function App() {
           <button
             type="button"
             className={`rounded px-2 py-1 text-sm ${view === 'rolling' ? 'bg-[var(--cc-accent)] text-white' : 'border border-[var(--cc-border)]'}`}
+            aria-pressed={view === 'rolling'}
+            aria-label="Rolling week"
             onClick={() => setView('rolling')}
           >
             Rolling week
@@ -947,6 +982,7 @@ export default function App() {
             className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm disabled:opacity-50"
             disabled={syncing}
             title="Refresh calendars and settings"
+            aria-label="Refresh calendars and settings"
             onClick={() => void onRefresh()}
           >
             {syncing ? 'Refreshing…' : 'Refresh'}
@@ -955,6 +991,8 @@ export default function App() {
             <button
               type="button"
               className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+              aria-label="Menu"
+              aria-haspopup="true"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((o) => !o)}
             >
@@ -1000,7 +1038,17 @@ export default function App() {
                     void onOpenCalendarLink()
                   }}
                 >
-                  Open calendar link…
+                    Open calendar link…
+                </button>
+                <button
+                  type="button"
+                  className="block w-full px-3 py-1.5 text-left text-sm hover:bg-[var(--cc-accent-soft)]"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    void onSubscribeIcs()
+                  }}
+                >
+                  Subscribe to ICS URL…
                 </button>
               </div>
             ) : null}
@@ -1009,6 +1057,7 @@ export default function App() {
             <button
               type="button"
               className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+              aria-label="Sign out of Google"
               onClick={() => void onSignOut()}
             >
               Sign out
@@ -1017,6 +1066,7 @@ export default function App() {
             <button
               type="button"
               className="rounded bg-[var(--cc-accent)] px-2 py-1 text-sm text-white"
+              aria-label="Sign in with Google"
               title={
                 isGoogleConfigured()
                   ? 'Connect your Google Calendar, Contacts, and Tasks'
@@ -1030,6 +1080,8 @@ export default function App() {
           <button
             type="button"
             className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+            aria-label="Settings"
+            aria-pressed={showSettings}
             onClick={() => setShowSettings((s) => !s)}
           >
             Settings
@@ -1056,6 +1108,28 @@ export default function App() {
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col border-l border-[var(--cc-border)] pl-5">
           <main className="min-h-0 min-w-0 flex-1">
+            {crossConflicts.length > 0 && !hideCrossBanner ? (
+              <div
+                className="mb-2 flex items-start justify-between gap-2 rounded-lg border border-amber-400 bg-amber-50 px-3 py-2 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100"
+                role="status"
+              >
+                <p>
+                  {crossConflicts.length} local/peer event(s) overlap Google
+                  {crossConflicts[0]
+                    ? ` — ${formatConflictSources(crossConflicts[0])}`
+                    : ''}
+                  . Amber rows mark the overlap; open an event to reschedule.
+                </p>
+                <button
+                  type="button"
+                  className="shrink-0 rounded px-2 py-0.5 text-xs underline"
+                  aria-label="Dismiss cross-source conflict notice"
+                  onClick={() => setHideCrossBanner(true)}
+                >
+                  Dismiss
+                </button>
+              </div>
+            ) : null}
             {editing ? (
               <EventEditor
                 initial={editing}
@@ -1144,13 +1218,20 @@ export default function App() {
               </p>
             )}
             {!signedIn ? (
-              <button
-                type="button"
-                className="w-full rounded bg-[var(--cc-accent)] px-2 py-1 text-white"
-                onClick={() => void onSignIn()}
-              >
-                Sign in with Google
-              </button>
+              <>
+                <p className="text-xs text-[var(--cc-muted)]">
+                  Google OAuth is in Testing: if sign-in shows “unknown error” or access denied,
+                  add this Gmail as a Test user (Google Cloud → Audience), then try again.
+                </p>
+                <button
+                  type="button"
+                  className="w-full rounded bg-[var(--cc-accent)] px-2 py-1 text-white"
+                  aria-label="Sign in with Google"
+                  onClick={() => void onSignIn()}
+                >
+                  Sign in with Google
+                </button>
+              </>
             ) : null}
             {settingsMatch('Theme', 'appearance', 'dark', 'light') ? (
             <label className="flex items-center justify-between gap-2">
@@ -1428,7 +1509,7 @@ export default function App() {
               />
             </label>
             ) : null}
-            {settingsMatch('Export', 'Import', 'ICS', 'CalDAV', 'settings', 'error log', 'Reset') ? (
+            {settingsMatch('Export', 'Import', 'ICS', 'CalDAV', 'subscribe', 'settings', 'error log', 'Reset') ? (
             <div className="flex flex-col gap-1">
               <button
                 type="button"
@@ -1456,6 +1537,32 @@ export default function App() {
               >
                 Open calendar link…
               </button>
+              <button
+                type="button"
+                className="rounded border border-[var(--cc-border)] px-2 py-1"
+                onClick={() => void onSubscribeIcs()}
+              >
+                Subscribe to ICS URL…
+              </button>
+              {loadIcsSubscriptions().map((sub) => (
+                <div key={sub.id} className="flex items-center justify-between gap-2 text-xs">
+                  <span className="min-w-0 truncate" title={sub.url}>
+                    {sub.displayName}
+                    {sub.lastError ? ` · ${sub.lastError}` : ''}
+                  </span>
+                  <button
+                    type="button"
+                    className="shrink-0 underline"
+                    onClick={() => {
+                      setEvents(unsubscribeIcs(sub.calendarId))
+                      setCalendars(loadCalendars())
+                      flash(`Unsubscribed ${sub.displayName}`)
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
               <button
                 type="button"
                 className="rounded border border-[var(--cc-border)] px-2 py-1"
@@ -1588,7 +1695,7 @@ export default function App() {
               <strong>
                 {conflictPrompt.blockers
                   .slice(0, 3)
-                  .map((e) => e.title || '(No title)')
+                  .map((e) => `${e.title || '(No title)'} (${e.source ?? 'local'})`)
                   .join(', ')}
               </strong>
               {conflictPrompt.blockers.length > 3

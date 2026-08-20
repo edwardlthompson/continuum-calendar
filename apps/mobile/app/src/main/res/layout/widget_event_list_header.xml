@@ -48,6 +48,7 @@
         android:paddingStart="@dimen/medium_margin"
         android:paddingEnd="@dimen/medium_margin"
         android:scaleType="fitCenter"
+        android:contentDescription="@string/accessibility_widget_go_to_today"
         android:src="@drawable/ic_today_vector" />
 
     <ImageView
@@ -60,6 +61,7 @@
         android:paddingStart="@dimen/medium_margin"
         android:paddingEnd="@dimen/medium_margin"
         android:scaleType="fitCenter"
+        android:contentDescription="@string/accessibility_widget_new_event"
         android:src="@drawable/ic_plus_vector" />
 
 </RelativeLayout>

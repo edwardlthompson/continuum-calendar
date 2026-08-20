@@ -217,6 +217,8 @@
     <string name="continuum_peer_sync_connected">Desktop peer sync connected</string>
     <string name="continuum_peer_sync_connected_toast">Peer sync connected — pulling desktop local events…</string>
     <string name="continuum_peer_sync_sign_in_failed">Peer sync sign-in failed: %s</string>
+    <string name="continuum_oauth_testing_mode">Google is in Testing mode. Add this exact Gmail as a Test user on the OAuth consent screen (Audience), wait a minute, then try again.</string>
+    <string name="accessibility_open_day">Open day %s, schedule an event</string>
     <string name="continuum_peer_sync_opening_browser">Opening Google sign-in… complete it, then return here</string>
     <string name="continuum_peer_sync_exchanging_token">Finishing sign-in (needs network)…</string>
     <string name="continuum_peer_sync_required">Local events cannot sync until you tap Continuum → Sync with desktop</string>
@@ -367,6 +369,8 @@
     <string name="accessibility_next_month">Go to next month</string>
     <string name="accessibility_previous_day">Go to previous day</string>
     <string name="accessibility_next_day">Go to next day</string>
+    <string name="accessibility_widget_go_to_today">Go to today</string>
+    <string name="accessibility_widget_new_event">New event</string>
 
     <!-- Permissions -->
     <string name="allow_alarms_reminders">You must allow the app to schedule alarms for reminders to work properly.</string>

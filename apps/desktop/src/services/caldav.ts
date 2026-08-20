@@ -1,5 +1,6 @@
-import type { CalendarEvent, CalendarListEntry } from '@continuum/shared'
+import type { CalendarListEntry } from '@continuum/shared'
 import { logicalCalendarId } from '@continuum/shared'
+import { parseCalDavDisplayName } from './caldavParse'
 
 export interface CalDavAccount {
   id: string
@@ -24,18 +25,19 @@ export function saveCalDavAccounts(accounts: CalDavAccount[]): void {
   localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts))
 }
 
+export function calDavAuthHeader(account: CalDavAccount): string {
+  return `Basic ${btoa(`${account.username}:${account.password}`)}`
+}
+
 /**
- * Minimal CalDAV discovery + sync stub.
- * Full REPORT/multiget can be swapped for `tsdav` once networked; this validates
- * credentials with a PROPFIND and registers calendar entries for the sidebar.
+ * PROPFIND credential check + sidebar entry. Event bodies come from REPORT in caldavSync.
  */
 export async function discoverCalDavCalendars(account: CalDavAccount): Promise<CalendarListEntry[]> {
   const url = account.serverUrl.replace(/\/?$/, '/')
-  const auth = btoa(`${account.username}:${account.password}`)
   const res = await fetch(url, {
     method: 'PROPFIND',
     headers: {
-      Authorization: `Basic ${auth}`,
+      Authorization: calDavAuthHeader(account),
       Depth: '0',
       'Content-Type': 'application/xml',
     },
@@ -44,22 +46,19 @@ export async function discoverCalDavCalendars(account: CalDavAccount): Promise<C
   if (!res.ok && res.status !== 207) {
     throw new Error(`CalDAV PROPFIND failed: ${res.status}`)
   }
+  const xml = await res.text()
   const id = `caldav-${account.id}`
+  const name = account.displayName || parseCalDavDisplayName(xml) || 'CalDAV'
   return [
     {
       id,
       accountId: account.id,
-      displayName: account.displayName || 'CalDAV',
+      displayName: name,
       color: '#2a9d8f',
       visible: true,
-      writable: true,
+      writable: false,
       source: 'caldav',
       logicalId: logicalCalendarId('caldav', id),
     },
   ]
-}
-
-/** Placeholder sync — returns empty until full CalDAV REPORT is wired. */
-export async function syncCalDavEvents(_account: CalDavAccount): Promise<CalendarEvent[]> {
-  return []
 }

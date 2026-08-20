@@ -202,6 +202,14 @@ class EventListAdapter(
             }
 
             (eventItemTitle.layoutParams as ConstraintLayout.LayoutParams).marginStart = startMargin
+            eventItemHolder.contentDescription = if (listEvent.id <= 0L) {
+                activity.getString(
+                    R.string.accessibility_open_day,
+                    Formatter.getDateDayTitle(Formatter.getDayCodeFromTS(listEvent.startTS)),
+                )
+            } else {
+                "${eventItemTitle.text}, ${eventItemTime.text}"
+            }
         }
     }
 

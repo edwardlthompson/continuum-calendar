@@ -14,6 +14,16 @@ object ContinuumConflict {
     /** Warning emoji — avoids missing-glyph issues with the bare ⚠ character on some devices. */
     const val WARNING_EMOJI = "⚠️"
 
+    fun sourceLabel(source: String): String {
+        val s = source.lowercase()
+        return when {
+            s.contains("google") -> "Google"
+            s.contains("caldav") -> "CalDAV"
+            s.contains("ics") -> "ICS"
+            else -> "local"
+        }
+    }
+
     fun titleWithConflictWarning(title: String, conflict: Boolean): String {
         if (!conflict) return title
         val trimmed = title.trimStart()
@@ -148,7 +158,9 @@ object ContinuumConflict {
         onSaveAnyway: () -> Unit,
         onCancel: () -> Unit = {},
     ) {
-        val names = overlaps.take(3).joinToString(", ") { it.title.ifBlank { "(No title)" } }
+        val names = overlaps.take(3).joinToString(", ") { ev ->
+            "${ev.title.ifBlank { "(No title)" }} (${sourceLabel(ev.source)})"
+        }
         val more = if (overlaps.size > 3) " and ${overlaps.size - 3} more" else ""
         val message = buildString {
             append(activity.getString(R.string.continuum_conflict_message, names + more))

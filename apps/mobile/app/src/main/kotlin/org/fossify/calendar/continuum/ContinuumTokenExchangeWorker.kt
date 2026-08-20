@@ -57,8 +57,9 @@ class ContinuumTokenExchangeWorker(
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         applicationContext,
-                        applicationContext.getString(
-                            R.string.continuum_peer_sync_sign_in_failed,
+                        ContinuumOAuthErrors.message(
+                            applicationContext,
+                            "token_exchange",
                             e.message ?: "error",
                         ),
                         Toast.LENGTH_LONG,

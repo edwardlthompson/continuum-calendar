@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "test": "node --experimental-strip-types --test src/auth/oauthErrors.test.ts src/services/caldavParse.test.ts src/services/icsSubscribe.test.ts"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.21",

@@ -10,6 +10,8 @@ Extends Fossify list widget:
 
 - When `show_empty_days_in_agenda` is on (default), blank days render as an **Open** row (title from `R.string.continuum_open_day`).
 - Built via `AgendaEmptyDays.fill` in `EventListWidgetAdapter.onDataSetChanged`.
+- Configure preview uses the same fill so empty days appear as **Open**.
+- TalkBack: Open rows use `accessibility_open_day`; header icons use `accessibility_widget_*`.
 - Optional longest free block today via `FreeSlots.compute` (Phase E).
 
 ## Rolling week widget
@@ -20,7 +22,6 @@ Extends Fossify list widget:
 | Day count | 3 / 5 / 7 | Default 7 |
 | Show free gaps | on/off | Free-slot chips under each day |
 | Theme | Light / Dark / System / Material You | Follows app theme when System |
-
 ## Layout (rolling)
 
 ```text
@@ -30,6 +31,7 @@ Extends Fossify list widget:
 │ ···    │ ···    │ Free   │               │
 │        │        │ 14–16  │               │
 └────────┴────────┴────────┴───── ... ─────┘
+
 ```
 
 ## Data sources

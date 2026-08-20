@@ -3,8 +3,10 @@ import { test } from 'node:test'
 import type { CalendarEvent } from './events.ts'
 import {
   conflictsForEvent,
+  crossSourceConflicts,
   detectConflicts,
   eventOccurrenceKey,
+  formatConflictSources,
   isTimedBusyEvent,
   suggestConflictFreeTime,
 } from './conflicts.ts'
@@ -77,4 +79,13 @@ test('suggestConflictFreeTime returns a non-overlapping work-hours slot', () => 
   })
   assert.ok(slot)
   assert.ok(slot!.start.getTime() >= new Date('2026-08-13T09:00:00').getTime())
+})
+
+test('crossSourceConflicts flags local vs Google only', () => {
+  const local = ev('local-1', '2026-08-20T10:00:00', '2026-08-20T11:00:00', { source: 'local' })
+  const google = ev('g-1', '2026-08-20T10:30:00', '2026-08-20T11:30:00', { source: 'google', calendarId: 'primary' })
+  const sameSrc = ev('g-2', '2026-08-20T10:45:00', '2026-08-20T11:15:00', { source: 'google', calendarId: 'primary' })
+  assert.equal(crossSourceConflicts([local, google]).length, 1)
+  assert.equal(crossSourceConflicts([google, sameSrc]).length, 0)
+  assert.match(formatConflictSources({ a: local, b: google }), /local.*google/)
 })

@@ -2,6 +2,8 @@
 
 > Not used on FOSS bootstrap (`foss-compliance.mdc`). For `--distribution-tier commercial` only.
 
+Continuum Calendar ships the FOSS path by default. The product Android app is [`apps/mobile/`](../../apps/mobile/) (Fossify fork). These patterns apply only if `distribution_tier` is commercial.
+
 ## Allowed (when documented)
 
 - Google Play Services (FCM, Maps) with privacy policy updates
@@ -15,11 +17,10 @@
 | Play Services push | Reliable delivery | Proprietary dependency; F-Droid exclusion |
 | Firebase | Crash/analytics | Closed-source SDK; GDPR disclosures |
 | Play Store | Wider reach | Store fees; review process |
-
 ## FOSS path
 
-Default template uses UnifiedPush and reproducible FOSS builds — see `modules/android/MODULE.md`.
+Default uses UnifiedPush and reproducible FOSS builds — see [MODULE.md](./MODULE.md).
 
 ## ADR
 
-Record SDK choices in `docs/adr/` before adding proprietary dependencies.
+Record SDK choices in [`docs/adr/`](../../docs/adr/) before adding proprietary dependencies.

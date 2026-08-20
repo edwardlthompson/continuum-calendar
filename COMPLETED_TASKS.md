@@ -2,6 +2,23 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint I1 — Ideas 1–6 (2026-08-20)
+
+- ✅ [AGENT] In-app Google Testing-mode guidance (desktop + Android OAuth errors)
+- ✅ [AGENT] Desktop CalDAV REPORT sync for non-Google servers
+- ✅ [AGENT] Peer + Google cross-source conflict UI
+- ✅ [AGENT] Agenda widget Open empty days (preview + TalkBack)
+- ✅ [AGENT] ICS URL subscribe + refresh (not one-shot import)
+- ✅ [AGENT] Desktop / Android accessibility pass (sign-in, Open day, widget chrome)
+
+## Sprint 0 — Template Customization (2026-08-20)
+
+- ✅ [AGENT] Run `scripts/init-project.ps1` (`-Stack multi`, Continuum Calendar)
+- ✅ [AGENT] Run `scripts/setup-github-repo.ps1` (requires `gh` auth with admin)
+- ✅ [AUTO] Sprint 0 sign-off (all green on `main`)
+- ✅ [AGENT] Keep web Golden Path examples healthy
+- ✅ [AGENT] Keep android module docs aligned
+
 ## Sprint A2 — Audit 2026-08-14 (2026-08-14)
 
 - ✅ [AGENT] F-001: Default Android release + desktop production to omit `client_secret` (opt in `CONTINUUM_INCLUDE_CLIENT_SECRET`)
@@ -720,4 +737,3 @@ Post-M19 review: close prompt/read-order gaps and enforce CURSOR_MODES in bootst
 - ✅ [AGENT] Android About parity: DonationsLoader, ReleaseTagFetcher, GoldenPathApp composition root
 - ✅ [AGENT] Opt-in update checks default `off`; About interval UI removed (Settings toggle only)
 - ✅ [AGENT] CI/release: CodeQL java-kotlin, node SBOM + health-check audit
-

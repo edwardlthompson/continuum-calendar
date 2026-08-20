@@ -70,6 +70,9 @@ export {
   isTimedBusyEvent,
   conflictsForEvent,
   suggestConflictFreeTime,
+  isCrossSourceConflict,
+  crossSourceConflicts,
+  formatConflictSources,
 } from './conflicts.js'
 export type { EventConflict, ConflictCandidate } from './conflicts.js'
 export { proposeMeetingTimes } from './proposeTimes.js'

@@ -52,6 +52,11 @@ Recommended cadence: **Monday** (aligned with scheduled security scans and `heal
 - Pre-release: `pre-release-gate.sh` invokes `check-security-triage.sh --strict` (fails on missing/failed Scorecard)
 - SARIF: Scorecard uploads findings to **Security → Code scanning**; triage open items into BUILD_PLAN `[AGENT]` rows or dismiss with rationale in DECISION_LOG.md
 
+### Dependabot (2026-08-20 `/build`)
+
+| Alert | Decision | Rationale |
+|-------|----------|-----------|
+| `glib` medium (`apps/desktop/src-tauri/Cargo.lock`) | Defer | Do not bump to 0.20 — GTK4 desktop stack. Standing AUTO row; re-check when a 0.19.x patch exists. |
 ### SARIF triage (M35 / 2026-08-15)
 
 | Check | Decision | Rationale |

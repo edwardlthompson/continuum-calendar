@@ -9,6 +9,9 @@ import {
 const SIGNIN_SCOPE = GOOGLE_SCOPES.calendar
 import { createPkcePair, randomString } from './pkce'
 import { loadTokens, saveTokens } from './tokenStore'
+import { humanizeOAuthFailure } from './oauthErrors'
+
+export { humanizeOAuthFailure, isTestingModeOAuthError } from './oauthErrors'
 
 const AUTH_STATE_KEY = 'continuum.oauth.state'
 const AUTH_VERIFIER_KEY = 'continuum.oauth.verifier'
@@ -264,35 +267,6 @@ function parseTokenJson(text: string): GoogleTokenJson {
     throw new Error('Token exchange failed: Google returned an empty token')
   }
   return data
-}
-
-export function humanizeOAuthFailure(err: unknown): string {
-  const raw = err instanceof Error ? err.message : String(err)
-  if (/access_denied|verification process|403:access_denied/i.test(raw)) {
-    return (
-      'Google blocked this account. Open Google Cloud → OAuth consent screen and add this ' +
-      'Google address as a test user (or publish the app), then try Sign in again.'
-    )
-  }
-  if (/client_secret is missing/i.test(raw)) {
-    return 'This installer cannot finish Google sign-in. Install Continuum Calendar 0.17.2 from GitHub Releases.'
-  }
-  if (/Failed to fetch|NetworkError|Load failed|error sending request/i.test(raw)) {
-    return 'Continuum could not reach Google to finish sign-in. Check the network and try again.'
-  }
-  if (/unknown error/i.test(raw)) {
-    return (
-      'Google returned an unknown error after the unverified-app warning. Add this Google account as an ' +
-      'OAuth test user, retry in a window without ad blockers, and install Continuum Calendar 0.17.2.'
-    )
-  }
-  if (/redirect_uri_mismatch/i.test(raw)) {
-    return 'Google rejected the sign-in redirect. The OAuth client must be type Desktop app, not Web.'
-  }
-  if (/invalid_grant/i.test(raw)) {
-    return 'The Google sign-in code expired or was reused. Click Sign in with Google again and finish in one try.'
-  }
-  return raw
 }
 
 /**

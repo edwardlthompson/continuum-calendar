@@ -133,6 +133,16 @@ class EventListWidgetAdapter(val context: Context, val intent: Intent) : RemoteV
                 setInt(R.id.event_item_title, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
             }
 
+            val openDay = Formatter.getDateDayTitle(Formatter.getDayCodeFromTS(item.startTS))
+            setContentDescription(
+                R.id.event_item_holder,
+                if (item.id <= 0L) {
+                    context.getString(R.string.accessibility_open_day, openDay)
+                } else {
+                    "${item.title}, $timeText"
+                },
+            )
+
             Intent().apply {
                 putExtra(EVENT_ID, item.id)
                 putExtra(EVENT_OCCURRENCE_TS, item.startTS)

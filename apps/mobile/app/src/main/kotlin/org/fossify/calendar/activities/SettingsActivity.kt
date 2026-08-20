@@ -966,6 +966,10 @@ class SettingsActivity : SimpleActivity() {
                 settingsContinuumPeerSync.text =
                     "${settingsContinuumPeerSync.text}\n${getString(R.string.continuum_peer_sync_need_android_client)}"
             }
+            if (!signedIn) {
+                settingsContinuumPeerSync.text =
+                    "${settingsContinuumPeerSync.text}\n${getString(R.string.continuum_oauth_testing_mode)}"
+            }
         }
         refresh()
         settingsContinuumPeerSyncHolder.setOnClickListener {

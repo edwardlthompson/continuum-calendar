@@ -72,7 +72,7 @@ class ContinuumAuthActivity : Activity() {
             ContinuumDiagnostics.e("OAuth redirect error: $desc")
             Toast.makeText(
                 this,
-                getString(R.string.continuum_peer_sync_sign_in_failed, desc),
+                ContinuumOAuthErrors.message(this, error, desc),
                 Toast.LENGTH_LONG,
             ).show()
             setResult(RESULT_CANCELED)

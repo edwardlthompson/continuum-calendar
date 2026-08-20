@@ -197,6 +197,7 @@ function OpenDayButton({
       type="button"
       className={`w-full rounded-md px-1 text-left text-sm font-medium hover:bg-[var(--cc-accent-soft)] ${pad}`}
       style={{ color: CONTINUUM_OPEN_DAY_COLOR }}
+      aria-label={`Open ${dateKey}, schedule an event`}
       onClick={() => onOpenDay?.(dateKey)}
     >
       Open
@@ -230,6 +231,7 @@ function EventRow({
         className={`flex w-full gap-2 rounded-md px-1 text-left hover:bg-[var(--cc-accent-soft)] ${pad} ${
           conflict ? 'ring-1 ring-amber-400/80 bg-amber-50/50 dark:bg-amber-950/20' : ''
         }`}
+        aria-label={`${displayTitle(ev.title, redactTitles)}, ${formatEventTimeRange(ev.start, ev.end, use24HourFormat, ev.allDay)}${conflict ? ', scheduling conflict' : ''}`}
         onClick={() => onSelectEvent?.(ev)}
       >
         <span

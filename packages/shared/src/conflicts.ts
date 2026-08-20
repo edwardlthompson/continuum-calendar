@@ -74,6 +74,25 @@ export function detectConflicts(events: CalendarEvent[]): EventConflict[] {
   return out
 }
 
+const PEER_OR_OVERLAY = new Set(['local', 'ics_import', 'caldav'])
+
+/** True when one side is Google and the other is local / ICS / CalDAV (two writers). */
+export function isCrossSourceConflict(pair: EventConflict): boolean {
+  const a = pair.a.source ?? 'local'
+  const b = pair.b.source ?? 'local'
+  if (a === b) return false
+  return (a === 'google' && PEER_OR_OVERLAY.has(b)) || (b === 'google' && PEER_OR_OVERLAY.has(a))
+}
+
+export function crossSourceConflicts(events: CalendarEvent[]): EventConflict[] {
+  return detectConflicts(events).filter(isCrossSourceConflict)
+}
+
+export function formatConflictSources(pair: EventConflict): string {
+  const label = (e: CalendarEvent) => `${e.title || '(No title)'} (${e.source ?? 'local'})`
+  return `${label(pair.a)} ↔ ${label(pair.b)}`
+}
+
 /** Events that overlap a candidate (excludes the candidate's own id when editing). */
 export function conflictsForEvent(
   candidate: ConflictCandidate,

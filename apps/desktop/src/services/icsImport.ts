@@ -34,12 +34,18 @@ export function importIcsText(text: string): { events: CalendarEvent[]; count: n
   return { events, count: imported.length }
 }
 
-/** Map webcal → https and fetch ICS with timeout + size cap. */
-export async function fetchIcsFromUrl(rawUrl: string): Promise<string> {
+/** Map webcal → https. */
+export function normalizeIcsUrl(rawUrl: string): string {
   let url = rawUrl.trim()
   if (url.startsWith('webcal://')) url = `https://${url.slice('webcal://'.length)}`
   else if (url.startsWith('webcals://')) url = `https://${url.slice('webcals://'.length)}`
   if (!/^https?:\/\//i.test(url)) throw new Error('URL must be http(s) or webcal')
+  return url
+}
+
+/** Map webcal → https and fetch ICS with timeout + size cap. */
+export async function fetchIcsFromUrl(rawUrl: string): Promise<string> {
+  const url = normalizeIcsUrl(rawUrl)
 
   const ctrl = new AbortController()
   const timer = window.setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS)

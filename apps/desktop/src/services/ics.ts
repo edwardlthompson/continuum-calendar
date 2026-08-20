@@ -1,4 +1,4 @@
-import type { CalendarEvent } from '@continuum/shared'
+import type { CalendarEvent, CalendarSource } from '@continuum/shared'
 
 function formatIcsDate(iso: string, allDay?: boolean): string {
   if (allDay) return iso.slice(0, 10).replace(/-/g, '')
@@ -31,7 +31,11 @@ export function eventsToIcs(events: CalendarEvent[], calName = 'Continuum'): str
   return lines.join('\r\n')
 }
 
-export function parseIcs(ics: string, calendarId = 'ics-import'): CalendarEvent[] {
+export function parseIcs(
+  ics: string,
+  calendarId = 'ics-import',
+  opts?: { source?: CalendarSource; readOnly?: boolean },
+): CalendarEvent[] {
   const events: CalendarEvent[] = []
   const blocks = ics.split('BEGIN:VEVENT').slice(1)
   let i = 0
@@ -55,14 +59,14 @@ export function parseIcs(ics: string, calendarId = 'ics-import'): CalendarEvent[
     events.push({
       id: get('UID') ?? `ics-${Date.now()}-${i++}`,
       calendarId,
-      source: 'ics_import',
+      source: opts?.source ?? 'ics_import',
       title: summary,
       description: get('DESCRIPTION')?.replace(/\\n/g, '\n'),
       location: get('LOCATION'),
       start: toIso(dtStart),
       end: toIso(dtEnd),
       allDay,
-      readOnly: true,
+      readOnly: opts?.readOnly ?? true,
     })
   }
   return events
