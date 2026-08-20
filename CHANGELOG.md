@@ -8,9 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* **android:** request the display's fastest same-resolution mode and mark fling surfaces high-refresh
+
 ### Changed
 
 * sync agent-project-bootstrap standards to v0.21.0
+* restore composition-root `App.tsx` exemption in `check-file-limits.sh`
 
 ## [0.19.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.18.3...v0.19.0) (2026-08-17)
 
