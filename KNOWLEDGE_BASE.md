@@ -196,3 +196,21 @@
 | **Cause** | Manifest was set to 0.18.3 in the prep commit; RP then computed the next MINOR from that baseline |
 | **Fix** | Ship the published tag (`v0.19.0`). Attach current APK/EXE to that release |
 | **Prevention** | Do not write a future template version into `.release-please-manifest.json` before RP has tagged it |
+
+### KB-031 — Template `check-file-limits.sh` drops the App.tsx exemption
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | After copying Canon `check-file-limits.sh` from bootstrap 0.21.0, `/ship` feature-gate fails: `App.tsx` 1668 lines |
+| **Cause** | Upstream scan includes all `*.tsx`; Continuum already exempted composition roots (DECISION 2026-08-11) |
+| **Fix** | Restore `! -name App.tsx` / `main.tsx` exclusions; keep the 0.21.0 `scripts/lib` 150-line check |
+| **Prevention** | When cherry-picking Canon `check-file-limits.sh`, re-apply the composition-root exemption |
+
+### KB-032 — Release Please omits `## [Unreleased]` after fold
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Post-merge `check-changelog-unreleased.sh` fails: Unreleased is not the first heading |
+| **Cause** | RP writes `## [0.22.0]` and does not restore an empty Unreleased section |
+| **Fix** | Add an empty `## [Unreleased]` above the new version heading immediately after merge |
+| **Prevention** | After every RP merge, restore Unreleased before other post-release docs commits |

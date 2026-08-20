@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — /ship published v0.22.0
+- **Status:** Accepted
+- **Context:** Template sync set the RP manifest to 0.21.0; `/ship` added Android high-refresh and merged RP #12.
+- **Decision:** Treat **v0.22.0** as the shipped GitHub tag. Attach desktop 0.17.3 EXE and Android 1.10.7 APK (includes high-refresh). Enable Windows upgrade-sim as a required check.
+- **Alternatives considered:** Leave branch protection unchanged (rejected — new verify-branch-protection gate requires the Windows job).
+- **Consequences:** Compare links mention v0.21.0 without that tag. Next template bump should not pre-write the RP manifest.
+
 ### 2026-08-20 — Sync child repo to agent-project-bootstrap v0.21.0
 - **Status:** Accepted
 - **Context:** Child was on template 0.19.0; upstream HEAD is v0.21.0 (first-run backlog, Windows upgrade-sim, Unreleased fold, doc-link/env gates).
