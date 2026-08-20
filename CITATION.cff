@@ -7,8 +7,8 @@ authors:
 repository-code: https://github.com/edwardlthompson/continuum-calendar
 url: https://github.com/edwardlthompson/continuum-calendar
 abstract: >-
-  FOSS calendar with rolling week views, explicit empty days, optional
-  Google Calendar sync, and Android homescreen widgets.
+  FOSS calendar with rolling week views, explicit empty days, optional Google
+  Calendar sync, and Android homescreen widgets.
 keywords:
   - foss
   - calendar
@@ -16,5 +16,5 @@ keywords:
   - android
   - google-calendar
 license: MIT
-version: 0.21.0
-date-released: 2026-08-20
+version: 0.22.0
+date-released: 2026-08-20T00:00:00.000Z

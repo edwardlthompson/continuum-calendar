@@ -6,6 +6,65 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.21.0...v0.22.0) (2026-08-20)
+
+
+### Added
+
+* **android:** add Settings choices for long event titles ([1f23a9e](https://github.com/edwardlthompson/continuum-calendar/commit/1f23a9eadad7d5503b9b7aed8df28a3d493c20e7))
+* **android:** request high-refresh display mode for flings ([9d181a9](https://github.com/edwardlthompson/continuum-calendar/commit/9d181a9ed215f5dc3d8ff359d09afc2cc40367ea))
+
+
+### Fixed
+
+* **calendar:** apply all-day conflict rule on every surface ([6f0ed23](https://github.com/edwardlthompson/continuum-calendar/commit/6f0ed23cc73a046b5373f40c0c890519a13760ae))
+* **desktop:** include Desktop OAuth secret in release EXE ([8cabcf6](https://github.com/edwardlthompson/continuum-calendar/commit/8cabcf644eb4845e6d3f55d8591765fb83c048aa))
+* **security:** bump holiday-generator js-yaml and nanoid ([043dd4f](https://github.com/edwardlthompson/continuum-calendar/commit/043dd4f2537e0999b5e7f8a65b6ebbaf6047f86e))
+* **security:** omit OAuth client secret from production builds ([fdcd285](https://github.com/edwardlthompson/continuum-calendar/commit/fdcd28547408c6c13471f6285240a60bac762437))
+* stabilize Google sign-in and Android event save ([bd40c4d](https://github.com/edwardlthompson/continuum-calendar/commit/bd40c4d79d217fa95f5922e75543600d9a3fb2b0))
+
+
+### Changed
+
+* **assets:** compress brand PNGs under 500KB hygiene budget ([0e11b69](https://github.com/edwardlthompson/continuum-calendar/commit/0e11b69598602309c7b1df2a3647da686aab4a16))
+* **deps-dev:** Bump postcss from 8.5.21 to 8.5.26 in /examples/web ([#8](https://github.com/edwardlthompson/continuum-calendar/issues/8)) ([629414e](https://github.com/edwardlthompson/continuum-calendar/commit/629414ead82c6226f84136ab70fc833cf39e0a80))
+* **deps:** Bump the android-dependencies group across 1 directory with 2 updates ([#2](https://github.com/edwardlthompson/continuum-calendar/issues/2)) ([03b97e8](https://github.com/edwardlthompson/continuum-calendar/commit/03b97e86e1f62adc5c3524956bd2057720e0e64b))
+* **deps:** Bump the node-dependencies group ([#1](https://github.com/edwardlthompson/continuum-calendar/issues/1)) ([78c1eba](https://github.com/edwardlthompson/continuum-calendar/commit/78c1ebaa72168270dfee2d0508d607192f30f5d5))
+* **deps:** Bump the node-dependencies group ([#13](https://github.com/edwardlthompson/continuum-calendar/issues/13)) ([b001242](https://github.com/edwardlthompson/continuum-calendar/commit/b0012429284adc78a7fea85c3bcc4ee84de822c2))
+* **main:** release 0.16.1 ([265dd26](https://github.com/edwardlthompson/continuum-calendar/commit/265dd26d9dc1bcc22b97c988b800376636889915))
+* **main:** release 0.16.1 ([673d01e](https://github.com/edwardlthompson/continuum-calendar/commit/673d01e26f8077116366b88ac4d63d8b639ee151))
+* **main:** release 0.16.2 ([1df088a](https://github.com/edwardlthompson/continuum-calendar/commit/1df088a832c153e60016569589e8a79c89a8271b))
+* **main:** release 0.16.2 ([53241d5](https://github.com/edwardlthompson/continuum-calendar/commit/53241d57c94edda10bb854260bc909c2d3fff52a))
+* **main:** release 0.17.0 ([05c1465](https://github.com/edwardlthompson/continuum-calendar/commit/05c1465f5aedc5c4a9f6a8e6f5dcc003f8d22b49))
+* **main:** release 0.17.0 ([ac6ea33](https://github.com/edwardlthompson/continuum-calendar/commit/ac6ea336e6af5620cc2a5cbc0a9a4b3a606a5595))
+* **main:** release 0.17.1 ([dc667de](https://github.com/edwardlthompson/continuum-calendar/commit/dc667de8d5d7031da66bb01770a6ba95a6fc1c19))
+* **main:** release 0.17.1 ([f1fb4bb](https://github.com/edwardlthompson/continuum-calendar/commit/f1fb4bb9102c2b2ca9c5b1f9c88f8cf404fbb975))
+* **main:** release 0.19.0 ([50ef80b](https://github.com/edwardlthompson/continuum-calendar/commit/50ef80b1305efafd72ccab3cc98cb1eadb9f01ec))
+* **main:** release 0.19.0 ([440aaea](https://github.com/edwardlthompson/continuum-calendar/commit/440aaeada687ef491df39cf63967a51c00e8787f))
+* **release:** bump Android 1.10.5 and desktop 0.17.0 ([0565719](https://github.com/edwardlthompson/continuum-calendar/commit/05657192735945136ec171aea4cc876913b970a6))
+* **release:** initial Continuum Calendar public tree ([f1f09ca](https://github.com/edwardlthompson/continuum-calendar/commit/f1f09caee0381f4d01270c539486b0416652f222))
+* **release:** prepare v0.16.2 release ([ae16328](https://github.com/edwardlthompson/continuum-calendar/commit/ae16328d0093fb43431cc80b17ff9ff802deb503))
+* **release:** prepare v0.16.3 release ([9531ebf](https://github.com/edwardlthompson/continuum-calendar/commit/9531ebfbac6a2ddc1682e79e01992f8013aa5400))
+* **release:** prepare v0.18.3 release ([69ed5cd](https://github.com/edwardlthompson/continuum-calendar/commit/69ed5cd6f14a1c5bea8975bfdb2aa141964e6af5))
+* **release:** prepare v0.22.0 release ([268b4ae](https://github.com/edwardlthompson/continuum-calendar/commit/268b4ae9e106796d96197ceeb46ea3ea82639293))
+* **release:** sync template version files to 0.16.1 ([ac5255f](https://github.com/edwardlthompson/continuum-calendar/commit/ac5255f40a250fcbac31141cf46b903437c03ab9))
+* sync template version files for release PR ([fcf792e](https://github.com/edwardlthompson/continuum-calendar/commit/fcf792e77184dc4420e00a374804b2067303d77d))
+* sync template version files for release PR ([93e11d8](https://github.com/edwardlthompson/continuum-calendar/commit/93e11d8ee27055fb5aaf0e04a4a58c79bc496f0e))
+* sync template version files for release PR ([562ffb5](https://github.com/edwardlthompson/continuum-calendar/commit/562ffb51d8c70aaf4adbc5c6e8261d4723ef5983))
+* sync template version files for release PR ([aa9ddc6](https://github.com/edwardlthompson/continuum-calendar/commit/aa9ddc6da37788d71b7248b05c263cffdbcb9615))
+* **template:** sync agent-project-bootstrap v0.21.0 ([9611fc6](https://github.com/edwardlthompson/continuum-calendar/commit/9611fc64704b3ad3460185a64f9b4f77973ede03))
+
+
+### Documentation
+
+* archive Sprint A2 AGENT rows after audit ([6c33f34](https://github.com/edwardlthompson/continuum-calendar/commit/6c33f34e8276b38030e35c44cf5b0294df0e0107))
+* point agent memory at v0.17.0 ([b11cf28](https://github.com/edwardlthompson/continuum-calendar/commit/b11cf286145ebc4234824ff6f1b7c8b7d07f26cd))
+* record ship learnings and public continuum-calendar home ([ac118a6](https://github.com/edwardlthompson/continuum-calendar/commit/ac118a6c7ccf149b5ce50fd7684230737b2a968f))
+* record v0.16.2 ship regressions ([1171e1e](https://github.com/edwardlthompson/continuum-calendar/commit/1171e1ebba018b57d20b283aba1e1eb87c098d9c))
+* record v0.17.0 ship regressions ([a63f88e](https://github.com/edwardlthompson/continuum-calendar/commit/a63f88e0d1669f8be7cdfa06833f4441e3b8e60b))
+* record v0.17.1 ship regressions ([c97e6fc](https://github.com/edwardlthompson/continuum-calendar/commit/c97e6fcb1493a1d455e6ed48c87e7cb9bd448db2))
+* record v0.19.0 ship regressions ([8a01728](https://github.com/edwardlthompson/continuum-calendar/commit/8a017282437970cf78a892b74183a92bd6889950))
+
 ## [Unreleased]
 
 ### Added
