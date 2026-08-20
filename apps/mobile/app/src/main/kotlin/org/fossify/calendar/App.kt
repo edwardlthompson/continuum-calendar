@@ -3,6 +3,7 @@ package org.fossify.calendar
 import android.widget.Toast
 import org.fossify.calendar.continuum.ContinuumDiagnostics
 import org.fossify.calendar.continuum.ContinuumSyncWorker
+import org.fossify.calendar.continuum.HighRefreshDisplay
 import org.fossify.calendar.extensions.hasDummyAlarm
 import org.fossify.calendar.jobs.AppStartupWorker
 import org.fossify.commons.FossifyApp
@@ -16,6 +17,7 @@ class App : FossifyApp() {
         // Commons anti-repackaging (ic_camera_vector probe) can false-positive; skip the scare dialog.
         baseConfig.appSideloadingStatus = SIDELOADING_FALSE
         ContinuumDiagnostics.install(this)
+        HighRefreshDisplay.install(this)
         ContinuumDiagnostics.lastCrashSummary(this)?.let { summary ->
             ContinuumDiagnostics.e("Previous crash detected:\n$summary")
             Toast.makeText(

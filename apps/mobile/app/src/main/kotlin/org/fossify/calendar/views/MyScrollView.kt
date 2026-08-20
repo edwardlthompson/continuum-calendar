@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.ScrollView
+import org.fossify.calendar.continuum.HighRefreshDisplay
 
 class MyScrollView : ScrollView {
     var isScrollable = true
@@ -13,6 +14,10 @@ class MyScrollView : ScrollView {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
+
+    init {
+        HighRefreshDisplay.markHighRefresh(this)
+    }
 
     private var scrollViewListener: ScrollViewListener? = null
 
