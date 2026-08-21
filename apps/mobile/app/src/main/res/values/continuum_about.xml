@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_donate">Donate via Venmo</string>
+    <string name="about_not_now">Not now</string>
+    <string name="about_install">Install</string>
+    <string name="about_donate_nudge_message">You just got a new Continuum build. Development is still going. If the app helps you, you can support it on Venmo. This is optional and will not appear again until the next update.</string>
+    <string name="about_update_message">Continuum Calendar %1$s is on GitHub. Install it when you are ready.</string>
+</resources>

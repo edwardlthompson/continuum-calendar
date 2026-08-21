@@ -78,6 +78,7 @@ import org.fossify.calendar.helpers.YEAR
 import org.fossify.calendar.helpers.YEARLY_VIEW
 import org.fossify.calendar.helpers.YEAR_TO_OPEN
 import org.fossify.calendar.continuum.ContinuumAboutActivity
+import org.fossify.calendar.continuum.ContinuumAppUpdates
 import org.fossify.calendar.continuum.ContinuumDiagnostics
 import org.fossify.calendar.continuum.ContinuumGoogleAuth
 import org.fossify.calendar.continuum.ContinuumHttp
@@ -195,6 +196,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         )
 
         checkWhatsNewDialog()
+        ContinuumAppUpdates.onLaunch(this)
         binding.calendarFab.beVisibleIf(config.storedView != YEARLY_VIEW && config.storedView != WEEKLY_VIEW)
         binding.calendarFab.setOnClickListener {
             if (config.allowCreatingTasks) {
@@ -1457,7 +1459,6 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             licenseMask = licenses,
             versionName = org.fossify.calendar.BuildConfig.VERSION_NAME,
             faqItems = faqItems,
-            showFAQBeforeMail = true
         )
     }
 

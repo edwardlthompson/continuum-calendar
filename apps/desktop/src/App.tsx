@@ -83,6 +83,11 @@ import {
 } from './services/localEventsSync'
 import { continuumLogger } from './diagnostics/continuumLogger'
 import { newEventDefaults } from './utils/defaultCalendar'
+import { VENMO_DONATE_URL } from './about/donate'
+import { openExternal } from './about/openExternal'
+import { decideLaunchPrompt, type LaunchPrompt } from './about/runAppUpdates'
+import { markUpdateChecked, markVersionSeen } from './about/updatePrefs'
+import { DonateNudgeDialog, UpdateAvailableDialog } from './components/AppUpdateDialogs'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 type MainView = 'rolling' | 'agenda'
@@ -129,6 +134,8 @@ export default function App() {
   const [settingsQuery, setSettingsQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [hideCrossBanner, setHideCrossBanner] = useState(false)
+  const [launchPrompt, setLaunchPrompt] = useState<LaunchPrompt | null>(null)
+  const installedVersionRef = useRef('0.17.3')
 
   const settingsMatch = useCallback((...labels: string[]) => {
     const q = settingsQuery.trim().toLowerCase()
@@ -198,6 +205,27 @@ export default function App() {
       continuumLogger.error('Startup crash notice', crash)
     }
   }, [flash])
+
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      let version = '0.17.3'
+      try {
+        if (isTauri()) {
+          const { getVersion } = await import('@tauri-apps/api/app')
+          version = await getVersion()
+        }
+      } catch {
+        /* Vite fallback */
+      }
+      installedVersionRef.current = version
+      const prompt = await decideLaunchPrompt(version)
+      if (!cancelled) setLaunchPrompt(prompt)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const applySettings = useCallback(
     (next: ContinuumSettings, toast?: string) => {
@@ -1050,6 +1078,16 @@ export default function App() {
                 >
                   Subscribe to ICS URL…
                 </button>
+                <button
+                  type="button"
+                  className="block w-full px-3 py-1.5 text-left text-sm hover:bg-[var(--cc-accent-soft)]"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    void openExternal(VENMO_DONATE_URL)
+                  }}
+                >
+                  Donate via Venmo
+                </button>
               </div>
             ) : null}
           </div>
@@ -1636,6 +1674,35 @@ export default function App() {
         >
           +
         </button>
+      ) : null}
+
+      {launchPrompt?.kind === 'update' ? (
+        <UpdateAvailableDialog
+          version={launchPrompt.version}
+          onLater={() => {
+            markUpdateChecked(Date.now(), launchPrompt.version)
+            setLaunchPrompt(null)
+          }}
+          onInstall={() => {
+            markUpdateChecked(Date.now(), launchPrompt.version)
+            void openExternal(launchPrompt.url)
+            setLaunchPrompt(null)
+          }}
+        />
+      ) : null}
+
+      {launchPrompt?.kind === 'donate' ? (
+        <DonateNudgeDialog
+          onLater={() => {
+            markVersionSeen(installedVersionRef.current)
+            setLaunchPrompt(null)
+          }}
+          onDonate={() => {
+            markVersionSeen(installedVersionRef.current)
+            void openExternal(VENMO_DONATE_URL)
+            setLaunchPrompt(null)
+          }}
+        />
       ) : null}
 
       {deletePrompt ? (

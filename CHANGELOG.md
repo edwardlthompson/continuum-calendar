@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* **desktop:** Menu item to donate via Venmo
+* **desktop / android:** daily GitHub Release check for a newer product installer (EXE / FOSS APK), with an optional Install prompt
+* **desktop / android:** one optional Venmo note after a version change — not on the update prompt
+
+### Changed
+
+* **android:** About replaces Fossify email with a Venmo donate link
+
 ## [0.22.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.0...v0.22.1) (2026-08-20)
 
 ### Added
