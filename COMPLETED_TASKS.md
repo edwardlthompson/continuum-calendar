@@ -2,6 +2,12 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## /ship v0.23.0 (2026-08-21)
+
+- ✅ [AUTO] Release Please #16 published tag v0.23.0 (feat about donate/updates)
+- ✅ [AGENT] Restore leading Unreleased and fold leftover notes into 0.23.0 (KB-032)
+- ✅ [HUMAN] Copy desktop 0.17.3 EXE + Android 1.10.7 APK onto the v0.23.0 GitHub Release
+
 ## /ship v0.22.1 (2026-08-20)
 
 - ✅ [AUTO] Release Please #14 published tag v0.22.1 (SBOMs via Release workflow)

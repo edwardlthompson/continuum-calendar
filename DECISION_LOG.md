@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-21 — /ship published v0.23.0
+- **Status:** Accepted
+- **Context:** Donate + daily GitHub update checks landed as `feat(about)` (KB-033). Release Please #16 tagged **v0.23.0**.
+- **Decision:** Treat **v0.23.0** as the shipped GitHub tag. Fold leftover Unreleased bullets into `## [0.23.0]`, restore a leading empty Unreleased, and copy desktop 0.17.3 EXE + Android 1.10.7 APK from v0.22.1 (product versions unchanged).
+- **Alternatives considered:** Another `chore(release)` prep commit (rejected — last ship became a patch). Rebuild binaries for a template-only tag (rejected — no product version bump).
+- **Consequences:** In-app update prompts wait for a newer EXE/APK filename. Donate reminder appears once after a future product version change.
+
 ### 2026-08-20 — /ship published v0.22.1
 - **Status:** Accepted
 - **Context:** `/push` used `chore(release): prepare v0.23.0`. Release Please #14 treated that as a patch and tagged **v0.22.1**. The I1 feature bullets stayed under Unreleased below the new version heading.

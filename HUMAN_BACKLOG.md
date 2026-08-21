@@ -4,4 +4,4 @@
 
 | Deferred | Sprint | Owner | Task | Reason |
 |----------|--------|-------|------|--------|
-| 2026-08-20 | Ongoing Maintenance | HUMAN | Quarterly ROADMAP review | Catalog no-match; ROADMAP still lists Phase 0-2 as current. Human should refresh phases vs shipped v0.22.1. |
+| 2026-08-20 | Ongoing Maintenance | HUMAN | Quarterly ROADMAP review | Catalog no-match; ROADMAP still lists Phase 0-2 as current. Human should refresh phases vs shipped v0.23.0. |

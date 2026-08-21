@@ -6,22 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.23.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.1...v0.23.0) (2026-08-21)
+## [Unreleased]
 
+## [0.23.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.1...v0.23.0) (2026-08-21)
 
 ### Added
 
 * **about:** add Venmo donate and daily GitHub update checks ([4b81560](https://github.com/edwardlthompson/continuum-calendar/commit/4b8156032bac2dfb243ef0692a787941d2a0fc53))
-
-
-### Documentation
-
-* **changelog:** restore Unreleased and fold I1 notes into 0.22.1 ([2aa4a32](https://github.com/edwardlthompson/continuum-calendar/commit/2aa4a32a9c2b2ff827f69867cfa0f9bd887abb99))
-
-## [Unreleased]
-
-### Added
-
 * **desktop:** Menu item to donate via Venmo
 * **desktop / android:** daily GitHub Release check for a newer product installer (EXE / FOSS APK), with an optional Install prompt
 * **desktop / android:** one optional Venmo note after a version change — not on the update prompt
@@ -29,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * **android:** About replaces Fossify email with a Venmo donate link
+
+### Documentation
+
+* **changelog:** restore Unreleased and fold I1 notes into 0.22.1 ([2aa4a32](https://github.com/edwardlthompson/continuum-calendar/commit/2aa4a32a9c2b2ff827f69867cfa0f9bd887abb99))
 
 ## [0.22.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.0...v0.22.1) (2026-08-20)
 
