@@ -224,3 +224,12 @@
 | **Fix** | Accept the published patch tag; fold real feature bullets into that version in CHANGELOG + `gh release edit` |
 | **Prevention** | Land `feat:` commits before the prep commit when a minor is intended; do not name a version RP has not computed |
 
+### KB-034 — Desktop WebView freeze after HMR
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `tauri:dev` window stops accepting clicks after a Year-view or recurrence edit |
+| **Cause** | Vite failed to resolve `@fullcalendar/multimonth` (workspace install not hoisted) and `.cc-splash` covered the page with `pointer-events` |
+| **Fix** | Install the plugin from the repo root (`-w @continuum/desktop`); set splash `pointer-events: none` |
+| **Prevention** | Add new FullCalendar plugins at the workspace root; keep the splash non-interactive |
+

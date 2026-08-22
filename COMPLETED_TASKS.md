@@ -7,7 +7,7 @@
 - ✅ [AGENT] Desktop editor parity, tray remaining-today, close-to-tray, Start with Windows (`185f81e`)
 - ✅ [AUTO] Release Please #17 published **v0.24.0**
 - ✅ [AGENT] Restore leading Unreleased and fold leftover notes into 0.24.0 (KB-032)
-- 🔲 [HUMAN] Copy desktop 0.17.3 EXE + Android 1.10.7 APK onto the v0.24.0 GitHub Release
+- ✅ [HUMAN] Copy desktop 0.17.3 EXE + Android 1.10.7 APK onto the v0.24.0 GitHub Release
 
 ## Sprint CC4 — Ideas 1–8 + today badge (2026-08-21)
 
