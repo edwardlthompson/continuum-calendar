@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-22 — /ship published v0.25.0
+- **Status:** Accepted
+- **Context:** Expired Google sign-in recovery, Calendar-only Testing-mode OAuth, and Android `invalid_grant` token-clear landed as `feat(desktop)` (KB-033). Release Please #19 tagged **v0.25.0**.
+- **Decision:** Treat **v0.25.0** as the shipped GitHub tag. Fold leftover Unreleased bullets into `## [0.25.0]`, restore a leading empty Unreleased, and copy desktop 0.17.3 EXE + Android 1.10.7 APK from v0.24.0 (product versions unchanged).
+- **Alternatives considered:** Request Drive App Data on desktop sign-in (rejected — KB-028 / Google “something went wrong”). `chore(release)` naming a version (rejected — KB-033).
+- **Consequences:** In-app update prompts still wait for a newer EXE/APK filename. Phone peer Drive sync still needs HUMAN OAuth Testing/publish.
+
 ### 2026-08-22 — /ship published v0.24.0
 - **Status:** Accepted
 - **Context:** Desktop editor, views, tray badge, close-to-tray, and Start with Windows landed as `feat(desktop)` (KB-033). Release Please #17 tagged **v0.24.0**.

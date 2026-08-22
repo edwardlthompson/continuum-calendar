@@ -177,9 +177,9 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 - ✅ [HUMAN] Weekly Dependabot / CVE triage (`docs/SECURITY_TRIAGE.md`) — 2026-08-20: 0 Critical/High; medium `glib` stays (AUTO row)
 - ✅ [HUMAN] Enable GitHub Pages if a public demo is wanted — https://edwardlthompson.github.io/continuum-calendar/ (2026-08-20)
-- ✅ [HUMAN] Attach desktop installer / Android APK to GitHub Release (v0.24.0: EXE 0.17.3 + APK 1.10.7 copied from v0.23.0)
+- ✅ [HUMAN] Attach desktop installer / Android APK to GitHub Release (v0.25.0: EXE 0.17.3 + APK 1.10.7 copied from v0.24.0)
 - ✅ [AUTO] Triage Dependabot medium `glib` in `apps/desktop/src-tauri/Cargo.lock` (do not bump to 0.20 — GTK4) — deferred 2026-08-20
-- ✅ [AUTO] Confirm v0.24.0 GitHub Release has SBOMs + product binaries (2026-08-22 `/ship`)
+- ✅ [AUTO] Confirm v0.25.0 GitHub Release has SBOMs + product binaries (2026-08-22 `/ship`)
 - ✅ [AUTO] Branch protection requires Template Upgrade Simulation (Windows) (2026-08-20 `/ship`)
 - ✅ [AUTO] Template update check (`scripts/check-template-updates.ps1`) — 2026-08-21 weekly throttle; child at 0.23.0
 - 🔲 [HUMAN] Quarterly ROADMAP review

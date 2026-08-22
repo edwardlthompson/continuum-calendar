@@ -2,6 +2,13 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## /ship v0.25.0 (2026-08-22)
+
+- ✅ [AGENT] Desktop expired-token banner + Calendar-only OAuth + Android invalid_grant clear (`c105ca2`)
+- ✅ [AUTO] Release Please #19 published **v0.25.0**
+- ✅ [AGENT] Restore leading Unreleased and fold leftover notes into 0.25.0 (KB-032)
+- ✅ [HUMAN] Copy desktop 0.17.3 EXE + Android 1.10.7 APK onto the v0.25.0 GitHub Release
+
 ## Sprint A4 — Audit 2026-08-22 pass 2 (2026-08-22)
 
 - ✅ [AGENT] F-005: Record pass-2 audit; revert `.cursor/*.json` timestamp churn

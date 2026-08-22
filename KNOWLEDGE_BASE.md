@@ -211,6 +211,7 @@
 | **Cause** | RP writes `## [0.22.0]` and does not restore an empty Unreleased section |
 | **Fix** | Add an empty `## [Unreleased]` above the new version heading immediately after merge |
 | **Prevention** | After every RP merge, restore Unreleased *first* and move leftover Added/Changed bullets into the new version section before other post-release docs |
+| **Last seen** | v0.25.0 (2026-08-22) — Release Please #19 left leftover Added bullets under a second Unreleased heading |
 ### KB-033 — `chore(release)` prep commit becomes a patch
 
 | Field | Detail |

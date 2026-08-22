@@ -6,27 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.25.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.24.0...v0.25.0) (2026-08-22)
+## [Unreleased]
 
+## [0.25.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.24.0...v0.25.0) (2026-08-22)
 
 ### Added
 
 * **desktop:** recover expired Google sign-in without losing edits ([c105ca2](https://github.com/edwardlthompson/continuum-calendar/commit/c105ca267ffa2f6129b3dc20aa569eef31cbc20d))
-
+* **desktop:** expired Google sign-in shows Sign in again, a banner, and an OS notification; local edits stay queued
+* **desktop:** Sign in / Sign in again opens Google in the system browser instead of a Test-users confirm that swallowed OK
+* **desktop:** missing Google event ids create on Calendar instead of 404-to-local; Drive-only phone sync is not requested during Testing-mode sign-in (KB-028)
+* **android:** expired Continuum Google API refresh tokens are cleared so peer-sync polling stops flooding logcat
 
 ### Documentation
 
 * **changelog:** restore Unreleased and fold notes into 0.24.0 ([dd0d772](https://github.com/edwardlthompson/continuum-calendar/commit/dd0d77253db983a2360b14de18c700753e34fbab))
 * confirm v0.24.0 binaries and record desktop HMR freeze ([5a6d426](https://github.com/edwardlthompson/continuum-calendar/commit/5a6d42695d03297a8a6b1f51c62446ab50f83d96))
-
-## [Unreleased]
-
-### Added
-
-* **desktop:** expired Google sign-in shows Sign in again, a banner, and an OS notification; local edits stay queued
-* **desktop:** Sign in / Sign in again opens Google in the system browser instead of a Test-users confirm that swallowed OK
-* **desktop:** missing Google event ids create on Calendar instead of 404-to-local; Drive-only phone sync is not requested during Testing-mode sign-in (KB-028)
-* **android:** expired Continuum Google API refresh tokens are cleared so peer-sync polling stops flooding logcat
 
 ## [0.24.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.23.0...v0.24.0) (2026-08-22)
 
