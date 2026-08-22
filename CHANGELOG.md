@@ -6,22 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.24.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.23.0...v0.24.0) (2026-08-22)
+## [Unreleased]
 
+## [0.24.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.23.0...v0.24.0) (2026-08-22)
 
 ### Added
 
 * **desktop:** add editor parity, tray badge, and Windows startup ([185f81e](https://github.com/edwardlthompson/continuum-calendar/commit/185f81e8083a5035c6d1a6079c73c1c21fd7c6b2))
-
-
-### Documentation
-
-* **changelog:** restore Unreleased and fold notes into 0.23.0 ([10bc54c](https://github.com/edwardlthompson/continuum-calendar/commit/10bc54cadfedde459720629b34aa4e0a0452a18a))
-
-## [Unreleased]
-
-### Added
-
 * **desktop:** event editor parity — repeat, time zone, three reminders, busy/visibility/color, removable attendees
 * **desktop / android:** red surround on the current day in month view
 * **desktop:** this / following / all when editing a repeating event; monthly weekday and last-day rules
@@ -35,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **desktop:** theme native date/time/select pickers so calendar popups stay readable
 * **desktop:** location field searches as you type (event history + Photon, same as Android)
+
+### Documentation
+
+* **changelog:** restore Unreleased and fold notes into 0.23.0 ([10bc54c](https://github.com/edwardlthompson/continuum-calendar/commit/10bc54cadfedde459720629b34aa4e0a0452a18a))
 
 ## [0.23.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.1...v0.23.0) (2026-08-21)
 

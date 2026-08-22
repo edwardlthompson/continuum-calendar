@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-22 — /ship published v0.24.0
+- **Status:** Accepted
+- **Context:** Desktop editor, views, tray badge, close-to-tray, and Start with Windows landed as `feat(desktop)` (KB-033). Release Please #17 tagged **v0.24.0**.
+- **Decision:** Treat **v0.24.0** as the shipped GitHub tag. Fold leftover Unreleased bullets into `## [0.24.0]`, restore a leading empty Unreleased, and copy desktop 0.17.3 EXE + Android 1.10.7 APK from v0.23.0 (product versions unchanged).
+- **Alternatives considered:** `chore(release)` prep naming a version (rejected — KB-033). Rebuild product binaries for a template-only tag (rejected — desktop/Android version numbers unchanged).
+- **Consequences:** In-app update prompts still wait for a newer EXE/APK filename. ADB smoke rows stay open on BUILD_PLAN.
+
 ### 2026-08-21 — /ship published v0.23.0
 - **Status:** Accepted
 - **Context:** Donate + daily GitHub update checks landed as `feat(about)` (KB-033). Release Please #16 tagged **v0.23.0**.
