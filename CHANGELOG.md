@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.24.0...v0.24.1) (2026-08-22)
+
+
+### Documentation
+
+* **changelog:** restore Unreleased and fold notes into 0.24.0 ([dd0d772](https://github.com/edwardlthompson/continuum-calendar/commit/dd0d77253db983a2360b14de18c700753e34fbab))
+* confirm v0.24.0 binaries and record desktop HMR freeze ([5a6d426](https://github.com/edwardlthompson/continuum-calendar/commit/5a6d42695d03297a8a6b1f51c62446ab50f83d96))
+
 ## [Unreleased]
 
 ## [0.24.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.23.0...v0.24.0) (2026-08-22)
