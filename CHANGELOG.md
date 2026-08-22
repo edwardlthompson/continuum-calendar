@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.23.0...v0.24.0) (2026-08-22)
+
+
+### Added
+
+* **desktop:** add editor parity, tray badge, and Windows startup ([185f81e](https://github.com/edwardlthompson/continuum-calendar/commit/185f81e8083a5035c6d1a6079c73c1c21fd7c6b2))
+
+
+### Documentation
+
+* **changelog:** restore Unreleased and fold notes into 0.23.0 ([10bc54c](https://github.com/edwardlthompson/continuum-calendar/commit/10bc54cadfedde459720629b34aa4e0a0452a18a))
+
 ## [Unreleased]
 
 ### Added
