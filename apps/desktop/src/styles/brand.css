@@ -95,6 +95,7 @@
   place-items: center;
   background: #05060e;
   transition: opacity 0.45s ease;
+  pointer-events: none;
 }
 
 .cc-splash--out {

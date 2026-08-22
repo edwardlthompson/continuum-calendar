@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-set-day-badge"
+description = "Allow updating the tray tooltip and taskbar overlay count"
+commands.allow = ["set_day_badge"]
+
+[[permission]]
+identifier = "allow-set-window-behavior"
+description = "Allow choosing minimize-to-taskbar vs close-to-notification-area"
+commands.allow = ["set_window_behavior"]

@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* **desktop:** event editor parity — repeat, time zone, three reminders, busy/visibility/color, removable attendees
+* **desktop / android:** red surround on the current day in month view
+* **desktop:** this / following / all when editing a repeating event; monthly weekday and last-day rules
+* **desktop:** year + month views, event search, jump-to-date, and keyboard shortcuts
+* **desktop:** holiday pack picker and remaining-today count on the tray and taskbar
+* **desktop:** settings to minimize to the taskbar and close to the notification area (tray)
+* **desktop:** optional Start with Windows (notification-area login item, off by default)
+* **desktop:** event editor fills the main pane without a horizontal scrollbar
+
+### Fixed
+
+* **desktop:** theme native date/time/select pickers so calendar popups stay readable
+* **desktop:** location field searches as you type (event history + Photon, same as Android)
+
 ## [0.23.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.22.1...v0.23.0) (2026-08-21)
 
 ### Added

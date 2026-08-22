@@ -258,8 +258,9 @@ class WidgetMonthlyConfigureActivity : SimpleActivity(), MonthlyCalendar {
             }
 
             if (day.isToday) {
-                dayMonthlyNumberBackground.setColorFilter(getProperPrimaryColor())
-                dayMonthlyNumberId.setTextColor(getProperPrimaryColor().getContrastColor())
+                val todayColor = getColor(org.fossify.calendar.R.color.continuum_brand_now)
+                dayMonthlyNumberBackground.setColorFilter(todayColor)
+                dayMonthlyNumberId.setTextColor(todayColor)
             }
         }
     }

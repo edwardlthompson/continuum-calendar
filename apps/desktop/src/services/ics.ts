@@ -18,6 +18,9 @@ export function eventsToIcs(events: CalendarEvent[], calName = 'Continuum'): str
     lines.push(`SUMMARY:${(ev.title || '').replace(/\n/g, ' ')}`)
     if (ev.description) lines.push(`DESCRIPTION:${ev.description.replace(/\n/g, '\\n')}`)
     if (ev.location) lines.push(`LOCATION:${ev.location}`)
+    for (const rule of ev.recurrence ?? []) {
+      lines.push(rule.startsWith('RRULE:') ? rule : `RRULE:${rule}`)
+    }
     if (ev.allDay) {
       lines.push(`DTSTART;VALUE=DATE:${formatIcsDate(ev.start, true)}`)
       lines.push(`DTEND;VALUE=DATE:${formatIcsDate(ev.end, true)}`)
@@ -48,6 +51,7 @@ export function parseIcs(
     const summary = get('SUMMARY') ?? '(No title)'
     const dtStart = get('DTSTART') ?? get('DTSTART;VALUE=DATE')
     const dtEnd = get('DTEND') ?? get('DTEND;VALUE=DATE')
+    const rrule = get('RRULE')
     if (!dtStart || !dtEnd) continue
     const allDay = dtStart.length === 8
     const toIso = (v: string) => {
@@ -67,6 +71,7 @@ export function parseIcs(
       end: toIso(dtEnd),
       allDay,
       readOnly: opts?.readOnly ?? true,
+      recurrence: rrule ? [`RRULE:${rrule}`] : undefined,
     })
   }
   return events

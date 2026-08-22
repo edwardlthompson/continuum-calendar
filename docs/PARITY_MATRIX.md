@@ -35,11 +35,22 @@
 | Weekly view days / snooze / notifications | Settings knobs | Continuum Settings + Fossify snooze/weekly days | `weeklyViewDays`, `defaultSnoozeMinutes`, `notificationEnabled` |
 | Redact titles (screenshots) | Toggle | Toggle | `redactTitlesInScreenshots` |
 | Settings App Data sync | **Peer remote:** either device seeds/pushes/pulls Drive `continuum-settings.json` (CAS). Sign-in reconciles (seed if empty, push pending, else pull). 1s FG poll. | **Peer remote:** same file; CalDAV for calendars + Continuum Google API for settings. Poller runs `reconcilePeerRemote`. Same GCP Client ID project as desktop. | envelope revision |
-| Event editor | All-day, description, location, reminders; Google create/update/delete | Fossify `EventActivity` | `defaultReminderMinutes` |
+| Event editor | Repeat, TZ, up to 3 reminders, busy/visibility/color, location search, attendees | Fossify `EventActivity` | `defaultReminderMinutes` |
+| Location autocomplete | History + Photon via native `ureq` (User-Agent) | History + Geocoder, then Photon | — |
+| Date / calendar pickers | Native `date` / `datetime-local` / `<select>` themed via `color-scheme` | Fossify themed `DatePickerDialog` | — |
+| Recurrence | Daily/weekly/monthly/yearly + until (local expand; Google RRULE on create) | Repeat interval / rule / until | — |
+| Time zone on event | IANA picker | Per-event TZ picker | — |
+| Extra reminders | Up to 3 popup reminders | Up to 3 reminders + type | — |
+| Busy / free / visibility / event color | Busy checkbox, visibility, color swatches | Availability, access, color | — |
+| Open location on map | OSM search link | `geo:` / map intent | — |
+| Month “today” cell | Red inset ring (`--cc-brand-now`) | Red cell surround (`continuum_brand_now`) | — |
 | Reminders / notifications | OS toast | AlarmManager | reminder fields on events |
 | Contacts autocomplete | People API | ContactsContract + People | — |
 | Grid click → edit/create | Rolling week eventClick / select | Fossify week/day native | — |
 | Default calendar for new events | Settings dropdown + sidebar ★; FAB/editor respects it | Settings → Default event type/calendar (Fossify) | `defaultWriteCalendarId` |
-| Year/Month-day combo switcher | **Deferred** | Fossify view dialog | — |
-
+| Year/Month-day combo switcher | Toolbar Week / Month / Year + jump-to-date | Fossify view dialog | — |
+| Event search | Header search (/) | Fossify search | — |
+| Recurrence edit scope | This / following / all | Fossify one/all | — |
+| Holiday pack | Settings country pack (US/CA/GB/DE) | Fossify holidays | desktop local |
+| Tray remaining-today | Taskbar overlay + tray tooltip counts down | N/A | — |
 Logical calendar ids: `{source}:{calendarId}` e.g. `google:primary`.

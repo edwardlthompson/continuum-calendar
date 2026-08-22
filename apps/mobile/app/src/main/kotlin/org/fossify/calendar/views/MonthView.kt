@@ -37,6 +37,7 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
     private var eventTitlePaint: TextPaint
     private var gridPaint: Paint
     private var circleStrokePaint: Paint
+    private var todayRingPaint: Paint
     private var plusTextPaint: Paint
     private var eventDotPaint: Paint
     private var config = context.config
@@ -104,6 +105,12 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
             style = Paint.Style.STROKE
             strokeWidth = resources.getDimension(R.dimen.circle_stroke_width)
             color = primaryColor
+        }
+
+        todayRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = resources.displayMetrics.density * 3f
+            color = context.getColor(R.color.continuum_brand_now)
         }
 
         val smallerTextSize = resources.getDimensionPixelSize(org.fossify.commons.R.dimen.smaller_text_size)
@@ -203,22 +210,24 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
                     val xPosCenter = xPos + dayWidth / 2
 
                     val isDaySelected = selectedDayCoords.x != -1 && x == selectedDayCoords.x && y == selectedDayCoords.y
+                    if (day.isToday && !isPrintVersion) {
+                        val inset = todayRingPaint.strokeWidth
+                        canvas.drawRoundRect(
+                            x * dayWidth + horizontalOffset + inset,
+                            y * dayHeight + weekDaysLetterHeight + inset,
+                            x * dayWidth + horizontalOffset + dayWidth - inset,
+                            y * dayHeight + weekDaysLetterHeight + dayHeight - inset,
+                            BG_CORNER_RADIUS,
+                            BG_CORNER_RADIUS,
+                            todayRingPaint
+                        )
+                    }
                     if (isDaySelected) {
                         canvas.drawCircle(
                             xPosCenter,
                             textY - dayTextRect.height() / 2,
                             textPaint.textSize * 0.8f,
                             circleStrokePaint
-                        )
-                        if (day.isToday) {
-                            textPaint.color = textColor
-                        }
-                    } else if (day.isToday && !isPrintVersion) {
-                        canvas.drawCircle(
-                            xPosCenter,
-                            textY - dayTextRect.height() / 2,
-                            textPaint.textSize * 0.8f,
-                            getCirclePaint(day)
                         )
                     }
 
@@ -392,7 +401,7 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
 
     private fun getTextPaint(startDay: DayMonthly): Paint {
         var paintColor = when {
-            !isPrintVersion && startDay.isToday -> primaryColor.getContrastColor()
+            !isPrintVersion && startDay.isToday -> context.getColor(R.color.continuum_brand_now)
             highlightWeekends && startDay.isWeekend -> weekendsTextColor
             else -> textColor
         }
@@ -439,16 +448,6 @@ class MonthView(context: Context, attrs: AttributeSet, defStyle: Int) : View(con
         val curPaint = Paint(eventTitlePaint)
         curPaint.color = paintColor
         curPaint.isStrikeThruText = event.shouldStrikeThrough()
-        return curPaint
-    }
-
-    private fun getCirclePaint(day: DayMonthly): Paint {
-        val curPaint = Paint(textPaint)
-        var paintColor = primaryColor
-        if (!day.isThisMonth) {
-            paintColor = paintColor.adjustAlpha(MEDIUM_ALPHA)
-        }
-        curPaint.color = paintColor
         return curPaint
     }
 

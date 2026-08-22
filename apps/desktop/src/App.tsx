@@ -4,12 +4,18 @@ import {
   conflictsForEvent,
   crossSourceConflicts,
   detectConflicts,
+  applyRecurrenceEdit,
+  expandRecurringEvents,
   eventOccurrenceKey,
+  remainingTodayCount,
+  nextRemainingTickMs,
+  seriesEventId,
   formatConflictSources,
   isBirthdayCalendarEntry,
   isContactBirthdayEvent,
   proposeMeetingTimes,
   suggestConflictFreeTime,
+  type RecurrenceEditScope,
   type CalendarEvent,
   type CalendarNotifyPrefs,
   type ContinuumSettings,
@@ -88,9 +94,21 @@ import { openExternal } from './about/openExternal'
 import { decideLaunchPrompt, type LaunchPrompt } from './about/runAppUpdates'
 import { markUpdateChecked, markVersionSeen } from './about/updatePrefs'
 import { DonateNudgeDialog, UpdateAvailableDialog } from './components/AppUpdateDialogs'
+import { CalendarToolbar, type MainView } from './components/CalendarToolbar'
+import { useDesktopHotkeys } from './hooks/useDesktopHotkeys'
+import { HOLIDAY_PACKS, mergeHolidayEvents, type HolidayPackId } from './services/holidayPacks'
+import { renderBadgePng } from './services/dayBadge'
+import {
+  loadWindowBehavior,
+  saveWindowBehavior,
+  toNativeArgs,
+  type CloseTarget,
+  type MinimizeTarget,
+  type WindowBehavior,
+} from './services/windowBehavior'
+import { readStartWithWindows, writeStartWithWindows } from './services/windowsAutostart'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
-type MainView = 'rolling' | 'agenda'
 
 function startOfDay(d: Date): Date {
   const x = new Date(d)
@@ -120,6 +138,15 @@ export default function App() {
   const [events, setEvents] = useState<CalendarEvent[]>(() => ensureSeededEvents())
   const [calendars, setCalendars] = useState(() => loadCalendars())
   const [view, setView] = useState<MainView>('agenda')
+  const [eventQuery, setEventQuery] = useState('')
+  const [jumpDate, setJumpDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [holidayPack, setHolidayPack] = useState<HolidayPackId>(() => {
+    const raw = localStorage.getItem('continuum.holidayPack')
+    return raw === 'us' || raw === 'ca' || raw === 'gb' || raw === 'de' ? raw : 'none'
+  })
+  const searchRef = useRef<HTMLInputElement>(null)
+  const [windowBehavior, setWindowBehavior] = useState<WindowBehavior>(loadWindowBehavior)
+  const [startWithWindows, setStartWithWindows] = useState(false)
   const [signedIn, setSignedIn] = useState(false)
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const statusTimerRef = useRef<number | null>(null)
@@ -162,7 +189,7 @@ export default function App() {
         .map((c) => c.id),
     )
     primaryIds.add('primary')
-    return events.filter((e) => {
+    const filtered = events.filter((e) => {
       const cal = calendars.find((c) => c.id === e.calendarId)
       if (!settings.useGoogleCalendar && (e.source === 'google' || cal?.source === 'google')) {
         return false
@@ -185,7 +212,20 @@ export default function App() {
       if (isContactBirthdayEvent(e)) return false
       return true
     })
-  }, [events, visibleIds, calendars, settings.showContactBirthdays, settings.useGoogleCalendar])
+    const from = new Date()
+    from.setDate(from.getDate() - 7)
+    from.setHours(0, 0, 0, 0)
+    const to = new Date()
+    to.setDate(to.getDate() + Math.max(settings.agendaRangeDays ?? 30, 42))
+    return expandRecurringEvents(filtered, from, to)
+  }, [events, visibleIds, calendars, settings.showContactBirthdays, settings.useGoogleCalendar, settings.agendaRangeDays])
+  const displayEvents = useMemo(() => {
+    const q = eventQuery.trim().toLowerCase()
+    if (!q) return visibleEvents
+    return visibleEvents.filter((e) =>
+      [e.title, e.location, e.description].some((s) => s?.toLowerCase().includes(q)),
+    )
+  }, [visibleEvents, eventQuery])
   const conflicts = useMemo(() => detectConflicts(visibleEvents), [visibleEvents])
   const crossConflicts = useMemo(() => crossSourceConflicts(visibleEvents), [visibleEvents])
 
@@ -742,7 +782,26 @@ export default function App() {
     })} – ${slot.end.toLocaleTimeString(undefined, timeOpts)}`
   }
 
-  async function onSaveEvent(draft: Omit<CalendarEvent, 'id'> & { id?: string }) {
+  async function onSaveEvent(
+    draft: Omit<CalendarEvent, 'id'> & { id?: string },
+    scope?: RecurrenceEditScope,
+    occurrenceStart?: string,
+  ) {
+    const master = draft.id ? events.find((e) => e.id === seriesEventId(draft.id ?? '')) : undefined
+    if (master?.recurrence?.length && scope && occurrenceStart) {
+      const next = applyRecurrenceEdit(scope, master, occurrenceStart, {
+        ...master,
+        ...draft,
+        id: master.id,
+      })
+      const saved = upsertEvents(next)
+      setEvents(saved)
+      setEditing(null)
+      noteLocalEventsChanged()
+      if (signedIn) void pushLocalEventsNow()
+      flash('Event saved')
+      return
+    }
     const blockers = conflictsForEvent(draft, visibleEvents)
     if (blockers.length) {
       const suggestion = suggestConflictFreeTime(draft, visibleEvents, {
@@ -883,6 +942,10 @@ export default function App() {
     }
   }
 
+  function goToday() {
+    setJumpDate(new Date().toISOString().slice(0, 10))
+  }
+
   function openNewEvent(partial: Partial<CalendarEvent> = {}) {
     const defaults = newEventDefaults(displayCalendars, settings.defaultWriteCalendarId)
     setEditing({
@@ -970,6 +1033,74 @@ export default function App() {
     })
   }
 
+  useDesktopHotkeys({
+    enabled: !editing,
+    onNew: () => openNewEvent(),
+    onToday: goToday,
+    onView: setView,
+    onSearch: () => searchRef.current?.focus(),
+    onJump: () => {
+      const raw = window.prompt('Jump to date (YYYY-MM-DD)', jumpDate)
+      if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) setJumpDate(raw)
+    },
+  })
+
+  useEffect(() => {
+    const native = toNativeArgs(windowBehavior)
+    void invoke('set_window_behavior', native).catch(() => undefined)
+  }, [windowBehavior])
+
+  useEffect(() => {
+    void readStartWithWindows().then(setStartWithWindows)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('continuum.holidayPack', holidayPack)
+    const next = mergeHolidayEvents(loadEvents(), holidayPack)
+    const prev = loadEvents()
+    if (JSON.stringify(prev.filter((e) => e.source === 'holidays')) === JSON.stringify(next.filter((e) => e.source === 'holidays'))) {
+      return
+    }
+    saveEvents(next)
+    setEvents(next)
+  }, [holidayPack])
+
+  useEffect(() => {
+    let timer = 0
+    let cancelled = false
+    const tick = async () => {
+      const n = remainingTodayCount(visibleEvents)
+      const png = await renderBadgePng(n)
+      if (cancelled) return
+      try {
+        await invoke('set_day_badge', {
+          count: n,
+          png,
+          summary: n ? `${n} remaining today` : 'No remaining events today',
+        })
+      } catch {
+        /* browser / denied */
+      }
+      const wait = Math.min(60_000, Math.max(5_000, nextRemainingTickMs(visibleEvents) - Date.now()))
+      timer = window.setTimeout(() => void tick(), wait)
+    }
+    void tick()
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [visibleEvents])
+
+  useEffect(() => {
+    let stop: (() => void) | undefined
+    void listen('tray-new-event', () => openNewEvent())
+      .then((fn) => {
+        stop = fn
+      })
+      .catch(() => undefined)
+    return () => stop?.()
+  }, [])
+
   return (
     <div
       className={`relative flex h-full flex-col gap-2 p-4 pb-10 ${dropActive ? 'ring-2 ring-[var(--cc-accent)] ring-inset' : ''}`}
@@ -987,24 +1118,6 @@ export default function App() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className={`rounded px-2 py-1 text-sm ${view === 'agenda' ? 'bg-[var(--cc-accent)] text-white' : 'border border-[var(--cc-border)]'}`}
-            aria-pressed={view === 'agenda'}
-            aria-label="Agenda (event list)"
-            onClick={() => setView('agenda')}
-          >
-            Agenda (event list)
-          </button>
-          <button
-            type="button"
-            className={`rounded px-2 py-1 text-sm ${view === 'rolling' ? 'bg-[var(--cc-accent)] text-white' : 'border border-[var(--cc-border)]'}`}
-            aria-pressed={view === 'rolling'}
-            aria-label="Rolling week"
-            onClick={() => setView('rolling')}
-          >
-            Rolling week
-          </button>
           <button
             type="button"
             className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm disabled:opacity-50"
@@ -1126,6 +1239,15 @@ export default function App() {
           </button>
         </div>
       </header>
+      <CalendarToolbar
+        view={view}
+        onView={setView}
+        query={eventQuery}
+        onQuery={setEventQuery}
+        jumpDate={jumpDate}
+        onJumpDate={setJumpDate}
+        searchRef={searchRef}
+      />
 
       <div className="flex min-h-0 flex-1 gap-5">
         <CalendarSidebar
@@ -1145,7 +1267,7 @@ export default function App() {
         />
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col border-l border-[var(--cc-border)] pl-5">
-          <main className="min-h-0 min-w-0 flex-1">
+          <main className="flex min-h-0 min-w-0 flex-1 flex-col">
             {crossConflicts.length > 0 && !hideCrossBanner ? (
               <div
                 className="mb-2 flex items-start justify-between gap-2 rounded-lg border border-amber-400 bg-amber-50 px-3 py-2 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100"
@@ -1178,13 +1300,14 @@ export default function App() {
                 defaultReminderMinutes={settings.defaultReminderMinutes}
                 googleSignedIn={signedIn && settings.useGoogleCalendar}
                 onCancel={() => setEditing(null)}
-                onSave={(e) => void onSaveEvent(e)}
+                onSave={(e, scope, occ) => void onSaveEvent(e, scope, occ)}
                 onDelete={editing.id ? () => requestDeleteEvent(editing) : undefined}
               />
             ) : view === 'agenda' ? (
               <AgendaView
-                events={visibleEvents}
+                events={displayEvents}
                 calendars={displayCalendars}
+                focusDate={jumpDate}
                 showEmptyDays={settings.showEmptyDaysInAgenda}
                 rangeDays={settings.agendaRangeDays}
                 redactTitles={settings.redactTitlesInScreenshots}
@@ -1192,7 +1315,10 @@ export default function App() {
                 use24HourFormat={settings.use24HourFormat}
                 workingHours={settings.workingHours}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
-                onSelectEvent={(ev) => setEditing(ev)}
+                onSelectEvent={(ev) => {
+                  const master = events.find((e) => e.id === seriesEventId(ev.id)) ?? ev
+                  setEditing({ ...master, occurrenceStart: ev.start })
+                }}
                 onOpenDay={(dateKey) => {
                   const startHm = (settings.workingHours.start || '09:00').slice(0, 5)
                   const [hh, mm] = startHm.split(':').map((x) => Number(x))
@@ -1207,7 +1333,11 @@ export default function App() {
               />
             ) : (
               <RollingWeekView
-                events={visibleEvents}
+                events={displayEvents}
+                calendarView={
+                  view === 'month' ? 'dayGridMonth' : view === 'year' ? 'multiMonthYear' : 'rollingWeek'
+                }
+                focusDate={jumpDate}
                 calendars={displayCalendars}
                 rollingWeekFromToday={settings.rollingWeekFromToday}
                 redactTitles={settings.redactTitlesInScreenshots}
@@ -1215,7 +1345,10 @@ export default function App() {
                 firstDayOfWeek={settings.firstDayOfWeek}
                 weeklyViewDays={settings.weeklyViewDays}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
-                onSelectEvent={(ev) => setEditing(ev)}
+                onSelectEvent={(ev) => {
+                  const master = events.find((e) => e.id === seriesEventId(ev.id)) ?? ev
+                  setEditing({ ...master, occurrenceStart: ev.start })
+                }}
                 onSelectSlot={(start, end) =>
                   openNewEvent({
                     start: start.toISOString().slice(0, 16),
@@ -1235,7 +1368,7 @@ export default function App() {
               placeholder="Search settings…"
               value={settingsQuery}
               onChange={(e) => setSettingsQuery(e.target.value)}
-              className="w-full rounded border border-[var(--cc-border)] bg-transparent px-2 py-1 text-sm"
+              className="w-full rounded border border-[var(--cc-border)] cc-native-field px-2 py-1 text-sm"
               aria-label="Search settings"
             />
             <p className="text-xs text-[var(--cc-muted)]">
@@ -1277,7 +1410,7 @@ export default function App() {
               <select
                 value={settings.themeMode}
                 onChange={(e) => void persistSettings({ themeMode: e.target.value as ThemeMode })}
-                className="rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
               >
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
@@ -1316,7 +1449,7 @@ export default function App() {
                 onChange={(e) =>
                   void persistSettings({ firstDayOfWeek: Number(e.target.value) || 0 })
                 }
-                className="rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
               >
                 <option value={0}>Sunday</option>
                 <option value={1}>Monday</option>
@@ -1328,6 +1461,76 @@ export default function App() {
               </select>
             </label>
             ) : null}
+            {settingsMatch('Minimize', 'taskbar', 'tray') ? (
+            <label className="flex items-center justify-between gap-2">
+              Minimize to
+              <select
+                value={windowBehavior.minimizeTo}
+                onChange={(e) =>
+                  setWindowBehavior(
+                    saveWindowBehavior({
+                      ...windowBehavior,
+                      minimizeTo: e.target.value as MinimizeTarget,
+                    }),
+                  )
+                }
+                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
+              >
+                <option value="taskbar">Taskbar</option>
+                <option value="tray">Notification area</option>
+              </select>
+            </label>
+            ) : null}
+            {settingsMatch('Close', 'quit', 'tray', 'notification') ? (
+            <label className="flex items-center justify-between gap-2">
+              Close button
+              <select
+                value={windowBehavior.closeTo}
+                onChange={(e) =>
+                  setWindowBehavior(
+                    saveWindowBehavior({
+                      ...windowBehavior,
+                      closeTo: e.target.value as CloseTarget,
+                    }),
+                  )
+                }
+                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
+              >
+                <option value="tray">Notification area</option>
+                <option value="quit">Quit Continuum</option>
+              </select>
+            </label>
+            ) : null}
+            {settingsMatch('Start', 'Windows', 'boot', 'startup', 'login') ? (
+            <label className="flex items-center justify-between gap-2">
+              Start with Windows
+              <input
+                type="checkbox"
+                checked={startWithWindows}
+                onChange={(e) => {
+                  const on = e.target.checked
+                  setStartWithWindows(on)
+                  void writeStartWithWindows(on).catch(() => setStartWithWindows(!on))
+                }}
+              />
+            </label>
+            ) : null}
+            {settingsMatch('Holiday', 'holidays', 'pack') ? (
+            <label className="flex items-center justify-between gap-2">
+              Holiday pack
+              <select
+                value={holidayPack}
+                onChange={(e) => setHolidayPack(e.target.value as HolidayPackId)}
+                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
+              >
+                {HOLIDAY_PACKS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            ) : null}
             {settingsMatch('Weekly view days', 'week') ? (
             <label className="flex items-center justify-between gap-2">
               Weekly view days
@@ -1335,7 +1538,7 @@ export default function App() {
                 type="number"
                 min={1}
                 max={14}
-                className="w-16 rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
                 value={settings.weeklyViewDays}
                 onChange={(e) =>
                   void persistSettings({
@@ -1351,7 +1554,7 @@ export default function App() {
               <input
                 type="number"
                 min={1}
-                className="w-16 rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
                 value={settings.defaultSnoozeMinutes}
                 onChange={(e) =>
                   void persistSettings({
@@ -1367,7 +1570,7 @@ export default function App() {
               <select
                 value={settings.defaultWriteCalendarId}
                 onChange={(e) => void persistSettings({ defaultWriteCalendarId: e.target.value })}
-                className="rounded border border-[var(--cc-border)] bg-transparent px-1 py-1"
+                className="rounded border border-[var(--cc-border)] cc-native-field px-1 py-1"
               >
                 {displayCalendars
                   .filter((c) => c.writable !== false && c.source !== 'holidays')
@@ -1413,7 +1616,7 @@ export default function App() {
               <span className="flex items-center gap-1">
                 <input
                   type="time"
-                  className="rounded border border-[var(--cc-border)] bg-transparent px-1"
+                  className="rounded border border-[var(--cc-border)] cc-native-field px-1"
                   value={settings.workingHours.start}
                   onChange={(e) =>
                     void persistSettings({
@@ -1424,7 +1627,7 @@ export default function App() {
                 –
                 <input
                   type="time"
-                  className="rounded border border-[var(--cc-border)] bg-transparent px-1"
+                  className="rounded border border-[var(--cc-border)] cc-native-field px-1"
                   value={settings.workingHours.end}
                   onChange={(e) =>
                     void persistSettings({
@@ -1441,7 +1644,7 @@ export default function App() {
               <input
                 type="number"
                 min={0}
-                className="w-16 rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
                 value={settings.travelBufferMinutes}
                 onChange={(e) =>
                   void persistSettings({
@@ -1457,7 +1660,7 @@ export default function App() {
               <input
                 type="number"
                 min={1}
-                className="w-16 rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
                 value={settings.slotMinMinutes}
                 onChange={(e) =>
                   void persistSettings({
@@ -1474,7 +1677,7 @@ export default function App() {
                 type="number"
                 min={1}
                 max={90}
-                className="w-16 rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
                 value={settings.agendaRangeDays}
                 onChange={(e) =>
                   void persistSettings({
@@ -1494,7 +1697,7 @@ export default function App() {
                     agendaDensity: e.target.value as ContinuumSettings['agendaDensity'],
                   })
                 }
-                className="rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
               >
                 <option value="comfortable">Comfortable</option>
                 <option value="compact">Compact</option>
@@ -1507,7 +1710,7 @@ export default function App() {
               <input
                 type="number"
                 min={0}
-                className="w-16 rounded border border-[var(--cc-border)] bg-transparent px-1"
+                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
                 value={settings.defaultReminderMinutes}
                 onChange={(e) =>
                   void persistSettings({

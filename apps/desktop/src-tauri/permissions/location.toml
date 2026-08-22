@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-suggest-locations"
+description = "Allow Photon / OSM place suggestions for the event location field"
+commands.allow = ["suggest_locations"]

@@ -135,6 +135,21 @@ grep '\[AUTO\]' BUILD_PLAN.md
 - 🔲 [AGENT] Rolling-week homescreen widget
 - ✅ [HUMAN] Package id `org.continuumcalendar.app` (see Sprint B1; OAuth client still open)
 
+### Sprint CC3 — Event editor + month today (2026-08-21)
+
+#### Sequential
+
+1. ✅ [AGENT] Red today surround on desktop FullCalendar month + Android `MonthView`
+2. ✅ [AGENT] Shared RRULE helpers + desktop EventEditor parity fields (repeat/TZ/reminders/busy/color)
+3. 🔲 [ADB] Smoke month today ring + create repeating local event on both apps
+
+### Sprint CC4 — Ideas 1–8 + today badge (2026-08-21)
+
+#### Sequential
+
+1. ✅ [AGENT] Recurrence edit scope, richer monthly RRULE, search/jump/year/hotkeys, holiday pack, tray remaining-today count
+2. 🔲 [ADB] Confirm tray count and this/all/following on a repeating event
+
 ---
 
 ## Child Repo Playbook (template)

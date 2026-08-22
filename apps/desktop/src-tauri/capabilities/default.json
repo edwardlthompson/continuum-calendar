@@ -11,6 +11,12 @@
     "allow-start-oauth-loopback",
     "allow-google-oauth-token",
     "allow-take-pending-open-paths",
-    "allow-read-text-file-limited"
+    "allow-read-text-file-limited",
+    "allow-suggest-locations",
+    "allow-set-day-badge",
+    "allow-set-window-behavior",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled"
   ]
 }

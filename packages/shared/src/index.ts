@@ -81,3 +81,17 @@ export {
   isBirthdayCalendarEntry,
   isContactBirthdayEvent,
 } from './birthdays.js'
+export type { MonthlyMode, RepeatFreq } from './recurrence.js'
+export type { RecurrenceEditScope } from './recurrenceExpand.js'
+export {
+  dayBefore,
+  freqFromRrule,
+  monthlyModeFromRrule,
+  occurrenceDateKey,
+  rruleFromFreq,
+  rruleFromParts,
+  seriesEventId,
+  untilFromRrule,
+} from './recurrence.js'
+export { applyRecurrenceEdit, expandRecurringEvents } from './recurrenceExpand.js'
+export { nextRemainingTickMs, remainingTodayCount } from './todayBadge.js'

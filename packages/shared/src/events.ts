@@ -41,6 +41,17 @@ export interface CalendarEvent {
    * Automated contact birthdays use `"birthday"` — distinct from manual yearly events.
    */
   eventType?: 'default' | 'birthday' | 'focusTime' | 'outOfOffice' | 'workingLocation' | 'fromGmail' | string
+  /** ICS / Google `RRULE:` lines (e.g. `RRULE:FREQ=WEEKLY`). */
+  recurrence?: string[]
+  /** Local dates (YYYY-MM-DD) skipped in a series (this-event edits). */
+  recurrenceExceptions?: string[]
+  /** Desktop editor only: occurrence being edited, not persisted. */
+  occurrenceStart?: string
+  /** IANA zone for timed events (Google `start.timeZone`). */
+  timeZone?: string
+  visibility?: 'default' | 'public' | 'private'
+  /** Per-event color hex; empty means calendar default. */
+  color?: string
 }
 
 export interface FreeSlot {

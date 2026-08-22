@@ -46,6 +46,13 @@ function mapGoogleEvent(raw: Record<string, unknown>, calendarId: string): Calen
     : undefined
 
   const eventType = raw.eventType ? String(raw.eventType) : 'default'
+  const visibilityRaw = raw.visibility ? String(raw.visibility) : 'default'
+  const visibility =
+    visibilityRaw === 'public' || visibilityRaw === 'private' ? visibilityRaw : 'default'
+  const recurrence = Array.isArray(raw.recurrence)
+    ? (raw.recurrence as unknown[]).map((r) => String(r))
+    : undefined
+  const startTz = (startObj as { timeZone?: string }).timeZone
   return {
     id: String(raw.id),
     calendarId,
@@ -61,8 +68,40 @@ function mapGoogleEvent(raw: Record<string, unknown>, calendarId: string): Calen
     etag: raw.etag ? String(raw.etag) : undefined,
     updated: raw.updated ? String(raw.updated) : undefined,
     htmlLink: raw.htmlLink ? String(raw.htmlLink) : undefined,
-    busy: eventType !== 'birthday',
+    busy: raw.transparency !== 'transparent' && eventType !== 'birthday',
     eventType,
+    recurrence: recurrence?.length ? recurrence : undefined,
+    timeZone: startTz,
+    visibility,
+    color: raw.colorId ? googleColorToHex(undefined, String(raw.colorId)) : undefined,
+  }
+}
+
+function googleEventBody(event: Omit<CalendarEvent, 'id' | 'etag' | 'updated' | 'htmlLink' | 'source'> & {
+  id?: string
+}) {
+  const tz = event.timeZone
+  return {
+    summary: event.title,
+    description: event.description,
+    location: event.location,
+    start: event.allDay
+      ? { date: event.start.slice(0, 10) }
+      : { dateTime: event.start, ...(tz ? { timeZone: tz } : {}) },
+    end: event.allDay
+      ? { date: event.end.slice(0, 10) }
+      : { dateTime: event.end, ...(tz ? { timeZone: tz } : {}) },
+    attendees: event.attendees?.map((a) => ({
+      email: a.email,
+      displayName: a.displayName,
+      optional: a.optional,
+    })),
+    reminders: event.reminders?.length
+      ? { useDefault: false, overrides: event.reminders.map((r) => ({ method: r.method, minutes: r.minutes })) }
+      : { useDefault: true },
+    recurrence: event.recurrence,
+    transparency: event.busy === false ? 'transparent' : 'opaque',
+    visibility: event.visibility ?? 'default',
   }
 }
 
@@ -210,21 +249,7 @@ export async function createGoogleEvent(
 ): Promise<CalendarEvent> {
   const headers = await authHeaders()
   headers.set('Content-Type', 'application/json')
-  const body = {
-    summary: event.title,
-    description: event.description,
-    location: event.location,
-    start: event.allDay ? { date: event.start.slice(0, 10) } : { dateTime: event.start },
-    end: event.allDay ? { date: event.end.slice(0, 10) } : { dateTime: event.end },
-    attendees: event.attendees?.map((a) => ({
-      email: a.email,
-      displayName: a.displayName,
-      optional: a.optional,
-    })),
-    reminders: event.reminders
-      ? { useDefault: false, overrides: event.reminders.map((r) => ({ method: r.method, minutes: r.minutes })) }
-      : undefined,
-  }
+  const body = googleEventBody(event)
   const res = await fetch(`${CALENDAR_BASE}/calendars/${encodeURIComponent(calendarId)}/events`, {
     method: 'POST',
     headers,
@@ -238,18 +263,7 @@ export async function updateGoogleEvent(event: CalendarEvent): Promise<CalendarE
   const headers = await authHeaders()
   headers.set('Content-Type', 'application/json')
   if (event.etag) headers.set('If-Match', event.etag)
-  const body = {
-    summary: event.title,
-    description: event.description,
-    location: event.location,
-    start: event.allDay ? { date: event.start.slice(0, 10) } : { dateTime: event.start },
-    end: event.allDay ? { date: event.end.slice(0, 10) } : { dateTime: event.end },
-    attendees: event.attendees?.map((a) => ({
-      email: a.email,
-      displayName: a.displayName,
-      optional: a.optional,
-    })),
-  }
+  const body = googleEventBody(event)
   const res = await fetch(
     `${CALENDAR_BASE}/calendars/${encodeURIComponent(event.calendarId)}/events/${encodeURIComponent(event.id)}`,
     { method: 'PUT', headers, body: JSON.stringify(body) },

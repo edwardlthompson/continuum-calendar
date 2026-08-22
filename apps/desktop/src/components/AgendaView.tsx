@@ -28,6 +28,7 @@ interface AgendaViewProps {
   onSelectEvent?: (event: CalendarEvent) => void
   /** Empty “Open” day row — schedule something in that slot. */
   onOpenDay?: (dateKey: string) => void
+  focusDate?: string
 }
 
 function displayTitle(title: string, redact: boolean): string {
@@ -52,6 +53,7 @@ export function AgendaView({
   conflictIds,
   onSelectEvent,
   onOpenDay,
+  focusDate,
 }: AgendaViewProps) {
   const [nowMs, setNowMs] = useState(() => Date.now())
   useEffect(() => {
@@ -76,11 +78,17 @@ export function AgendaView({
   const pad = density === 'compact' ? 'py-1' : 'py-2'
   const workEnd = workingHours.end || '17:00'
 
+  useEffect(() => {
+    if (!focusDate) return
+    document.getElementById(`agenda-${focusDate}`)?.scrollIntoView({ block: 'start' })
+  }, [focusDate])
+
   return (
     <div className="h-full overflow-auto rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-3">
       <ul className="space-y-3">
         {sections.map((section) => {
           const isToday = section.date === start
+          const jumpTarget = focusDate === section.date
           const header = formatAgendaSectionTitle(section.date, start)
           const phase = isToday
             ? todayAgendaPhase(section.events, nowMs, workEnd, start)
@@ -166,7 +174,7 @@ export function AgendaView({
           }
 
           return (
-            <li key={section.date}>
+            <li id={`agenda-${section.date}`} key={section.date} className={jumpTarget ? 'rounded-lg ring-2 ring-[var(--cc-brand-now)]' : undefined}>
               <h3
                 className={`mb-1 text-sm font-semibold ${
                   isToday ? 'text-[var(--cc-accent)]' : 'text-[var(--cc-text)]'

@@ -1,7 +1,10 @@
 use std::path::Path;
 use std::sync::Mutex;
 
+mod location;
 mod oauth;
+mod tray;
+mod window_behavior;
 
 static PENDING_OPENS: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
@@ -76,13 +79,23 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_autostart::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             oauth::start_oauth_loopback,
             oauth::google_oauth_token,
             take_pending_open_paths,
-            read_text_file_limited
+            read_text_file_limited,
+            location::suggest_locations,
+            tray::set_day_badge,
+            window_behavior::set_window_behavior
         ])
+        .on_window_event(|window, event| {
+            window_behavior::on_window_event(window, event);
+        })
         .setup(|app| {
+            if let Err(e) = tray::install(app) {
+                log::warn!("tray unavailable: {e}");
+            }
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()

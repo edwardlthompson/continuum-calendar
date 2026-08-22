@@ -239,9 +239,10 @@ class MyWidgetMonthlyProvider : AppWidgetProvider() {
             setTextSize(R.id.day_monthly_number_id, context.getWidgetFontSize() - 3f)
 
             if (day.isToday) {
-                setTextColor(R.id.day_monthly_number_id, textColor.getContrastColor())
+                val todayColor = context.getColor(R.color.continuum_brand_now)
+                setTextColor(R.id.day_monthly_number_id, todayColor)
                 setViewVisibility(R.id.day_monthly_number_background, View.VISIBLE)
-                setInt(R.id.day_monthly_number_background, "setColorFilter", textColor)
+                setInt(R.id.day_monthly_number_background, "setColorFilter", todayColor)
             } else {
                 setTextColor(R.id.day_monthly_number_id, textColor)
                 setViewVisibility(R.id.day_monthly_number_background, View.GONE)

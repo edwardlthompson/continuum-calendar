@@ -1,7 +1,9 @@
 import { useMemo, useRef } from 'react'
+import { useEffect } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { DateSelectArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core'
 import { eventOccurrenceKey, type CalendarEvent, type CalendarListEntry } from '@continuum/shared'
@@ -35,6 +37,8 @@ interface RollingWeekViewProps {
   conflictIds?: Set<string>
   onSelectEvent?: (event: CalendarEvent) => void
   onSelectSlot?: (start: Date, end: Date) => void
+  calendarView?: 'rollingWeek' | 'dayGridMonth' | 'multiMonthYear'
+  focusDate?: string
 }
 
 export function RollingWeekView({
@@ -49,6 +53,8 @@ export function RollingWeekView({
   conflictIds,
   onSelectEvent,
   onSelectSlot,
+  calendarView = 'rollingWeek',
+  focusDate,
 }: RollingWeekViewProps) {
   const calendarRef = useRef<FullCalendar>(null)
   const today = useMemo(
@@ -117,17 +123,24 @@ export function RollingWeekView({
 
   const timeFormats = fullCalendarTimeFormats(use24HourFormat)
 
+  useEffect(() => {
+    const api = calendarRef.current?.getApi()
+    if (!api) return
+    if (calendarView && api.view.type !== calendarView) api.changeView(calendarView)
+    if (focusDate) api.gotoDate(focusDate)
+  }, [calendarView, focusDate])
+
   return (
     <div className="h-full min-h-[28rem] rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-2 shadow-sm">
       <FullCalendar
         key={`${today.toISOString()}-${use24HourFormat}-${firstDayOfWeek}-${weeklyViewDays}`}
         ref={calendarRef}
-        plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
-        initialView="rollingWeek"
+        plugins={[timeGridPlugin, dayGridPlugin, multiMonthPlugin, interactionPlugin]}
+        initialView={calendarView}
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'rollingWeek,dayGridMonth',
+          right: '',
         }}
         buttonText={{
           today: 'Today',
@@ -142,6 +155,10 @@ export function RollingWeekView({
           },
           dayGridMonth: {
             buttonText: 'Month',
+          },
+          multiMonthYear: {
+            type: 'multiMonthYear',
+            buttonText: 'Year',
           },
         }}
         initialDate={today}

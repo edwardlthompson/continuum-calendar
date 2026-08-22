@@ -39,6 +39,17 @@ body {
   font-weight: 700;
 }
 
+/* Month grid: unmistakable today cell (same red as the agenda now-bar). */
+.fc-dayGridMonth-view .fc-daygrid-day.fc-day-today {
+  background: transparent !important;
+  box-shadow: inset 0 0 0 3px var(--cc-brand-now);
+}
+
+.fc-dayGridMonth-view .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  color: var(--cc-brand-now);
+  font-weight: 700;
+}
+
 .fc .fc-timegrid-slot {
   height: 2.25rem;
 }
@@ -56,6 +67,30 @@ body {
 .fc-event.cc-conflict-event {
   box-shadow: inset 0 0 0 2px #facc15;
 }
+/* Native date/time/select popups follow color-scheme; transparent fields
+   inherit light chrome + dark text tokens (or the reverse) = unreadable. */
+.cc-native-field {
+  color: var(--cc-text);
+  background-color: var(--cc-surface);
+  accent-color: var(--cc-accent);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-theme='light'] .cc-native-field {
+  color-scheme: light;
+}
+
+html[data-theme='dark'] .cc-native-field {
+  color-scheme: dark;
+}
+
+.cc-native-field option {
+  color: var(--cc-text);
+  background-color: var(--cc-surface);
+}
+
 .cc-conflict-badge {
   display: inline-flex;
   align-items: center;
