@@ -20,4 +20,11 @@ class ContinuumOAuthErrorsTest {
     fun invalidGrantIsNotTestingMode() {
         assertFalse(ContinuumOAuthErrors.isTestingMode("invalid_grant", "code expired"))
     }
+
+    @Test
+    fun invalidGrantIsDetected() {
+        assertTrue(ContinuumOAuthErrors.isInvalidGrant("Token refresh failed (400): invalid_grant"))
+        assertTrue(ContinuumOAuthErrors.isInvalidGrant("Token has been expired or revoked."))
+        assertFalse(ContinuumOAuthErrors.isInvalidGrant("Calendar list failed: 401"))
+    }
 }

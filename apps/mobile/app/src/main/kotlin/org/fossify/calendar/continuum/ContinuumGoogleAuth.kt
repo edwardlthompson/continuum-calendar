@@ -62,6 +62,9 @@ class ContinuumGoogleAuth(private val context: Context) {
             refreshAccessToken(refresh, previous = tokens)
         } catch (e: Exception) {
             ContinuumDiagnostics.w("Token refresh failed", e)
+            if (ContinuumOAuthErrors.isInvalidGrant(e.message.orEmpty())) {
+                saveTokens(null)
+            }
             null
         }
     }
@@ -86,9 +89,11 @@ class ContinuumGoogleAuth(private val context: Context) {
                     body,
                 )
                 if (resp.code !in 200..299) {
-                    throw IllegalStateException(
-                        "Token refresh failed (${resp.code}): ${resp.body.take(240)}",
-                    )
+                    val snippet = resp.body.take(240)
+                    if (ContinuumOAuthErrors.isInvalidGrant(snippet)) {
+                        saveTokens(null)
+                    }
+                    throw IllegalStateException("Token refresh failed (${resp.code}): $snippet")
                 }
                 val json = JSONObject(resp.body)
                 val next = ContinuumTokens(
@@ -106,6 +111,7 @@ class ContinuumGoogleAuth(private val context: Context) {
             } catch (e: Exception) {
                 lastError = e
                 ContinuumDiagnostics.w("Token refresh attempt ${attempt + 1}/3 failed", e)
+                if (ContinuumOAuthErrors.isInvalidGrant(e.message.orEmpty())) break
                 if (attempt < 2) Thread.sleep(600L * (attempt + 1))
             }
         }

@@ -259,6 +259,12 @@ export async function createGoogleEvent(
   return mapGoogleEvent((await res.json()) as Record<string, unknown>, calendarId)
 }
 
+/** Create a Google Calendar copy (phone CalDAV path) when Drive App Data is unavailable. */
+export async function createGoogleEventCopy(calendarId: string, event: CalendarEvent): Promise<CalendarEvent> {
+  const { id: _id, etag: _etag, updated: _updated, htmlLink: _link, source: _source, ...rest } = event
+  return createGoogleEvent(calendarId, { ...rest, calendarId })
+}
+
 export async function updateGoogleEvent(event: CalendarEvent): Promise<CalendarEvent> {
   const headers = await authHeaders()
   headers.set('Content-Type', 'application/json')
@@ -268,6 +274,10 @@ export async function updateGoogleEvent(event: CalendarEvent): Promise<CalendarE
     `${CALENDAR_BASE}/calendars/${encodeURIComponent(event.calendarId)}/events/${encodeURIComponent(event.id)}`,
     { method: 'PUT', headers, body: JSON.stringify(body) },
   )
+  if (res.status === 404) {
+    const { id: _id, etag: _etag, updated: _updated, htmlLink: _link, source: _source, ...rest } = event
+    return createGoogleEvent(event.calendarId, rest)
+  }
   if (!res.ok) throw new Error(`Calendar update failed: ${res.status}`)
   return mapGoogleEvent((await res.json()) as Record<string, unknown>, event.calendarId)
 }

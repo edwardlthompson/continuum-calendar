@@ -178,7 +178,7 @@
 | **Symptom** | Desktop Sign in: pick account → Continue on unverified warning → Google page “An unknown error has occurred”; no `code` hits loopback |
 | **Cause** | OAuth consent is Testing; Google blocks accounts that are not listed as test users. Four sensitive scopes made Continue even more brittle |
 | **Fix** | Add the exact Gmail under Audience → Test users; desktop requests Calendar only; native Rust token POST; never set empty `VITE_GOOGLE_CLIENT_SECRET=` in `.env.production` |
-| **Prevention** | Confirm header version is 0.17.3+; do not treat this as an app crash until the account is a test user |
+| **Prevention** | Confirm header version is 0.17.3+; do not treat this as an app crash until the account is a test user. Do not add `drive.appdata` or `prompt=consent` to desktop sign-in while Publishing status is Testing — Google then shows “Sorry, something went wrong there” after Continue |
 ### KB-029 — Room `Cannot access database on the main thread` after overlap save
 
 | Field | Detail |
@@ -187,7 +187,6 @@
 | **Cause** | `runOnUiThread { finishSaveEvent() }` then `storeEvent()` on UI when the event had no reminders |
 | **Fix** | Always `ensureBackgroundThread { storeEvent(...) }` after the UI hop for notification permission |
 | **Prevention** | After any `runOnUiThread` hop, do not call Room/DAO on that same stack |
-
 ### KB-030 — Pre-bumping `.template-version` makes Release Please skip that tag
 
 | Field | Detail |
@@ -196,7 +195,6 @@
 | **Cause** | Manifest was set to 0.18.3 in the prep commit; RP then computed the next MINOR from that baseline |
 | **Fix** | Ship the published tag (`v0.19.0`). Attach current APK/EXE to that release |
 | **Prevention** | Do not write a future template version into `.release-please-manifest.json` before RP has tagged it |
-
 ### KB-031 — Template `check-file-limits.sh` drops the App.tsx exemption
 
 | Field | Detail |
@@ -205,7 +203,6 @@
 | **Cause** | Upstream scan includes all `*.tsx`; Continuum already exempted composition roots (DECISION 2026-08-11) |
 | **Fix** | Restore `! -name App.tsx` / `main.tsx` exclusions; keep the 0.21.0 `scripts/lib` 150-line check |
 | **Prevention** | When cherry-picking Canon `check-file-limits.sh`, re-apply the composition-root exemption |
-
 ### KB-032 — Release Please omits `## [Unreleased]` after fold
 
 | Field | Detail |
@@ -214,7 +211,6 @@
 | **Cause** | RP writes `## [0.22.0]` and does not restore an empty Unreleased section |
 | **Fix** | Add an empty `## [Unreleased]` above the new version heading immediately after merge |
 | **Prevention** | After every RP merge, restore Unreleased *first* and move leftover Added/Changed bullets into the new version section before other post-release docs |
-
 ### KB-033 — `chore(release)` prep commit becomes a patch
 
 | Field | Detail |
@@ -223,7 +219,6 @@
 | **Cause** | Conventional Commits: `chore` is patch (or skipped). Features in the same prep commit do not bump minor |
 | **Fix** | Accept the published patch tag; fold real feature bullets into that version in CHANGELOG + `gh release edit` |
 | **Prevention** | Land `feat:` commits before the prep commit when a minor is intended; do not name a version RP has not computed |
-
 ### KB-034 — Desktop WebView freeze after HMR
 
 | Field | Detail |
@@ -232,4 +227,3 @@
 | **Cause** | Vite failed to resolve `@fullcalendar/multimonth` (workspace install not hoisted) and `.cc-splash` covered the page with `pointer-events` |
 | **Fix** | Install the plugin from the repo root (`-w @continuum/desktop`); set splash `pointer-events: none` |
 | **Prevention** | Add new FullCalendar plugins at the workspace root; keep the splash non-interactive |
-

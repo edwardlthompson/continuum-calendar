@@ -2,6 +2,17 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint A4 — Audit 2026-08-22 pass 2 (2026-08-22)
+
+- ✅ [AGENT] F-005: Record pass-2 audit; revert `.cursor/*.json` timestamp churn
+- ✅ [AGENT] F-006: Close stale A2 F-007 (Release Please PR #9 merged 2026-08-15 as v0.17.0)
+
+## Sprint A3 — Audit 2026-08-22 (2026-08-22)
+
+- ✅ [AGENT] F-001/F-007: Record audit; revert `.cursor/*.json` timestamp churn from validate-bootstrap
+- ✅ [AGENT] F-008: Tighten desktop `isExpiredGoogleAuth` to invalid_grant / revoked only
+- ✅ [AGENT] F-002: Android `invalid_grant` clears Continuum tokens so the 1s poller stops flooding logcat
+
 ## /ship v0.24.0 (2026-08-22)
 
 - ✅ [AGENT] Desktop editor parity, tray remaining-today, close-to-tray, Start with Windows (`185f81e`)

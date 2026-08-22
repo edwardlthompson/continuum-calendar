@@ -31,13 +31,22 @@ import { AppTitle } from './components/AppTitle'
 import { useTheme } from './theme/ThemeContext'
 import {
   exchangeCodeForTokens,
+  ensureFreshTokens,
   getStoredTokens,
   humanizeOAuthFailure,
   isGoogleConfigured,
+  isInsufficientDriveScope,
   parseOAuthCallback,
   signInWithGoogle,
   signOutGoogle,
 } from './auth/googleAuth'
+import {
+  authStatusFromTokens,
+  clearNeedsReauth,
+  loadNeedsReauth,
+  onAuthExpired,
+  type GoogleAuthStatus,
+} from './auth/authSession'
 import {
   deleteLocalEvent,
   ensureSeededEvents,
@@ -78,7 +87,12 @@ import {
   subscribeIcsUrl,
   unsubscribeIcs,
 } from './services/icsSubscribe'
-import { createGoogleEvent, deleteGoogleEvent, updateGoogleEvent } from './services/googleCalendar'
+import {
+  createGoogleEvent,
+  createGoogleEventCopy,
+  deleteGoogleEvent,
+  updateGoogleEvent,
+} from './services/googleCalendar'
 import {
   noteLocalEventsChanged,
   pushLocalEventsNow,
@@ -94,6 +108,7 @@ import { openExternal } from './about/openExternal'
 import { decideLaunchPrompt, type LaunchPrompt } from './about/runAppUpdates'
 import { markUpdateChecked, markVersionSeen } from './about/updatePrefs'
 import { DonateNudgeDialog, UpdateAvailableDialog } from './components/AppUpdateDialogs'
+import { AuthReconnectBanner } from './components/AuthReconnectBanner'
 import { CalendarToolbar, type MainView } from './components/CalendarToolbar'
 import { useDesktopHotkeys } from './hooks/useDesktopHotkeys'
 import { HOLIDAY_PACKS, mergeHolidayEvents, type HolidayPackId } from './services/holidayPacks'
@@ -147,7 +162,10 @@ export default function App() {
   const searchRef = useRef<HTMLInputElement>(null)
   const [windowBehavior, setWindowBehavior] = useState<WindowBehavior>(loadWindowBehavior)
   const [startWithWindows, setStartWithWindows] = useState(false)
-  const [signedIn, setSignedIn] = useState(false)
+  const [authStatus, setAuthStatus] = useState<GoogleAuthStatus>(() =>
+    loadNeedsReauth() ? 'needs-reauth' : 'signed-out',
+  )
+  const signedIn = authStatus === 'signed-in'
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const statusTimerRef = useRef<number | null>(null)
   const [editing, setEditing] = useState<Partial<CalendarEvent> | null>(null)
@@ -386,6 +404,7 @@ export default function App() {
     } catch (e) {
       if (isTransientPeerError(e)) return
       continuumLogger.error('Local events peer reconcile failed', e)
+      flash(humanizeOAuthFailure(e))
     }
   }, [flash, settings.showContactBirthdays])
 
@@ -420,7 +439,7 @@ export default function App() {
       await runMultiSync()
     } catch (e) {
       continuumLogger.error('Manual refresh failed', e)
-      flash(e instanceof Error ? e.message : 'Refresh failed')
+      flash(humanizeOAuthFailure(e))
       setSyncInfo(getSyncStatus())
     } finally {
       setSyncing(false)
@@ -428,12 +447,34 @@ export default function App() {
   }, [flash, hydrateSettingsFromDrive, runMultiSync])
 
   useEffect(() => {
-    void getStoredTokens().then((t) => setSignedIn(Boolean(t)))
+    void (async () => {
+      if (loadNeedsReauth()) {
+        setAuthStatus('needs-reauth')
+        return
+      }
+      const stored = await getStoredTokens()
+      if (!stored) {
+        setAuthStatus('signed-out')
+        return
+      }
+      const fresh = await ensureFreshTokens()
+      setAuthStatus(authStatusFromTokens(Boolean(fresh)))
+    })()
+    return onAuthExpired(() => {
+      setAuthStatus('needs-reauth')
+      flash(
+        'Google sign-in expired. Your events are still saved on this PC. Sign in again to sync.',
+      )
+    })
+  }, [flash])
+
+  useEffect(() => {
     const cb = parseOAuthCallback(window.location.href)
     if (cb) {
       void exchangeCodeForTokens(cb.code, cb.state)
         .then(async () => {
-          setSignedIn(true)
+          clearNeedsReauth()
+          setAuthStatus('signed-in')
           window.history.replaceState({}, '', '/')
           flash('Signed in with Google')
           await hydrateSettingsFromDrive()
@@ -678,26 +719,11 @@ export default function App() {
       return
     }
     try {
-      const openAudience = window.confirm(
-        [
-          'Google will warn that Continuum is unverified. That is expected.',
-          '',
-          'If Continue then shows “An unknown error has occurred”, Google is blocking this account — Continuum never gets a login code.',
-          '',
-          'Add this exact Gmail as a Test user first (Google Cloud → Audience), wait one minute, then sign in again.',
-          '',
-          'OK = open the Test users page now. Cancel = I already added this account, continue sign-in.',
-        ].join('\n'),
-      )
-      if (openAudience) {
-        window.open('https://console.cloud.google.com/auth/audience', '_blank', 'noopener,noreferrer')
-        flash('Add your Gmail as a Test user, then click Sign in again')
-        return
-      }
-      flash('Opening Google sign-in…')
+      flash('Opening Google sign-in in your browser…')
       const result = await signInWithGoogle()
       if (result === 'pending-redirect') return
-      setSignedIn(true)
+      clearNeedsReauth()
+      setAuthStatus('signed-in')
       flash('Signed in with Google')
       await hydrateSettingsFromDrive()
       await runMultiSync()
@@ -711,7 +737,8 @@ export default function App() {
 
   async function onSignOut() {
     await signOutGoogle()
-    setSignedIn(false)
+    clearNeedsReauth()
+    setAuthStatus('signed-out')
     flash('Signed out')
   }
 
@@ -797,8 +824,17 @@ export default function App() {
       const saved = upsertEvents(next)
       setEvents(saved)
       setEditing(null)
-      noteLocalEventsChanged()
-      if (signedIn) void pushLocalEventsNow()
+      const wroteLocal = next.some((e) => e.source === 'local' || e.source === 'ics_import' || !e.source)
+      if (wroteLocal) noteLocalEventsChanged()
+      if (signedIn && wroteLocal) {
+        void pushLocalEventsNow()
+          .then(() => flash('Event saved · synced to peers'))
+          .catch((e) => {
+            continuumLogger.error('Local events push failed', e)
+            flash(humanizeOAuthFailure(e))
+          })
+        return
+      }
       flash('Event saved')
       return
     }
@@ -820,7 +856,7 @@ export default function App() {
     const writeGoogle =
       settings.useGoogleCalendar &&
       signedIn &&
-      (draft.source === 'google' || cal?.source === 'google')
+      (draft.source === 'google' || cal?.source === 'google' || draft.calendarId === 'primary')
     let saved: CalendarEvent
     if (writeGoogle) {
       try {
@@ -881,9 +917,23 @@ export default function App() {
       if (signedIn) {
         void pushLocalEventsNow()
           .then(() => flash('Event saved · synced to peers'))
-          .catch((e) => {
+          .catch(async (e) => {
+            if (settings.useGoogleCalendar && isInsufficientDriveScope(e)) {
+              try {
+                const gcal =
+                  calendars.find((c) => c.logicalId === 'google:primary')?.id ??
+                  (cal?.source === 'google' ? cal.id : 'primary')
+                const published = await createGoogleEventCopy(gcal, saved)
+                deleteLocalEvent(saved.calendarId, saved.id, saved.source)
+                setEvents(upsertEvents([published]))
+                flash('Event saved to Google Calendar — pull calendars on your phone')
+                return
+              } catch (pubErr) {
+                continuumLogger.error('Google Calendar publish after Drive 403 failed', pubErr)
+              }
+            }
             continuumLogger.error('Local events push failed', e)
-            flash(e instanceof Error ? e.message : 'Saved locally — peer push failed')
+            flash(humanizeOAuthFailure(e))
           })
         return
       }
@@ -1204,7 +1254,7 @@ export default function App() {
               </div>
             ) : null}
           </div>
-          {signedIn ? (
+          {authStatus === 'signed-in' ? (
             <button
               type="button"
               className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
@@ -1217,7 +1267,7 @@ export default function App() {
             <button
               type="button"
               className="rounded bg-[var(--cc-accent)] px-2 py-1 text-sm text-white"
-              aria-label="Sign in with Google"
+              aria-label={authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
               title={
                 isGoogleConfigured()
                   ? 'Connect your Google Calendar, Contacts, and Tasks'
@@ -1225,7 +1275,7 @@ export default function App() {
               }
               onClick={() => void onSignIn()}
             >
-              Sign in with Google
+              {authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
             </button>
           )}
           <button
@@ -1239,6 +1289,7 @@ export default function App() {
           </button>
         </div>
       </header>
+      {authStatus === 'needs-reauth' ? <AuthReconnectBanner onSignIn={() => void onSignIn()} /> : null}
       <CalendarToolbar
         view={view}
         onView={setView}
@@ -1372,7 +1423,11 @@ export default function App() {
               aria-label="Search settings"
             />
             <p className="text-xs text-[var(--cc-muted)]">
-              {signedIn ? 'Signed in with Google' : 'Not signed in'}
+              {authStatus === 'signed-in'
+                ? 'Signed in with Google'
+                : authStatus === 'needs-reauth'
+                  ? 'Google sign-in expired — events stay on this PC'
+                  : 'Not signed in'}
               {syncInfo.lastSyncedAt
                 ? ` · last sync ${new Date(syncInfo.lastSyncedAt).toLocaleTimeString()}`
                 : ''}
@@ -1388,19 +1443,25 @@ export default function App() {
                 Sign in to publish/pull Continuum settings with Android
               </p>
             )}
-            {!signedIn ? (
+            {authStatus !== 'signed-in' ? (
               <>
+                {authStatus === 'needs-reauth' ? (
+                  <p className="text-sm font-medium text-[var(--cc-brand-now)]">
+                    Sign in again. Edits you already made are still on this computer.
+                  </p>
+                ) : (
                 <p className="text-xs text-[var(--cc-muted)]">
                   Google OAuth is in Testing: if sign-in shows “unknown error” or access denied,
                   add this Gmail as a Test user (Google Cloud → Audience), then try again.
                 </p>
+                )}
                 <button
                   type="button"
                   className="w-full rounded bg-[var(--cc-accent)] px-2 py-1 text-white"
-                  aria-label="Sign in with Google"
+                  aria-label={authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
                   onClick={() => void onSignIn()}
                 >
-                  Sign in with Google
+                  {authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
                 </button>
               </>
             ) : null}

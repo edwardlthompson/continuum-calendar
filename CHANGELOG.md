@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* **desktop:** expired Google sign-in shows Sign in again, a banner, and an OS notification; local edits stay queued
+* **desktop:** Sign in / Sign in again opens Google in the system browser instead of a Test-users confirm that swallowed OK
+* **desktop:** missing Google event ids create on Calendar instead of 404-to-local; Drive-only phone sync is not requested during Testing-mode sign-in (KB-028)
+* **android:** expired Continuum Google API refresh tokens are cleared so peer-sync polling stops flooding logcat
+
 ## [0.24.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.23.0...v0.24.0) (2026-08-22)
 
 ### Added

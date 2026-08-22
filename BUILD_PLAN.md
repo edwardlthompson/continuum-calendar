@@ -34,6 +34,17 @@ grep '\[AUTO\]' BUILD_PLAN.md
 
 ## Continuum Calendar — Active Board
 
+> **Sprint A4** archived in COMPLETED_TASKS.md @ `5a6d426`.
+
+### Sprint A3 — Audit 2026-08-22 (HUMAN backlog)
+
+> **A3 AGENT** archived in COMPLETED_TASKS.md @ `5a6d426`. See ephemeral `CODE_REVIEW.md`.
+
+#### Human & device (after automation)
+
+- 🔲 [HUMAN] F-003: Testing-mode Test users or publish OAuth consent (`docs/HUMAN_REMAINING.md` §1)
+- 🔲 [ADB] Smoke PC Sign in again (Calendar only) + phone Connect Google calendars after reauth
+
 ### Sprint A2 — Audit 2026-08-14 (HUMAN backlog)
 
 > **A2 AGENT** archived in COMPLETED_TASKS.md @ `fdcd285`. See ephemeral `CODE_REVIEW.md`.
@@ -43,7 +54,6 @@ grep '\[AUTO\]' BUILD_PLAN.md
 - 🔲 [HUMAN] F-002: Public OAuth clients + consent + release keystore SHA-1 on Android client
 - 🔲 [HUMAN] F-003: Approve or defer secure token storage
 - 🔲 [HUMAN] F-004: LICENSE copyright + Continuum Privacy Policy URL
-- 🔲 [HUMAN] F-007: Approve CodeQL/Actions on Release Please PR #9
 - 🔲 [ADB] Install 1.10.4 APK; About shows 1.10.4; all-day + timed event has no false conflict
 
 ### Sprint A1 — Audit 2026-08-11 (HUMAN backlog)

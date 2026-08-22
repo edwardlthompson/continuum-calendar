@@ -12,6 +12,12 @@ object ContinuumOAuthErrors {
             blob.contains("verification", ignoreCase = true)
     }
 
+    /** Refresh token dead — clear local tokens; do not retry. */
+    fun isInvalidGrant(blob: String): Boolean {
+        return blob.contains("invalid_grant", ignoreCase = true) ||
+            blob.contains("expired or revoked", ignoreCase = true)
+    }
+
     fun message(context: Context, error: String, description: String): String {
         return if (isTestingMode(error, description)) {
             context.getString(R.string.continuum_oauth_testing_mode)

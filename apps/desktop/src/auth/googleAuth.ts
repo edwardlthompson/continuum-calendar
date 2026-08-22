@@ -5,13 +5,24 @@ import {
   type GoogleOAuthTokens,
 } from '@continuum/shared'
 
-/** Calendar only — extra sensitive scopes often break Google's unverified-app Continue. */
+/**
+ * Calendar only while the OAuth app is in Testing (KB-028). Extra scopes
+ * (Drive, Contacts, Tasks) plus prompt=consent make Google show
+ * "Sorry, something went wrong there" after Continue.
+ */
 const SIGNIN_SCOPE = GOOGLE_SCOPES.calendar
 import { createPkcePair, randomString } from './pkce'
 import { loadTokens, saveTokens } from './tokenStore'
-import { humanizeOAuthFailure } from './oauthErrors'
+import { openExternal } from '../about/openExternal'
+import { humanizeOAuthFailure, isExpiredGoogleAuth } from './oauthErrors'
+import { handleExpiredGoogleAuth } from './authSession'
 
-export { humanizeOAuthFailure, isTestingModeOAuthError } from './oauthErrors'
+export {
+  hasDriveAppDataScope,
+  humanizeOAuthFailure,
+  isInsufficientDriveScope,
+  isTestingModeOAuthError,
+} from './oauthErrors'
 
 const AUTH_STATE_KEY = 'continuum.oauth.state'
 const AUTH_VERIFIER_KEY = 'continuum.oauth.verifier'
@@ -198,8 +209,21 @@ export async function ensureFreshTokens(): Promise<GoogleOAuthTokens | null> {
     let tokens = await loadTokens()
     if (!tokens) return null
     if (isTokenExpired(tokens)) {
-      if (!tokens.refreshToken) return null
-      tokens = await refreshAccessToken(tokens)
+      if (!tokens.refreshToken) {
+        await saveTokens(null)
+        handleExpiredGoogleAuth(new Error('No refresh token'))
+        return null
+      }
+      try {
+        tokens = await refreshAccessToken(tokens)
+      } catch (e) {
+        if (isExpiredGoogleAuth(e)) {
+          await saveTokens(null)
+          handleExpiredGoogleAuth(e)
+          return null
+        }
+        throw e
+      }
     }
     return tokens
   })().finally(() => {
@@ -281,7 +305,6 @@ export async function signInWithGoogle(): Promise<'pending-redirect' | GoogleOAu
   if (await isTauri()) {
     const { invoke } = await import('@tauri-apps/api/core')
     const { listen } = await import('@tauri-apps/api/event')
-    const { openUrl } = await import('@tauri-apps/plugin-opener')
 
     const port = await invoke<number>('start_oauth_loopback')
     const redirectUri = `http://127.0.0.1:${port}`
@@ -319,11 +342,11 @@ export async function signInWithGoogle(): Promise<'pending-redirect' | GoogleOAu
               reject(new Error(humanizeOAuthFailure(raw)))
             },
           )
-          await openUrl(authUrl)
+          await openExternal(authUrl)
         } catch (e) {
           window.clearTimeout(timer)
           finish()
-          reject(e instanceof Error ? e : new Error('Failed to open system browser'))
+          reject(e instanceof Error ? e : new Error('Failed to open the Google sign-in page in your browser'))
         }
       })()
     })
