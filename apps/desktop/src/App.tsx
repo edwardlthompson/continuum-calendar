@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  defaultContinuumSettings,
   conflictsForEvent,
   crossSourceConflicts,
   detectConflicts,
@@ -11,6 +10,10 @@ import {
   nextRemainingTickMs,
   seriesEventId,
   formatConflictSources,
+  uniqueConflictDates,
+  peekNextConflictDate,
+  earliestConflictTimeOnDate,
+  localDateKey,
   isBirthdayCalendarEntry,
   isContactBirthdayEvent,
   proposeMeetingTimes,
@@ -20,7 +23,6 @@ import {
   type CalendarNotifyPrefs,
   type ContinuumSettings,
   type FreeSlot,
-  type ThemeMode,
 } from '@continuum/shared'
 import { RollingWeekView } from './components/RollingWeekView'
 import { AgendaView } from './components/AgendaView'
@@ -61,10 +63,7 @@ import {
   loadLocalSettings,
   pushSettingsPatch,
   startSettingsPollLoop,
-  exportSettingsJson,
-  importSettingsJson,
   reconcilePeerSettings,
-  getSettingsSyncError,
   markPendingPeerPush,
 } from './services/settingsSync'
 import { isTransientPeerError, resetPeerSyncBackoff } from './services/peerSyncControl'
@@ -77,15 +76,12 @@ import {
 } from './services/notifications'
 import { getDeviceId } from './auth/tokenStore'
 import { copyFreeSlotsToClipboard } from './utils/freeSlots'
-import { downloadIcsFile } from './services/ics'
 import { importIcsFromUrl, importIcsText, looksLikeIcsFileName } from './services/icsImport'
 import { discoverCalDavCalendars, loadCalDavAccounts, saveCalDavAccounts, type CalDavAccount } from './services/caldav'
 import { syncCalDavEvents } from './services/caldavSync'
 import { refreshDesktopOverlays } from './services/overlaySync'
 import {
-  loadIcsSubscriptions,
   subscribeIcsUrl,
-  unsubscribeIcs,
 } from './services/icsSubscribe'
 import {
   createGoogleEvent,
@@ -111,17 +107,16 @@ import { DonateNudgeDialog, UpdateAvailableDialog } from './components/AppUpdate
 import { AuthReconnectBanner } from './components/AuthReconnectBanner'
 import { CalendarToolbar, type MainView } from './components/CalendarToolbar'
 import { useDesktopHotkeys } from './hooks/useDesktopHotkeys'
-import { HOLIDAY_PACKS, mergeHolidayEvents, type HolidayPackId } from './services/holidayPacks'
-import { renderBadgePng } from './services/dayBadge'
+import { hotkeyTitle } from './hooks/desktopHotkeys'
+import { mergeHolidayEvents, type HolidayPackId } from './services/holidayPacks'
+import { SettingsPanel } from './settings/SettingsPanel'
+import { renderBadgePng, renderOverlayPng } from './services/dayBadge'
 import {
   loadWindowBehavior,
-  saveWindowBehavior,
   toNativeArgs,
-  type CloseTarget,
-  type MinimizeTarget,
   type WindowBehavior,
 } from './services/windowBehavior'
-import { readStartWithWindows, writeStartWithWindows } from './services/windowsAutostart'
+import { readStartWithWindows } from './services/windowsAutostart'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 
@@ -154,7 +149,8 @@ export default function App() {
   const [calendars, setCalendars] = useState(() => loadCalendars())
   const [view, setView] = useState<MainView>('agenda')
   const [eventQuery, setEventQuery] = useState('')
-  const [jumpDate, setJumpDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [jumpDate, setJumpDate] = useState(() => localDateKey())
+  const [focusSeq, setFocusSeq] = useState(0)
   const [holidayPack, setHolidayPack] = useState<HolidayPackId>(() => {
     const raw = localStorage.getItem('continuum.holidayPack')
     return raw === 'us' || raw === 'ca' || raw === 'gb' || raw === 'de' ? raw : 'none'
@@ -178,15 +174,10 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [settingsQuery, setSettingsQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
-  const [hideCrossBanner, setHideCrossBanner] = useState(false)
+  const [hideConflictBanner, setHideConflictBanner] = useState(false)
   const [launchPrompt, setLaunchPrompt] = useState<LaunchPrompt | null>(null)
   const installedVersionRef = useRef('0.17.3')
 
-  const settingsMatch = useCallback((...labels: string[]) => {
-    const q = settingsQuery.trim().toLowerCase()
-    if (!q) return true
-    return labels.some((l) => l.toLowerCase().includes(q))
-  }, [settingsQuery])
   const [syncInfo, setSyncInfo] = useState(getSyncStatus())
   const [syncing, setSyncing] = useState(false)
   const [dropActive, setDropActive] = useState(false)
@@ -246,6 +237,19 @@ export default function App() {
   }, [visibleEvents, eventQuery])
   const conflicts = useMemo(() => detectConflicts(visibleEvents), [visibleEvents])
   const crossConflicts = useMemo(() => crossSourceConflicts(visibleEvents), [visibleEvents])
+  const conflictDates = useMemo(() => uniqueConflictDates(conflicts), [conflicts])
+  const nextConflictJump = useMemo(
+    () => peekNextConflictDate(conflictDates, jumpDate),
+    [conflictDates, jumpDate],
+  )
+  const jumpScrollTime = useMemo(() => {
+    if (view === 'agenda' || !jumpDate) return undefined
+    return earliestConflictTimeOnDate(conflicts, jumpDate)
+  }, [conflicts, jumpDate, focusSeq, view])
+
+  useEffect(() => {
+    setHideConflictBanner(false)
+  }, [conflictDates.join('|')])
 
   const flash = useCallback((msg: string) => {
     setStatusMsg(msg)
@@ -993,7 +997,37 @@ export default function App() {
   }
 
   function goToday() {
-    setJumpDate(new Date().toISOString().slice(0, 10))
+    jumpCalendarTo(localDateKey())
+  }
+
+  function jumpCalendarTo(dateKey: string) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return
+    setEditing(null)
+    setShowSettings(false)
+    setConflictPrompt(null)
+    const today = localDateKey()
+    const agendaEnd = (() => {
+      const d = new Date(`${today}T12:00:00`)
+      d.setDate(d.getDate() + Math.max(1, settings.agendaRangeDays ?? 30))
+      return localDateKey(d.getTime())
+    })()
+    if (view === 'agenda' && (dateKey < today || dateKey > agendaEnd)) {
+      setView('rolling')
+    }
+    setJumpDate(dateKey)
+    setFocusSeq((n) => n + 1)
+  }
+
+  function jumpToOverlap(pairs: typeof conflicts) {
+    const dates = uniqueConflictDates(pairs)
+    if (!dates.length) return
+    const idx = dates.indexOf(jumpDate)
+    jumpCalendarTo(dates[(idx + 1) % dates.length] ?? dates[0]!)
+  }
+
+  function formatConflictJumpDay(dateKey: string): string {
+    const d = new Date(`${dateKey}T12:00:00`)
+    return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
   }
 
   function openNewEvent(partial: Partial<CalendarEvent> = {}) {
@@ -1091,7 +1125,7 @@ export default function App() {
     onSearch: () => searchRef.current?.focus(),
     onJump: () => {
       const raw = window.prompt('Jump to date (YYYY-MM-DD)', jumpDate)
-      if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) setJumpDate(raw)
+      if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) jumpCalendarTo(raw)
     },
   })
 
@@ -1120,16 +1154,25 @@ export default function App() {
     let cancelled = false
     const tick = async () => {
       const n = remainingTodayCount(visibleEvents)
-      const png = await renderBadgePng(n)
+      let png: number[] = []
+      let overlay: number[] = []
+      try {
+        png = await renderBadgePng(n)
+        overlay = renderOverlayPng(n)
+      } catch {
+        png = []
+        overlay = []
+      }
       if (cancelled) return
       try {
         await invoke('set_day_badge', {
           count: n,
           png,
+          overlay,
           summary: n ? `${n} remaining today` : 'No remaining events today',
         })
       } catch {
-        /* browser / denied */
+        /* tray badge is best-effort */
       }
       const wait = Math.min(60_000, Math.max(5_000, nextRemainingTickMs(visibleEvents) - Date.now()))
       timer = window.setTimeout(() => void tick(), wait)
@@ -1164,7 +1207,19 @@ export default function App() {
             {syncInfo.lastSyncedAt
               ? `Synced ${new Date(syncInfo.lastSyncedAt).toLocaleTimeString()}`
               : 'Not synced'}
-            {conflicts.length ? ` · ${conflicts.length} conflict(s)` : ''}
+            {conflicts.length ? (
+              <>
+                {' · '}
+                <button
+                  type="button"
+                  className="underline decoration-amber-500 underline-offset-2 hover:text-amber-800 dark:hover:text-amber-200"
+                  aria-label={`Jump to overlapping events on ${nextConflictJump ?? conflictDates[0] ?? 'that day'}`}
+                  onClick={() => jumpToOverlap(conflicts)}
+                >
+                  {conflicts.length} overlap{conflicts.length === 1 ? '' : 's'} — jump
+                </button>
+              </>
+            ) : null}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -1296,7 +1351,8 @@ export default function App() {
         query={eventQuery}
         onQuery={setEventQuery}
         jumpDate={jumpDate}
-        onJumpDate={setJumpDate}
+        onJumpDate={jumpCalendarTo}
+        onToday={goToday}
         searchRef={searchRef}
       />
 
@@ -1319,23 +1375,45 @@ export default function App() {
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col border-l border-[var(--cc-border)] pl-5">
           <main className="flex min-h-0 min-w-0 flex-1 flex-col">
-            {crossConflicts.length > 0 && !hideCrossBanner ? (
+            {conflicts.length > 0 && !hideConflictBanner ? (
               <div
                 className="mb-2 flex items-start justify-between gap-2 rounded-lg border border-amber-400 bg-amber-50 px-3 py-2 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100"
                 role="status"
               >
-                <p>
-                  {crossConflicts.length} local/peer event(s) overlap Google
-                  {crossConflicts[0]
-                    ? ` — ${formatConflictSources(crossConflicts[0])}`
-                    : ''}
-                  . Amber rows mark the overlap; open an event to reschedule.
-                </p>
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 text-left underline decoration-amber-600 underline-offset-2 hover:decoration-2"
+                  aria-label={
+                    nextConflictJump
+                      ? `Jump to overlapping events on ${nextConflictJump}`
+                      : 'Jump to overlapping events'
+                  }
+                  onClick={() => jumpToOverlap(conflicts)}
+                >
+                  <span className="font-medium">
+                    {conflicts.length} overlapping event{conflicts.length === 1 ? '' : 's'}
+                  </span>
+                  {nextConflictJump ? (
+                    <span>
+                      {' '}
+                      on {formatConflictJumpDay(nextConflictJump)} — click to jump, then reschedule or
+                      dismiss.
+                    </span>
+                  ) : (
+                    <span> — click to jump to the conflict day.</span>
+                  )}
+                  {crossConflicts.length > 0 ? (
+                    <span className="mt-0.5 block text-xs opacity-90">
+                      {crossConflicts.length} involve local/peer vs Google
+                      {crossConflicts[0] ? ` (${formatConflictSources(crossConflicts[0])})` : ''}
+                    </span>
+                  ) : null}
+                </button>
                 <button
                   type="button"
                   className="shrink-0 rounded px-2 py-0.5 text-xs underline"
-                  aria-label="Dismiss cross-source conflict notice"
-                  onClick={() => setHideCrossBanner(true)}
+                  aria-label="Dismiss overlap notice"
+                  onClick={() => setHideConflictBanner(true)}
                 >
                   Dismiss
                 </button>
@@ -1359,6 +1437,7 @@ export default function App() {
                 events={displayEvents}
                 calendars={displayCalendars}
                 focusDate={jumpDate}
+                focusSeq={focusSeq}
                 showEmptyDays={settings.showEmptyDaysInAgenda}
                 rangeDays={settings.agendaRangeDays}
                 redactTitles={settings.redactTitlesInScreenshots}
@@ -1389,6 +1468,8 @@ export default function App() {
                   view === 'month' ? 'dayGridMonth' : view === 'year' ? 'multiMonthYear' : 'rollingWeek'
                 }
                 focusDate={jumpDate}
+                focusSeq={focusSeq}
+                focusScrollTime={jumpScrollTime}
                 calendars={displayCalendars}
                 rollingWeekFromToday={settings.rollingWeekFromToday}
                 redactTitles={settings.redactTitlesInScreenshots}
@@ -1412,520 +1493,38 @@ export default function App() {
         </div>
 
         {showSettings ? (
-          <aside className="w-72 shrink-0 space-y-3 overflow-auto rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-3 text-sm">
-            <h2 className="font-semibold">Continuum</h2>
-            <input
-              type="search"
-              placeholder="Search settings…"
-              value={settingsQuery}
-              onChange={(e) => setSettingsQuery(e.target.value)}
-              className="w-full rounded border border-[var(--cc-border)] cc-native-field px-2 py-1 text-sm"
-              aria-label="Search settings"
-            />
-            <p className="text-xs text-[var(--cc-muted)]">
-              {authStatus === 'signed-in'
-                ? 'Signed in with Google'
-                : authStatus === 'needs-reauth'
-                  ? 'Google sign-in expired — events stay on this PC'
-                  : 'Not signed in'}
-              {syncInfo.lastSyncedAt
-                ? ` · last sync ${new Date(syncInfo.lastSyncedAt).toLocaleTimeString()}`
-                : ''}
-            </p>
-            {getSettingsSyncError() ? (
-              <p className="text-xs text-red-500">Settings sync: {getSettingsSyncError()}</p>
-            ) : signedIn ? (
-              <p className="text-xs text-[var(--cc-muted)]">
-                Peer remote: Continuum settings sync both ways with Android (Drive App Data)
-              </p>
-            ) : (
-              <p className="text-xs text-[var(--cc-muted)]">
-                Sign in to publish/pull Continuum settings with Android
-              </p>
-            )}
-            {authStatus !== 'signed-in' ? (
-              <>
-                {authStatus === 'needs-reauth' ? (
-                  <p className="text-sm font-medium text-[var(--cc-brand-now)]">
-                    Sign in again. Edits you already made are still on this computer.
-                  </p>
-                ) : (
-                <p className="text-xs text-[var(--cc-muted)]">
-                  Google OAuth is in Testing: if sign-in shows “unknown error” or access denied,
-                  add this Gmail as a Test user (Google Cloud → Audience), then try again.
-                </p>
-                )}
-                <button
-                  type="button"
-                  className="w-full rounded bg-[var(--cc-accent)] px-2 py-1 text-white"
-                  aria-label={authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
-                  onClick={() => void onSignIn()}
-                >
-                  {authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
-                </button>
-              </>
-            ) : null}
-            {settingsMatch('Theme', 'appearance', 'dark', 'light') ? (
-            <label className="flex items-center justify-between gap-2">
-              Theme
-              <select
-                value={settings.themeMode}
-                onChange={(e) => void persistSettings({ themeMode: e.target.value as ThemeMode })}
-                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-              >
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="system">System ({resolved})</option>
-              </select>
-            </label>
-            ) : null}
-            {settingsMatch('Use Google Calendar', 'Google', 'privacy') ? (
-            <label
-              className="flex items-center justify-between gap-2"
-              title="When off, Continuum uses local calendars only (still peer-syncs via Drive App Data). Google Calendar sync is skipped."
-            >
-              Use Google Calendar
-              <input
-                type="checkbox"
-                checked={settings.useGoogleCalendar}
-                onChange={(e) => void persistSettings({ useGoogleCalendar: e.target.checked })}
-              />
-            </label>
-            ) : null}
-            {settingsMatch('24-hour time', 'time', 'clock') ? (
-            <label className="flex items-center justify-between gap-2">
-              24-hour time
-              <input
-                type="checkbox"
-                checked={settings.use24HourFormat}
-                onChange={(e) => void persistSettings({ use24HourFormat: e.target.checked })}
-              />
-            </label>
-            ) : null}
-            {settingsMatch('First day of week', 'week') ? (
-            <label className="flex items-center justify-between gap-2">
-              First day of week
-              <select
-                value={settings.firstDayOfWeek}
-                onChange={(e) =>
-                  void persistSettings({ firstDayOfWeek: Number(e.target.value) || 0 })
-                }
-                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-              >
-                <option value={0}>Sunday</option>
-                <option value={1}>Monday</option>
-                <option value={2}>Tuesday</option>
-                <option value={3}>Wednesday</option>
-                <option value={4}>Thursday</option>
-                <option value={5}>Friday</option>
-                <option value={6}>Saturday</option>
-              </select>
-            </label>
-            ) : null}
-            {settingsMatch('Minimize', 'taskbar', 'tray') ? (
-            <label className="flex items-center justify-between gap-2">
-              Minimize to
-              <select
-                value={windowBehavior.minimizeTo}
-                onChange={(e) =>
-                  setWindowBehavior(
-                    saveWindowBehavior({
-                      ...windowBehavior,
-                      minimizeTo: e.target.value as MinimizeTarget,
-                    }),
-                  )
-                }
-                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-              >
-                <option value="taskbar">Taskbar</option>
-                <option value="tray">Notification area</option>
-              </select>
-            </label>
-            ) : null}
-            {settingsMatch('Close', 'quit', 'tray', 'notification') ? (
-            <label className="flex items-center justify-between gap-2">
-              Close button
-              <select
-                value={windowBehavior.closeTo}
-                onChange={(e) =>
-                  setWindowBehavior(
-                    saveWindowBehavior({
-                      ...windowBehavior,
-                      closeTo: e.target.value as CloseTarget,
-                    }),
-                  )
-                }
-                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-              >
-                <option value="tray">Notification area</option>
-                <option value="quit">Quit Continuum</option>
-              </select>
-            </label>
-            ) : null}
-            {settingsMatch('Start', 'Windows', 'boot', 'startup', 'login') ? (
-            <label className="flex items-center justify-between gap-2">
-              Start with Windows
-              <input
-                type="checkbox"
-                checked={startWithWindows}
-                onChange={(e) => {
-                  const on = e.target.checked
-                  setStartWithWindows(on)
-                  void writeStartWithWindows(on).catch(() => setStartWithWindows(!on))
-                }}
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Holiday', 'holidays', 'pack') ? (
-            <label className="flex items-center justify-between gap-2">
-              Holiday pack
-              <select
-                value={holidayPack}
-                onChange={(e) => setHolidayPack(e.target.value as HolidayPackId)}
-                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-              >
-                {HOLIDAY_PACKS.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            ) : null}
-            {settingsMatch('Weekly view days', 'week') ? (
-            <label className="flex items-center justify-between gap-2">
-              Weekly view days
-              <input
-                type="number"
-                min={1}
-                max={14}
-                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
-                value={settings.weeklyViewDays}
-                onChange={(e) =>
-                  void persistSettings({
-                    weeklyViewDays: Math.min(14, Math.max(1, Number(e.target.value) || 7)),
-                  })
-                }
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Default snooze', 'snooze') ? (
-            <label className="flex items-center justify-between gap-2">
-              Default snooze (min)
-              <input
-                type="number"
-                min={1}
-                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
-                value={settings.defaultSnoozeMinutes}
-                onChange={(e) =>
-                  void persistSettings({
-                    defaultSnoozeMinutes: Math.max(1, Number(e.target.value) || 10),
-                  })
-                }
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Default calendar', 'calendar') ? (
-            <label className="flex flex-col gap-1">
-              Default calendar for new events
-              <select
-                value={settings.defaultWriteCalendarId}
-                onChange={(e) => void persistSettings({ defaultWriteCalendarId: e.target.value })}
-                className="rounded border border-[var(--cc-border)] cc-native-field px-1 py-1"
-              >
-                {displayCalendars
-                  .filter((c) => c.writable !== false && c.source !== 'holidays')
-                  .map((c) => (
-                    <option key={c.logicalId} value={c.logicalId}>
-                      {c.displayName} ({c.source})
-                    </option>
-                  ))}
-              </select>
-            </label>
-            ) : null}
-            {settingsMatch('Show empty days', 'agenda', 'open') ? (
-            <label className="flex items-center justify-between gap-2">
-              Show empty days in agenda
-              <input
-                type="checkbox"
-                checked={settings.showEmptyDaysInAgenda}
-                onChange={(e) => void persistSettings({ showEmptyDaysInAgenda: e.target.checked })}
-              />
-            </label>
-            ) : null}
-            {settingsMatch('birthdays', 'Google', 'contacts') ? (
-            <label className="flex items-center justify-between gap-2" title="Hides Google Contacts automated birthday events only. Manual yearly birthday events stay.">
-              Show Google automated birthdays
-              <input
-                type="checkbox"
-                checked={settings.showContactBirthdays}
-                onChange={(e) => {
-                  const show = e.target.checked
-                  const nextCals = calendars.map((c) =>
-                    isBirthdayCalendarEntry(c) ? { ...c, visible: show } : c,
-                  )
-                  setCalendars(nextCals)
-                  saveCalendars(nextCals)
-                  void persistSettings({ showContactBirthdays: show })
-                }}
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Working hours', 'hours') ? (
-            <label className="flex items-center justify-between gap-2">
-              Working hours
-              <span className="flex items-center gap-1">
-                <input
-                  type="time"
-                  className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-                  value={settings.workingHours.start}
-                  onChange={(e) =>
-                    void persistSettings({
-                      workingHours: { ...settings.workingHours, start: e.target.value || '09:00' },
-                    })
-                  }
-                />
-                –
-                <input
-                  type="time"
-                  className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-                  value={settings.workingHours.end}
-                  onChange={(e) =>
-                    void persistSettings({
-                      workingHours: { ...settings.workingHours, end: e.target.value || '17:00' },
-                    })
-                  }
-                />
-              </span>
-            </label>
-            ) : null}
-            {settingsMatch('Travel buffer', 'travel') ? (
-            <label className="flex items-center justify-between gap-2">
-              Travel buffer (min)
-              <input
-                type="number"
-                min={0}
-                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
-                value={settings.travelBufferMinutes}
-                onChange={(e) =>
-                  void persistSettings({
-                    travelBufferMinutes: Math.max(0, Number(e.target.value) || 0),
-                  })
-                }
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Min free slot', 'slot') ? (
-            <label className="flex items-center justify-between gap-2">
-              Min free slot (min)
-              <input
-                type="number"
-                min={1}
-                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
-                value={settings.slotMinMinutes}
-                onChange={(e) =>
-                  void persistSettings({
-                    slotMinMinutes: Math.max(1, Number(e.target.value) || 30),
-                  })
-                }
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Agenda range', 'agenda') ? (
-            <label className="flex items-center justify-between gap-2">
-              Agenda range (days)
-              <input
-                type="number"
-                min={1}
-                max={90}
-                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
-                value={settings.agendaRangeDays}
-                onChange={(e) =>
-                  void persistSettings({
-                    agendaRangeDays: Math.min(90, Math.max(1, Number(e.target.value) || 30)),
-                  })
-                }
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Agenda density', 'agenda', 'compact') ? (
-            <label className="flex items-center justify-between gap-2">
-              Agenda density
-              <select
-                value={settings.agendaDensity}
-                onChange={(e) =>
-                  void persistSettings({
-                    agendaDensity: e.target.value as ContinuumSettings['agendaDensity'],
-                  })
-                }
-                className="rounded border border-[var(--cc-border)] cc-native-field px-1"
-              >
-                <option value="comfortable">Comfortable</option>
-                <option value="compact">Compact</option>
-              </select>
-            </label>
-            ) : null}
-            {settingsMatch('Default reminder', 'reminder') ? (
-            <label className="flex items-center justify-between gap-2">
-              Default reminder (min)
-              <input
-                type="number"
-                min={0}
-                className="w-16 rounded border border-[var(--cc-border)] cc-native-field px-1"
-                value={settings.defaultReminderMinutes}
-                onChange={(e) =>
-                  void persistSettings({
-                    defaultReminderMinutes: Math.max(0, Number(e.target.value) || 0),
-                  })
-                }
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Rolling week', 'week') ? (
-            <label className="flex items-center justify-between gap-2">
-              Rolling week from today
-              <input
-                type="checkbox"
-                checked={settings.rollingWeekFromToday}
-                onChange={(e) => void persistSettings({ rollingWeekFromToday: e.target.checked })}
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Notifications', 'notify', 'permission') ? (
-              <label className="flex items-center justify-between gap-2">
-                Notifications
-                <input
-                  type="checkbox"
-                  checked={settings.notificationEnabled}
-                  onChange={(e) => void onToggleNotifications(e.target.checked)}
-                />
-              </label>
-            ) : null}
-            {settingsMatch('Redact titles', 'screenshots', 'privacy') ? (
-            <label className="flex items-center justify-between gap-2">
-              Redact titles in screenshots
-              <input
-                type="checkbox"
-                checked={settings.redactTitlesInScreenshots}
-                onChange={(e) => void persistSettings({ redactTitlesInScreenshots: e.target.checked })}
-              />
-            </label>
-            ) : null}
-            {settingsMatch('Export', 'Import', 'ICS', 'CalDAV', 'subscribe', 'settings', 'error log', 'Reset') ? (
-            <div className="flex flex-col gap-1">
-              <button
-                type="button"
-                className="rounded border border-[var(--cc-border)] px-2 py-1"
-                onClick={() => void downloadIcsFile(visibleEvents)}
-              >
-                Export ICS
-              </button>
-              <label className="rounded border border-[var(--cc-border)] px-2 py-1 text-center">
-                Import ICS
-                <input
-                  type="file"
-                  accept=".ics,text/calendar"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0]
-                    if (f) onImportIcs(f)
-                  }}
-                />
-              </label>
-              <button
-                type="button"
-                className="rounded border border-[var(--cc-border)] px-2 py-1"
-                onClick={() => void onOpenCalendarLink()}
-              >
-                Open calendar link…
-              </button>
-              <button
-                type="button"
-                className="rounded border border-[var(--cc-border)] px-2 py-1"
-                onClick={() => void onSubscribeIcs()}
-              >
-                Subscribe to ICS URL…
-              </button>
-              {loadIcsSubscriptions().map((sub) => (
-                <div key={sub.id} className="flex items-center justify-between gap-2 text-xs">
-                  <span className="min-w-0 truncate" title={sub.url}>
-                    {sub.displayName}
-                    {sub.lastError ? ` · ${sub.lastError}` : ''}
-                  </span>
-                  <button
-                    type="button"
-                    className="shrink-0 underline"
-                    onClick={() => {
-                      setEvents(unsubscribeIcs(sub.calendarId))
-                      setCalendars(loadCalendars())
-                      flash(`Unsubscribed ${sub.displayName}`)
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="rounded border border-[var(--cc-border)] px-2 py-1"
-                onClick={() => void onAddCalDav()}
-              >
-                Add CalDAV account
-              </button>
-              <button
-                type="button"
-                className="rounded border border-[var(--cc-border)] px-2 py-1"
-                onClick={() => {
-                  const blob = new Blob([exportSettingsJson()], { type: 'application/json' })
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url
-                  a.download = 'continuum-settings.json'
-                  a.click()
-                }}
-              >
-                Export settings JSON
-              </button>
-              <label className="rounded border border-[var(--cc-border)] px-2 py-1 text-center">
-                Import settings JSON
-                <input
-                  type="file"
-                  accept="application/json"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0]
-                    if (!f) return
-                    void f.text().then((t) => {
-                      try {
-                        applySettings(importSettingsJson(t), 'Settings imported')
-                      } catch (err) {
-                        flash(err instanceof Error ? err.message : 'Import failed')
-                      }
-                    })
-                  }}
-                />
-              </label>
-              <button
-                type="button"
-                className="rounded border border-[var(--cc-border)] px-2 py-1"
-                onClick={() => void persistSettings(defaultContinuumSettings(), 'Reset to Continuum defaults')}
-              >
-                Reset Continuum defaults
-              </button>
-              <button
-                type="button"
-                className="rounded border border-[var(--cc-border)] px-2 py-1"
-                onClick={() => {
-                  continuumLogger.downloadLog()
-                  flash('Error log downloaded')
-                }}
-              >
-                Download error log
-              </button>
-            </div>
-            ) : null}
-            {syncInfo.lastError ? <p className="text-xs text-red-500">{syncInfo.lastError}</p> : null}
-          </aside>
+          <SettingsPanel
+            form={{
+              query: settingsQuery,
+              onQuery: setSettingsQuery,
+              settings,
+              persistSettings,
+              applySettings,
+              authStatus,
+              signedIn,
+              resolvedTheme: resolved,
+              lastSyncedAt: syncInfo.lastSyncedAt,
+              lastSyncError: syncInfo.lastError,
+              onSignIn: () => void onSignIn(),
+              windowBehavior,
+              setWindowBehavior,
+              startWithWindows,
+              setStartWithWindows,
+              holidayPack,
+              setHolidayPack,
+              calendars,
+              displayCalendars,
+              setCalendars,
+              visibleEvents,
+              setEvents,
+              flash,
+              onToggleNotifications,
+              onImportIcs,
+              onOpenCalendarLink: () => void onOpenCalendarLink(),
+              onSubscribeIcs: () => void onSubscribeIcs(),
+              onAddCalDav: () => void onAddCalDav(),
+            }}
+          />
         ) : null}
       </div>
 
@@ -1934,6 +1533,7 @@ export default function App() {
           type="button"
           className="cc-fab absolute bottom-12 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--cc-accent)] text-2xl font-light text-white shadow-lg"
           aria-label="New event"
+          title={hotkeyTitle('New event', 'N')}
           onClick={() => openNewEvent()}
         >
           +
@@ -2045,6 +1645,15 @@ export default function App() {
               </p>
             )}
             <div className="flex flex-wrap justify-end gap-2 pt-1">
+              <button
+                type="button"
+                className="rounded border border-[var(--cc-border)] px-3 py-1.5 text-sm"
+                onClick={() => {
+                  jumpCalendarTo(localDateKey(new Date(conflictPrompt.draft.start).getTime()))
+                }}
+              >
+                View on calendar
+              </button>
               <button
                 type="button"
                 className="rounded px-3 py-1.5 text-sm"

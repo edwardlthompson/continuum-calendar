@@ -17,6 +17,41 @@
 
 ## Entries
 
+### 2026-08-23 — Product install only via tauri build (no localhost EXE)
+- **Status:** Accepted
+- **Context:** Agents used `cargo build --release` + copy, or launched `target\debug\app.exe` for tray A/B. Debug always hits `devUrl` localhost:5173; without Vite the user sees Edge `ERR_CONNECTION_REFUSED` and thinks Continuum is broken (KB-035).
+- **Decision:** Supported local deploy is `npm run install:local` (`tauri build --no-bundle` → `%LOCALAPPDATA%\Continuum Calendar\app.exe`). Debug EXE without Vite shows Continuum HTML via `dev_ui_guard`. Autostart heals Run keys pointing at repo `target\debug` or `target\release` to the AppData install.
+- **Alternatives considered:** Removing `devUrl` (breaks `tauri:dev`). Making `cargo build --release` run Vite (duplicates Tauri’s `beforeBuildCommand`; rejected in favor of one script).
+- **Consequences:** Tray/debug probes must not be mistaken for product installs. `cargo build --release` alone is not the supported install path.
+
+### 2026-08-23 — Tray deep recovery: shell rejects first-time NIM_ADD
+- **Status:** Accepted
+- **Context:** A/B proved installed release, debug `app.exe`, and WinForms `ContinuumTrayTest` never create a Continuum/`ContinuumTrayTest` `NotifyIconSettings` key. Backup + delete `PromotedIconCache` (IconStreams absent on this 24H2 hive) + Explorer restart with Continuum surviving `TaskbarCreated` still left `promote=no-key-yet`. Emptying the catalog lets Discord/Steam re-register; Continuum and the probe do not.
+- **Decision:** Ship MicMute-style baseline/orphan promote + one-shot `retry-add`; keep Tauri tray (no GUID). Treat missing Continuum registry key as shell/injector failure requiring clean-boot triage, not more `Shell_NotifyIcon` stacks (KB-036).
+- **Alternatives considered:** Reintroduce GUID pump (rejected — err 5). Leave Start with Windows on debug EXE (rejected — KB-035). Invent fake NotifyIconSettings hashes (rejected — Explorer ignores).
+- **Consequences:** App logs `retry-add=` / `promote=`; backups under `%LOCALAPPDATA%\org.continuumcalendar.app\logs\NotifyIconSettings-*.reg`. Icon remains invisible until Explorer accepts a real `NIM_ADD`.
+
+### 2026-08-23 — Explorer, not Tauri, is dropping the tray icon
+- **Status:** Accepted
+- **Context:** `Shell_NotifyIcon(NIM_ADD)` returned Access Denied for Continuum, for a dedicated STA tray thread, and for a standalone WinForms test EXE. Clearing 124 NotifyIconSettings keys did not help. Explorer restart while Continuum was exiting deleted any chance of `TaskbarCreated`.
+- **Decision:** Keep Tauri’s tray (bright cyan PNG); prevent process exit except Quit so Explorer restarts can re-register; treat a missing `NotifyIconSettings` `app.exe` key as the source of truth that the icon was never accepted (KB-036).
+- **Alternatives considered:** Custom GUID `NIM_ADD` (failed with the same error 5). Recreate-on-badge (hid the icon). Auto-restart Explorer from the app (too disruptive).
+- **Consequences:** The app can survive an Explorer restart. If this PC’s shell keeps rejecting new icons, no in-app change will make Continuum appear in the overflow.
+
+### 2026-08-23 — Keep a single Windows tray icon
+- **Status:** Accepted
+- **Context:** The running app created a `tray_icon_app` HWND and `tray-status.txt` said `recreate_err=None`, but NotifyIconSettings had no Continuum key and the user could not find the icon.
+- **Decision:** Stop deleting/recreating the tray on each badge tick; update the existing icon; promote the Windows 11 notification-area entry (KB-036).
+- **Alternatives considered:** Keep recreate because `set_icon` once returned OS error 5 off the UI thread (rejected — recreate made the icon invisible). Force-restart Explorer (rejected — too disruptive).
+- **Consequences:** Badge still updates via `NIM_MODIFY`. If that fails, the previous icon stays instead of vanishing.
+
+### 2026-08-23 — Desktop login must not start debug console
+- **Status:** Accepted
+- **Context:** Start with Windows while `tauri:dev` registered `target\debug\app.exe`. That binary is a console app and loads Vite `localhost:5173`, so Windows login opened a terminal and a hung window.
+- **Decision:** Refuse autostart from dev builds; release startup rewrites a stale debug Run key to the installed GUI EXE; always use the Windows GUI subsystem (KB-035).
+- **Alternatives considered:** Leave debug console for `println` (rejected — Explorer/login looked broken). Hidden-to-tray on login (not required to unblock first boot).
+- **Consequences:** `tauri:dev` Settings cannot enable Start with Windows. This machine’s Run key now points at `AppData\Local\Continuum Calendar\app.exe`.
+
 ### 2026-08-22 — /ship published v0.25.0
 - **Status:** Accepted
 - **Context:** Expired Google sign-in recovery, Calendar-only Testing-mode OAuth, and Android `invalid_grant` token-clear landed as `feat(desktop)` (KB-033). Release Please #19 tagged **v0.25.0**.

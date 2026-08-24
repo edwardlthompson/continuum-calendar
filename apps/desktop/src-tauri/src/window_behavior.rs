@@ -1,5 +1,8 @@
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager, Window, WindowEvent};
+use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder, Window, WindowEvent};
+
+static ALLOW_EXIT: AtomicBool = AtomicBool::new(false);
 
 #[derive(Clone, Copy)]
 struct Prefs {
@@ -19,7 +22,22 @@ fn prefs() -> Prefs {
     })
 }
 
+pub fn request_exit(app: &AppHandle) {
+    ALLOW_EXIT.store(true, Ordering::SeqCst);
+    app.exit(0);
+}
+
+pub fn should_prevent_exit() -> bool {
+    !ALLOW_EXIT.load(Ordering::SeqCst)
+}
+
 pub fn show_main(app: &AppHandle) {
+    if app.get_webview_window("main").is_none() {
+        let _ = WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
+            .title("Continuum Calendar")
+            .inner_size(1280.0, 800.0)
+            .build();
+    }
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.set_skip_taskbar(false);
         let _ = w.unminimize();

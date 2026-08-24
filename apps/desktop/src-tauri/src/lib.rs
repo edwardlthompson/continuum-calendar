@@ -1,9 +1,14 @@
 use std::path::Path;
 use std::sync::Mutex;
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
+use tauri::Emitter;
 
+mod autostart_guard;
+mod dev_ui_guard;
 mod location;
 mod oauth;
 mod tray;
+mod tray_promote;
 mod window_behavior;
 
 static PENDING_OPENS: Mutex<Vec<String>> = Mutex::new(Vec::new());
@@ -77,7 +82,20 @@ pub fn run() {
         }
     }
 
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            for arg in argv.iter().skip(1) {
+                if let Some((ev, payload)) = classify_open_arg(arg) {
+                    push_pending_open(payload.clone());
+                    let _ = app.emit(ev, payload);
+                }
+            }
+            window_behavior::show_main(app);
+        }));
+    }
+    builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
@@ -96,6 +114,8 @@ pub fn run() {
             if let Err(e) = tray::install(app) {
                 log::warn!("tray unavailable: {e}");
             }
+            autostart_guard::heal_on_startup(app);
+            dev_ui_guard::apply_if_needed(app);
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
@@ -105,6 +125,37 @@ pub fn run() {
             }
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|_app, event| {
+            if let tauri::RunEvent::ExitRequested { api, .. } = event {
+                if window_behavior::should_prevent_exit() {
+                    api.prevent_exit();
+                }
+            }
+        });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn classifies_ics_path() {
+        let (ev, path) = classify_open_arg(r"C:\tmp\team.ics").expect("ics");
+        assert_eq!(ev, "open-ics-path");
+        assert!(path.ends_with("team.ics"));
+    }
+
+    #[test]
+    fn classifies_calendar_url() {
+        let (ev, _) = classify_open_arg("webcal://example.com/x.ics").expect("url");
+        assert_eq!(ev, "open-calendar-url");
+    }
+
+    #[test]
+    fn ignores_unrelated_args() {
+        assert!(classify_open_arg("").is_none());
+        assert!(classify_open_arg("--help").is_none());
+    }
 }

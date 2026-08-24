@@ -1,5 +1,5 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+// GUI subsystem always — Explorer / login must not open a console (KB-035).
+#![windows_subsystem = "windows"]
 
 fn main() {
     app_lib::run();

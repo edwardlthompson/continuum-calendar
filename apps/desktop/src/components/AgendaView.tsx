@@ -29,6 +29,7 @@ interface AgendaViewProps {
   /** Empty “Open” day row — schedule something in that slot. */
   onOpenDay?: (dateKey: string) => void
   focusDate?: string
+  focusSeq?: number
 }
 
 function displayTitle(title: string, redact: boolean): string {
@@ -54,6 +55,7 @@ export function AgendaView({
   onSelectEvent,
   onOpenDay,
   focusDate,
+  focusSeq = 0,
 }: AgendaViewProps) {
   const [nowMs, setNowMs] = useState(() => Date.now())
   useEffect(() => {
@@ -81,7 +83,7 @@ export function AgendaView({
   useEffect(() => {
     if (!focusDate) return
     document.getElementById(`agenda-${focusDate}`)?.scrollIntoView({ block: 'start' })
-  }, [focusDate])
+  }, [focusDate, focusSeq])
 
   return (
     <div className="h-full overflow-auto rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-3">

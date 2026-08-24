@@ -228,3 +228,19 @@
 | **Cause** | Vite failed to resolve `@fullcalendar/multimonth` (workspace install not hoisted) and `.cc-splash` covered the page with `pointer-events` |
 | **Fix** | Install the plugin from the repo root (`-w @continuum/desktop`); set splash `pointer-events: none` |
 | **Prevention** | Add new FullCalendar plugins at the workspace root; keep the splash non-interactive |
+### KB-035 — Windows login starts debug console + hung UI / Edge localhost page
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Desktop app opens a terminal on boot; window is blank / Not Responding; **or** Edge “Hmmm… can't reach this page” / `localhost refused to connect` / `ERR_CONNECTION_REFUSED` |
+| **Cause** | `target\debug\app.exe` / `tauri:dev` always loads `devUrl` `http://localhost:5173`. Without Vite, WebView2 shows the Edge error. Start with Windows or agents copying/launching the debug EXE make this look like a broken install |
+| **Fix** | GUI subsystem always; refuse/heal autostart away from repo `target\debug` and `target\release`; `dev_ui_guard` replaces Edge with a Continuum “Developer build” page when Vite is down; install product builds only via `npm run install:local` (runs `tauri build --no-bundle` and copies release EXE) |
+| **Prevention** | Never copy or Start-Process `target\debug\app.exe` as the product app; agents use `npm run install:local` from `apps/desktop` |
+### KB-036 — Windows 11 hides Continuum tray after recreate
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | App is running; no Continuum icon next to the clock or in the overflow (`^`); NotifyIconSettings has no `app.exe` key |
+| **Cause** | Recreating the tray on every badge tick hid it. Custom GUID/`NIM_ADD` got Access Denied (`last_err=5`). Deep recovery 2026-08-23: installed, `target\debug\app.exe`, and a WinForms probe all stay `promote=no-key-yet`; clearing `PromotedIconCache` + Explorer restart with Continuum alive (and even an empty `NotifyIconSettings` catalog) still creates keys for Discord/Steam/etc. but never Continuum or the probe |
+| **Fix** | Tauri `TrayIconBuilder` once with bright cyan PNG; badge = tooltip + overlay only; never `NIM_DELETE` on each tick. Capture NotifyIconSettings baseline and claim a single orphan (`IconSnapshot`, empty path). One-shot `retry-add` after 5s if still no key. Keep process alive on `ExitRequested` for `TaskbarCreated`. If SoT key never appears, reset tray caches then escalate to clean-boot / tray injectors — in-app code cannot force Explorer to accept `NIM_ADD` |
+| **Prevention** | Do not swap in a second GUID `Shell_NotifyIcon` stack; do not treat Tauri `build()`/`retry-add=Ok` as proof; require Continuum row under `NotifyIconSettings` |

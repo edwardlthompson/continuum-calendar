@@ -39,6 +39,8 @@ interface RollingWeekViewProps {
   onSelectSlot?: (start: Date, end: Date) => void
   calendarView?: 'rollingWeek' | 'dayGridMonth' | 'multiMonthYear'
   focusDate?: string
+  focusSeq?: number
+  focusScrollTime?: string
 }
 
 export function RollingWeekView({
@@ -55,6 +57,8 @@ export function RollingWeekView({
   onSelectSlot,
   calendarView = 'rollingWeek',
   focusDate,
+  focusSeq = 0,
+  focusScrollTime,
 }: RollingWeekViewProps) {
   const calendarRef = useRef<FullCalendar>(null)
   const today = useMemo(
@@ -128,7 +132,8 @@ export function RollingWeekView({
     if (!api) return
     if (calendarView && api.view.type !== calendarView) api.changeView(calendarView)
     if (focusDate) api.gotoDate(focusDate)
-  }, [calendarView, focusDate])
+    if (focusScrollTime && calendarView === 'rollingWeek') api.scrollToTime(focusScrollTime)
+  }, [calendarView, focusDate, focusScrollTime, focusSeq])
 
   return (
     <div className="h-full min-h-[28rem] rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-2 shadow-sm">

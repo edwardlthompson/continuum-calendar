@@ -12,7 +12,8 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "test": "node --experimental-strip-types --test src/auth/oauthErrors.test.ts src/services/caldavParse.test.ts src/services/icsSubscribe.test.ts src/about/productUpdate.test.ts src/about/githubRelease.test.ts src/services/locationSuggest.test.ts src/services/holidayPacks.test.ts src/services/windowBehavior.test.ts"
+    "install:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-local.ps1",
+    "test": "node --experimental-strip-types --test src/auth/oauthErrors.test.ts src/services/caldavParse.test.ts src/services/icsSubscribe.test.ts src/about/productUpdate.test.ts src/about/githubRelease.test.ts src/services/locationSuggest.test.ts src/services/holidayPacks.test.ts src/services/windowBehavior.test.ts src/services/windowsAutostart.test.ts src/services/dayBadge.test.ts src/hooks/desktopHotkeys.test.ts src/settings/settingsCatalog.test.ts"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.21",

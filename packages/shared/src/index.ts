@@ -73,8 +73,11 @@ export {
   isCrossSourceConflict,
   crossSourceConflicts,
   formatConflictSources,
+  uniqueConflictDates,
+  peekNextConflictDate,
+  earliestConflictTimeOnDate,
 } from './conflicts.js'
-export type { EventConflict, ConflictCandidate } from './conflicts.js'
+export type { EventConflict, ConflictCandidate, ConflictDetectOptions } from './conflicts.js'
 export { proposeMeetingTimes } from './proposeTimes.js'
 export {
   isBirthdayCalendarLabel,

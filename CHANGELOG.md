@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* **desktop:** Settings uses categories and subpages instead of one long list
+* **desktop:** single-instance launch focuses the running window instead of opening a second process
+* **desktop:** clickable overlap warnings jump the calendar to each conflict day; save dialog adds **View on calendar**
+* **desktop:** **Today** toolbar button returns to the current day (shortcut **T**)
+* **desktop:** keyboard shortcut glossary in Settings → Window & startup; toolbar hovers show shortcut hints
+* **desktop:** `npm run install:local` script for release-only local installs
+
+### Fixed
+
+* **desktop:** Windows login no longer starts the debug console EXE; Start with Windows uses the installed GUI app (KB-035)
+* **desktop:** `npm run install:local` ships only `tauri build` release EXEs; debug builds without Vite show a Continuum page instead of Edge `ERR_CONNECTION_REFUSED` (KB-035)
+* **desktop:** notification-area icon uses the Continuum mark; taskbar badge shows count only (not a duplicate icon)
+* **desktop:** restore the Tauri notification-area icon via stale UID sweep + session-new promote; idle days show the app logo with optional count overlay (KB-036)
+* **desktop:** overlap warnings ignore fully past conflicts
+* **shared:** conflict detection skips overlaps whose window has already ended
+
 ## [0.25.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.24.0...v0.25.0) (2026-08-22)
 
 ### Added

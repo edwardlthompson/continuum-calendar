@@ -1,5 +1,6 @@
 import type { CalendarEvent, FreeSlot } from './events.js'
 import type { WorkingHours } from './settings.js'
+import { localDateKey } from './agenda.ts'
 // .ts suffix keeps Node --experimental-strip-types tests resolvable (value import).
 import { proposeMeetingTimes } from './proposeTimes.ts'
 
@@ -23,6 +24,27 @@ function endMs(e: { end: string }): number {
 
 function overlaps(a: { start: string; end: string }, b: { start: string; end: string }): boolean {
   return startMs(a) < endMs(b) && endMs(a) > startMs(b)
+}
+
+function resolveNowMs(now?: Date | number): number {
+  if (now instanceof Date) return now.getTime()
+  if (typeof now === 'number') return now
+  return Date.now()
+}
+
+/** Overlap is warn-worthy only while some portion is still upcoming. */
+function isActiveOverlap(
+  a: { start: string; end: string },
+  b: { start: string; end: string },
+  nowMs: number,
+): boolean {
+  if (!overlaps(a, b)) return false
+  return Math.min(endMs(a), endMs(b)) > nowMs
+}
+
+export type ConflictDetectOptions = {
+  /** Defaults to Date.now(); inject in tests. */
+  now?: Date | number
 }
 
 /** Occurrence key so a repeating event is flagged only on the day it actually overlaps. */
@@ -57,8 +79,12 @@ export function isTimedBusyEvent(e: {
   return true
 }
 
-/** Detect overlapping timed (non-all-day) events. */
-export function detectConflicts(events: CalendarEvent[]): EventConflict[] {
+/** Detect overlapping timed (non-all-day) events that are still upcoming. */
+export function detectConflicts(
+  events: CalendarEvent[],
+  options: ConflictDetectOptions = {},
+): EventConflict[] {
+  const nowMs = resolveNowMs(options.now)
   const timed = events
     .filter((e) => isTimedBusyEvent(e))
     .sort((a, b) => startMs(a) - startMs(b))
@@ -66,7 +92,7 @@ export function detectConflicts(events: CalendarEvent[]): EventConflict[] {
   for (let i = 0; i < timed.length; i++) {
     for (let j = i + 1; j < timed.length; j++) {
       if (startMs(timed[j]) >= endMs(timed[i])) break
-      if (overlaps(timed[i], timed[j])) {
+      if (isActiveOverlap(timed[i], timed[j], nowMs)) {
         out.push({ a: timed[i], b: timed[j] })
       }
     }
@@ -84,8 +110,11 @@ export function isCrossSourceConflict(pair: EventConflict): boolean {
   return (a === 'google' && PEER_OR_OVERLAY.has(b)) || (b === 'google' && PEER_OR_OVERLAY.has(a))
 }
 
-export function crossSourceConflicts(events: CalendarEvent[]): EventConflict[] {
-  return detectConflicts(events).filter(isCrossSourceConflict)
+export function crossSourceConflicts(
+  events: CalendarEvent[],
+  options: ConflictDetectOptions = {},
+): EventConflict[] {
+  return detectConflicts(events, options).filter(isCrossSourceConflict)
 }
 
 export function formatConflictSources(pair: EventConflict): string {
@@ -93,19 +122,57 @@ export function formatConflictSources(pair: EventConflict): string {
   return `${label(pair.a)} ↔ ${label(pair.b)}`
 }
 
+/** Local YYYY-MM-DD for each overlap, first occurrence of a day wins. */
+export function uniqueConflictDates(pairs: EventConflict[]): string[] {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const pair of pairs) {
+    const key = localDateKey(startMs(pair.a))
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(key)
+  }
+  return out
+}
+
+/** Next conflict day when cycling from [currentJumpDate] (wraps). */
+export function peekNextConflictDate(dates: string[], currentJumpDate: string): string | undefined {
+  if (!dates.length) return undefined
+  const idx = dates.indexOf(currentJumpDate)
+  return dates[(idx + 1) % dates.length] ?? dates[0]
+}
+
+/** Earliest timed overlap on a day as HH:mm:ss for calendar scroll. */
+export function earliestConflictTimeOnDate(pairs: EventConflict[], dateKey: string): string | undefined {
+  let min = Infinity
+  for (const pair of pairs) {
+    for (const e of [pair.a, pair.b]) {
+      if (localDateKey(startMs(e)) !== dateKey) continue
+      const t = startMs(e)
+      if (t < min) min = t
+    }
+  }
+  if (!Number.isFinite(min)) return undefined
+  const d = new Date(min)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:00`
+}
+
 /** Events that overlap a candidate (excludes the candidate's own id when editing). */
 export function conflictsForEvent(
   candidate: ConflictCandidate,
   events: CalendarEvent[],
+  options: ConflictDetectOptions = {},
 ): CalendarEvent[] {
   if (!isTimedBusyEvent(candidate)) return []
+  const nowMs = resolveNowMs(options.now)
   const start = startMs(candidate)
   const end = endMs(candidate)
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return []
   return events.filter((e) => {
     if (!isTimedBusyEvent(e)) return false
     if (candidate.id && e.id === candidate.id) return false
-    return overlaps(candidate, e)
+    return isActiveOverlap(candidate, e, nowMs)
   })
 }
 
