@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.0...v0.25.1) (2026-08-24)
+
+
+### Changed
+
+* **release:** prepare desktop tray, conflicts, and shortcuts release ([f8d463f](https://github.com/edwardlthompson/continuum-calendar/commit/f8d463f03f66c6b6715834a075bbbd7da2e0f0d9))
+
+
+### Documentation
+
+* **changelog:** restore Unreleased and fold notes into 0.25.0 ([e4ff6ce](https://github.com/edwardlthompson/continuum-calendar/commit/e4ff6ce7e94f98b71c76dbe4c685facf587b63cb))
+
 ## [Unreleased]
 
 ### Added
