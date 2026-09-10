@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^2.1.1",
-    "hono": "^4.13.2"
+    "hono": "^4.13.7"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.8",
