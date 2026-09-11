@@ -1,6 +1,7 @@
 package org.fossify.calendar
 
 import android.widget.Toast
+import org.fossify.calendar.continuum.ContinuumAboutGuard
 import org.fossify.calendar.continuum.ContinuumDiagnostics
 import org.fossify.calendar.continuum.ContinuumSyncWorker
 import org.fossify.calendar.continuum.HighRefreshDisplay
@@ -18,6 +19,7 @@ class App : FossifyApp() {
         baseConfig.appSideloadingStatus = SIDELOADING_FALSE
         ContinuumDiagnostics.install(this)
         HighRefreshDisplay.install(this)
+        ContinuumAboutGuard.install(this)
         ContinuumDiagnostics.lastCrashSummary(this)?.let { summary ->
             ContinuumDiagnostics.e("Previous crash detected:\n$summary")
             Toast.makeText(

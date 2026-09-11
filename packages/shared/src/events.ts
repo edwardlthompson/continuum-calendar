@@ -43,6 +43,8 @@ export interface CalendarEvent {
   eventType?: 'default' | 'birthday' | 'focusTime' | 'outOfOffice' | 'workingLocation' | 'fromGmail' | string
   /** ICS / Google `RRULE:` lines (e.g. `RRULE:FREQ=WEEKLY`). */
   recurrence?: string[]
+  /** Google series master id when this row is an expanded instance. */
+  recurringEventId?: string
   /** Local dates (YYYY-MM-DD) skipped in a series (this-event edits). */
   recurrenceExceptions?: string[]
   /** Desktop editor only: occurrence being edited, not persisted. */

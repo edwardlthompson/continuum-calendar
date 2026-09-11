@@ -51,3 +51,7 @@ Maintainers run a weekly CVE triage pass per `docs/SECURITY_TRIAGE.md`. Review D
 ## Release process (maintainers)
 
 See `docs/MAINTAINING_THE_TEMPLATE.md` for the full semver release checklist.
+
+## For coding agents
+
+Read [`AGENTS.md`](AGENTS.md) and [`docs/START_HERE.md`](docs/START_HERE.md) before editing. In Cursor, `/build` implements one BUILD_PLAN feature row; after each `[AGENT]` step run `scripts/watch-agent-gates.sh --once --autofix`. Do not `git push` unless the human invoked `/push` or `/ship`. `[HUMAN]` rows stay on the board until a person finishes them.

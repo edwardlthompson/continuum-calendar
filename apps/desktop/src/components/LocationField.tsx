@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { loadEvents } from '../data/localStore'
 import {
   mergeLocationSuggestions,
+  mapsSearchUrl,
   recentEventLocations,
   suggestLocations,
 } from '../services/locationSuggest'
@@ -10,6 +11,8 @@ import { openExternal } from '../about/openExternal'
 export function LocationField(props: { value: string; onChange: (next: string) => void }) {
   const [hits, setHits] = useState<string[]>([])
   const pickedRef = useRef(false)
+  const locId = useId()
+  const mapUrl = mapsSearchUrl(props.value)
 
   useEffect(() => {
     if (pickedRef.current) {
@@ -29,22 +32,20 @@ export function LocationField(props: { value: string; onChange: (next: string) =
   }, [props.value])
 
   return (
-    <label className="flex flex-col gap-1 text-sm">
-      <span className="flex items-center justify-between gap-2">
-        Location
+    <div className="flex flex-col gap-1 text-sm">
+      <div className="flex items-center justify-between gap-2">
+        <span id={locId}>Location</span>
         <button
           type="button"
           className="text-xs text-[var(--cc-accent)] underline"
-          disabled={!props.value.trim()}
-          onClick={() =>
-            void openExternal(
-              `https://www.openstreetmap.org/search?query=${encodeURIComponent(props.value.trim())}`,
-            )
-          }
+          disabled={!mapUrl}
+          onClick={() => {
+            if (mapUrl) void openExternal(mapUrl)
+          }}
         >
           Map
         </button>
-      </span>
+      </div>
       <input
         className="cc-native-field w-full min-w-0 rounded border border-[var(--cc-border)] px-2 py-1.5"
         value={props.value}
@@ -55,6 +56,7 @@ export function LocationField(props: { value: string; onChange: (next: string) =
           }
         }}
         autoComplete="off"
+        aria-labelledby={locId}
         placeholder="Start typing an address…"
       />
       {hits.length > 0 ? (
@@ -64,7 +66,9 @@ export function LocationField(props: { value: string; onChange: (next: string) =
               <button
                 type="button"
                 className="w-full px-2 py-1.5 text-left hover:bg-[var(--cc-accent-soft)]"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
                   pickedRef.current = true
                   props.onChange(hit)
                   setHits([])
@@ -76,6 +80,6 @@ export function LocationField(props: { value: string; onChange: (next: string) =
           ))}
         </ul>
       ) : null}
-    </label>
+    </div>
   )
 }

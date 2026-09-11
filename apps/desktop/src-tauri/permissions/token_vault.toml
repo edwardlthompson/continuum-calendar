@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-save-google-tokens"
+description = "Allow writing Google OAuth tokens to the app config directory"
+commands.allow = ["save_google_tokens"]
+
+[[permission]]
+identifier = "allow-load-google-tokens"
+description = "Allow reading Google OAuth tokens from the app config directory"
+commands.allow = ["load_google_tokens"]

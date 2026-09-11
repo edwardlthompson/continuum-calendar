@@ -11,16 +11,12 @@ ERRORS=0
 MAX_REPORT=20
 reported=0
 
-# One ls-tree call — per-file `git cat-file` hangs for minutes on large Windows trees.
-while IFS=$'\t' read -r meta path; do
-  [ -z "${path:-}" ] && continue
-  size="${meta##* }"
-  case "$size" in
-    ''|*[!0-9]*) continue ;;
-  esac
+while IFS= read -r file; do
+  [ -z "$file" ] && continue
+  size=$(git cat-file -s "HEAD:$file" 2>/dev/null || echo 0)
   if [ "$size" -gt "$MAX_BYTES" ]; then
     kb=$((size / 1024))
-    echo "LARGE TRACKED FILE: $path (${kb} KB > ${MAX_KB} KB)"
+    echo "LARGE TRACKED FILE: $file (${kb} KB > ${MAX_KB} KB)"
     ERRORS=$((ERRORS + 1))
     reported=$((reported + 1))
     if [ "$reported" -ge "$MAX_REPORT" ]; then
@@ -28,7 +24,7 @@ while IFS=$'\t' read -r meta path; do
       break
     fi
   fi
-done < <(git ls-tree -r -l HEAD)
+done < <(git ls-files)
 
 if [ "$ERRORS" -gt 0 ]; then
   echo "$ERRORS tracked file(s) exceed ${MAX_KB} KB"

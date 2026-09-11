@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.25.0` (product EXE 0.17.3 / APK 1.10.7 copied from prior tag)
+- Latest template-aligned tag: `v0.25.2` (AppImage + 0.17.3 EXE + 1.10.7 APK on the GitHub Release)
 
 ### Key Constraints
 
@@ -46,8 +46,11 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 ## Session Retrospectives
 
-| Date | Milestone | What worked | What to improve |
-|------|-----------|-------------|-----------------|
+| Date | Sprint/Task | What Worked | What to Improve |
+|------|-------------|-------------|-----------------|
+| 2026-09-11 | Wrap-up ship | BUILD_PLAN 0 open; Dependabot #24–#29 + release #33 merged; installers on v0.25.2; Tasks/widget/GP catch-up committed | Copy EXE/APK onto each future tag; leftover node hono 4.13.7 / vitest 4.1.11 if Dependabot reopens |
+| 2026-09-11 | /cleanup + backlog | Archived OAuth/ADB; EXE+APK on v0.25.1; Tasks/widget/AppImage CI | `docs/PRIVACY.md` still needs a push to `main`; Dependabot PRs remain |
+| 2026-09-11 | HUMAN OAuth/legal/token vault | Console + local bake; F-002 release Android client; F-003 vault; F-004 privacy; ROADMAP | ADB device smoke and Windows EXE/APK attach still need those hosts; `docs/PRIVACY.md` on `main` after push |
 | 2026-08-22 | /ship v0.24.0 | `feat(desktop)` → RP #17 cut **v0.24.0**; editor/tray/autostart; Unreleased restored (KB-032) | Copy EXE/APK onto each tag; ADB smoke still open |
 | 2026-08-21 | /ship v0.23.0 | `feat(about)` → RP #16 cut **v0.23.0**; Venmo + daily GitHub installer check; Unreleased restored (KB-032) | Copy EXE/APK onto each tag; donate nudge only after version change |
 | 2026-08-20 | /ship v0.22.1 | RP #14 cut **v0.22.1** (chore prep → patch); I1 features in 300cd93; Unreleased restored after fold (KB-032/033) | Next minor needs `feat:` commits; copy product binaries onto each template tag |
@@ -62,5 +65,5 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ## Template Provenance
 
 - **Source template:** `edwardlthompson/agent-project-bootstrap`
-- **Template version:** `0.25.1` (see `.template-version`)
+- **Template version:** `1.4.0` (see `.template-version`)
 - **Last update check:** See `.template-update.json`

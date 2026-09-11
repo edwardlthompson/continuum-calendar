@@ -19,6 +19,7 @@
   "install": "Requirements depend on your active stack (Node 20+, Python 3.11+, Android SDK). See the active `modules/{stack}/MODULE.md` and `examples/{stack}/README.md`.",
   "usage": "Use `/bootstrap` for Sprint 0, `/build` for features, and `/verify` before merge. Edit colors in `design-tokens/design-tokens.json` and logos in `branding/assets/`, then run `python3 scripts/sync-design-tokens.py`.",
   "urls": {
+    "github_repo": "edwardlthompson/continuum-calendar",
     "docs": "docs/START_HERE.md",
     "contributing": "CONTRIBUTING.md",
     "security": "SECURITY.md",
@@ -27,7 +28,7 @@
     "branding": "branding/BRANDING.md"
   },
   "badge": {
-    "primary": "e94560",
+    "primary": "D63854",
     "secondary": "4A5F82",
     "license": "2ea043",
     "foss": "656d76"

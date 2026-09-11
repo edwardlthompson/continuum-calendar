@@ -20,8 +20,7 @@ data class ContinuumTokens(
  * FOSS-friendly (no Play Services Sign-In SDK).
  */
 class ContinuumGoogleAuth(private val context: Context) {
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences = ContinuumTokenStore.open(context)
 
     fun isSignedIn(): Boolean = loadTokens()?.accessToken?.isNotBlank() == true
 
@@ -81,7 +80,7 @@ class ContinuumGoogleAuth(private val context: Context) {
         if (secret.isNotBlank()) params["client_secret"] = secret
         val body = params.entries.joinToString("&") { "${it.key}=${Uri.encode(it.value)}" }
         var lastError: Exception? = null
-        repeat(3) { attempt ->
+        for (attempt in 0 until 3) {
             try {
                 val resp = ContinuumHttpsPost.postForm(
                     context,
@@ -265,7 +264,6 @@ class ContinuumGoogleAuth(private val context: Context) {
     }
 
     companion object {
-        private const val PREFS = "continuum_google_auth"
         private const val KEY_ACCESS = "access"
         private const val KEY_REFRESH = "refresh"
         private const val KEY_EXPIRES = "expires"

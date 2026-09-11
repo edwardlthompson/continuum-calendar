@@ -2,6 +2,60 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Wrap-up — empty board + GitHub Release (2026-09-11)
+
+- ✅ [AUTO] Merge Dependabot [#24](https://github.com/edwardlthompson/continuum-calendar/pull/24), [#26](https://github.com/edwardlthompson/continuum-calendar/pull/26), [#28](https://github.com/edwardlthompson/continuum-calendar/pull/28), [#29](https://github.com/edwardlthompson/continuum-calendar/pull/29)
+- ✅ [AGENT] Merge release [#33](https://github.com/edwardlthompson/continuum-calendar/pull/33) (`v0.25.2`)
+- ✅ [AUTO] Close superseded web vitest [#31](https://github.com/edwardlthompson/continuum-calendar/pull/31); Dependabot closed leftover node hono [#30](https://github.com/edwardlthompson/continuum-calendar/pull/30) / vitest [#32](https://github.com/edwardlthompson/continuum-calendar/pull/32)
+- ✅ [HUMAN] Attach Windows EXE + Linux AppImage + FOSS APK to `v0.25.2` (copied from `v0.25.1`)
+
+## Backlog — Tasks, multi-cal sync, week widget, AppImage CI (2026-09-11)
+
+- ✅ [AGENT] Google Tasks UI
+- ✅ [AGENT] Multi-Google-calendar API sync polish
+- ✅ [AGENT] Rolling-week homescreen widget
+- ✅ [AGENT] Optional: Ubuntu CI job that builds desktop AppImage artifacts
+
+## Ship OAuth, tokens, and device smoke (2026-09-11)
+
+- ✅ [HUMAN] Attach Windows EXE + FOSS APK to GitHub Release `v0.25.1` (copied 0.17.3 EXE + 1.10.7 FOSS APK from v0.25.0; AppImage already on the tag)
+- ✅ [HUMAN] Bake Desktop OAuth for local Sign-in: `python scripts/set-desktop-google-client-id.py <ID> <SECRET>` then `cd apps/desktop && npm run install:local` (see `docs/GOOGLE_API_SETUP.md`)
+- ✅ [HUMAN] F-002: Public desktop + Android OAuth clients (PKCE, no `client_secret` in apps) + consent screen
+- ✅ [HUMAN] F-004: LICENSE copyright + Continuum Privacy Policy URL on consent screen
+- ✅ [HUMAN] F-003: Approve or defer secure token storage (Tauri store / EncryptedSharedPreferences)
+- ✅ [HUMAN] Optional: Continuum public OAuth Client ID for desktop product (`docs/GOOGLE_API_SETUP.md`)
+- ✅ [HUMAN] Quarterly ROADMAP review
+- ✅ [ADB] After OAuth: PC Sign in + phone Connect Google calendars
+- ✅ [ADB] Visual: launcher icon, package id, About, no Fossify store wording
+- ✅ [ADB] Agenda now-bar + notifications; month today ring; tray count / recurrence edit scope
+- ✅ [ADB] Install current FOSS APK; About version matches; no false all-day conflicts
+- ✅ [AGENT] Exchange auth code + refresh tokens — blocked on public OAuth client (F-002)
+- ✅ [AGENT] Persist tokens via Tauri secure store — after F-003
+
+## Sprint GP — Golden Path catch-up v1.4.0 (2026-09-11)
+
+- ✅ [AGENT] Crash capture / crash inbox: Golden Path stack tests + thin desktop port (`docs/features/crash-capture.md`)
+- ✅ [AGENT] Settings chrome: Settings-only header, theme dropdown, no ThemeToggle/FilterChip (`docs/features/settings-chrome.md`)
+- ✅ [AGENT] Feedback / GitHub feedback / deep-link / inbox (`docs/features/feedback.md`)
+- ✅ [AGENT] Donations-updates: keep Continuum About/Venmo; sync Golden Path about stubs (`docs/features/donations-updates.md`)
+- ✅ [AGENT] Privacy report / sanitize fixtures (`docs/features/privacy-report.md`, `docs/features/sanitize-fixtures.md`)
+- ✅ [AGENT] Navigation `nav.back` i18n parity (`docs/features/navigation.md`)
+- ✅ [AGENT] Display refresh (`docs/features/display-refresh.md`)
+- ✅ [AGENT] UnifiedPush Android stub (`docs/features/unifiedpush.md`)
+- ✅ [AGENT] Tour/coach Settings-only chrome (`docs/features/tour-coach-chrome.md`)
+- ✅ [AGENT] F-Droid metadata SourceCode/IssueTracker (`docs/features/android-module-fdroid.md`)
+- ✅ [AGENT] Winget publish loop example (`docs/features/winget-publish-loop.md`)
+- ✅ [AGENT] Cursor cloud hooks / automations / canvas / CLI docs wiring (`docs/features/cursor-cloud-hooks.md`)
+- ✅ [AGENT] ADR-0001 Selected pattern line (MVVM / Clean / Hexagonal) without overwriting Continuum decision (`docs/features/adr-0001-architecture-pick.md`)
+- ✅ [AGENT] Copy remaining template feature specs under `docs/features/` (do not overwrite Continuum settings/crash/donations specs)
+
+## Sprint L1 — Linux AppImage parity (2026-09-10)
+
+- ✅ [AGENT] Tauri Linux targets (`nsis` + `appimage`), install-local.sh, rename-appimage stable asset name
+- ✅ [AGENT] ProductKind `appimage` + Start at login (platform-neutral) + PARITY_MATRIX / ROADMAP / HUMAN_REMAINING
+- ✅ [AGENT] Linux runtime dep notes + icons/XDG autostart in `apps/desktop` install-local
+- ✅ [HUMAN] Local Ubuntu smoke: install, Start at login (XDG), tray StatusNotifier, agenda UI
+
 ## /ship v0.25.0 (2026-08-22)
 
 - ✅ [AGENT] Desktop expired-token banner + Calendar-only OAuth + Android invalid_grant clear (`c105ca2`)

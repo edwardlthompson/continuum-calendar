@@ -9,6 +9,33 @@ kotlin {
     }
 }
 
+// Live donations.json / app-update.json are gitignored; copy exemplars when missing
+// so local Gradle and CI instrumented tests never ship an empty About donate block.
+val syncExemplarAssets = tasks.register("syncExemplarAssets") {
+    val assetsDir = layout.projectDirectory.dir("src/main/assets")
+    doLast {
+        listOf("donations.json", "app-update.json").forEach { name ->
+            val dest = assetsDir.file(name).asFile
+            val example = assetsDir.file("$name.example").asFile
+            if (!dest.exists() && example.exists()) {
+                example.copyTo(dest)
+                logger.lifecycle("Synced exemplar asset: ${dest.name}")
+            }
+        }
+    }
+}
+
+tasks.named("preBuild").configure { dependsOn(syncExemplarAssets) }
+
+fun readGoldenPathAppVersion(): String {
+    val file = rootProject.file("../../schemas/golden-path/app-version.json")
+    check(file.isFile) { "Missing Golden Path app version SoT: ${file.invariantSeparatorsPath}" }
+    val match = Regex(""""version"\s*:\s*"([^"]+)"""").find(file.readText())
+    val version = match?.groupValues?.get(1)?.trim().orEmpty()
+    check(version.isNotEmpty()) { "schemas/golden-path/app-version.json missing version" }
+    return version
+}
+
 android {
     namespace = "dev.foss.goldenpath"
     compileSdk = 37
@@ -18,13 +45,32 @@ android {
         minSdk = 26
         targetSdk = 37
         versionCode = 1
-        versionName = "0.1.0"
+        versionName = readGoldenPathAppVersion()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+
+    val uploadStoreFile = System.getenv("GOLDENPATH_UPLOAD_STORE_FILE")
+    if (!uploadStoreFile.isNullOrBlank()) {
+        signingConfigs.create("upload") {
+            storeFile = file(uploadStoreFile)
+            storePassword = System.getenv("GOLDENPATH_UPLOAD_STORE_PASSWORD").orEmpty()
+            keyAlias = System.getenv("GOLDENPATH_UPLOAD_KEY_ALIAS") ?: "upload"
+            keyPassword = System.getenv("GOLDENPATH_UPLOAD_KEY_PASSWORD").orEmpty()
+        }
+        buildTypes.named("release").configure {
+            signingConfig = signingConfigs.getByName("upload")
         }
     }
 
@@ -39,6 +85,17 @@ android {
     }
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        animationsDisabled = true
+    }
+
+    lint {
+        abortOnError = true
+        lintConfig = file("lint.xml")
+        error += "ContentDescription"
+        error += "ClickableViewAccessibility"
+        error += "LabelFor"
+        error += "KeyboardInaccessibleWidget"
     }
 }
 
@@ -65,7 +122,10 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test:runner:1.7.0")
     androidTestImplementation("androidx.test:rules:1.7.0")
+    // Pin AndroidX Test line (no official test-bom). Espresso 3.7+ required on API 36+.
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestUtil("androidx.test:orchestrator:1.6.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

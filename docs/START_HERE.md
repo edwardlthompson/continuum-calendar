@@ -8,8 +8,8 @@
 
 ## Which repo mode are you in?
 
-- **Bootstrap:** New project from **Use this template** → read `docs/CURSOR_MODES.md`, then `docs/INITIALIZATION_PROMPT.md`
-- **Reference:** Existing project using this repo as rules reference → read `docs/CURSOR_MODES.md`, then `docs/FOR_AGENTS.md`
+- [**Bootstrap**](help/GLOSSARY.md): New project from **Use this template** → read `docs/CURSOR_MODES.md`, then `docs/INITIALIZATION_PROMPT.md`
+- [**Reference**](help/GLOSSARY.md): Existing project using this repo as rules reference → read `docs/CURSOR_MODES.md`, then `docs/FOR_AGENTS.md`
 
 ## Cursor modes (Plan / Agent / Debug / Ask)
 
@@ -72,7 +72,7 @@ flowchart TD
 
 ## BUILD_PLAN Labels
 
-`AGENT` | `HUMAN` | `ADB` | `AUTO` — filter with `grep '\[AGENT\]' BUILD_PLAN.md`. Definitions: [`help/GLOSSARY.md`](help/GLOSSARY.md).
+[**Sacred**](help/GLOSSARY.md) · [**Canon**](help/GLOSSARY.md) · [**AGENT**](help/GLOSSARY.md) · [**HUMAN**](help/GLOSSARY.md) · [**ADB**](help/GLOSSARY.md) · [**AUTO**](help/GLOSSARY.md) — filter with `grep '\[AGENT\]' BUILD_PLAN.md`. Definitions: [`help/GLOSSARY.md`](help/GLOSSARY.md).
 
 **Status markers:** 🔲 open · ✅ done · ❌ blocked — emoji only (not `- [ ]` checkboxes). Applies to all repo checklists; see legend in `BUILD_PLAN.md`.
 
@@ -82,6 +82,7 @@ Enable Dependabot alerts on GitHub (Settings → Code security and analysis). We
 
 ## Agent Prompts
 
-**Bootstrap:** Read @docs/START_HERE.md, @docs/CURSOR_MODES.md, and @docs/INITIALIZATION_PROMPT.md. Pick Cursor mode per CURSOR_MODES. Follow Section 8. Use BUILD_PLAN Sequential lane.
+**Agent prompts**
 
-**Reference:** Read @docs/CURSOR_MODES.md, @docs/FOR_AGENTS.md, and @TEMPLATE_INDEX.json. Pick Cursor mode per CURSOR_MODES. Apply matching rules. Do not copy examples/ wholesale.
+- [**Bootstrap**](help/GLOSSARY.md): Read @docs/START_HERE.md, @docs/CURSOR_MODES.md, and @docs/INITIALIZATION_PROMPT.md. Pick Cursor mode per CURSOR_MODES. Follow Section 8. Use BUILD_PLAN Sequential lane.
+- [**Reference**](help/GLOSSARY.md): Read @docs/CURSOR_MODES.md, @docs/FOR_AGENTS.md, and @TEMPLATE_INDEX.json. Pick Cursor mode per CURSOR_MODES. Apply matching rules. Do not copy examples/ wholesale.

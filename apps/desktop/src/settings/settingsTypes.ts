@@ -11,14 +11,20 @@ export type SettingsFormModel = {
   applySettings: (next: ContinuumSettings, toast?: string) => void
   authStatus: GoogleAuthStatus
   signedIn: boolean
+  signInPending?: boolean
+  /** Signed in with Calendar but missing Drive App Data — needs Sign in again. */
+  needsDriveReconnect?: boolean
   resolvedTheme: string
   lastSyncedAt: string | number | Date | null | undefined
   lastSyncError: string | null | undefined
   onSignIn: () => void
+  /** Incremental OAuth for Google Tasks (KB-028: not part of default Sign in). */
+  onConnectTasks?: () => void
+  tasksConnected?: boolean
   windowBehavior: WindowBehavior
   setWindowBehavior: (next: WindowBehavior) => void
-  startWithWindows: boolean
-  setStartWithWindows: (on: boolean) => void
+  startAtLogin: boolean
+  setStartAtLogin: (on: boolean) => void
   holidayPack: HolidayPackId
   setHolidayPack: (id: HolidayPackId) => void
   calendars: CalendarListEntry[]

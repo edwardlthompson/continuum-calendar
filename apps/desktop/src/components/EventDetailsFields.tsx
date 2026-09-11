@@ -7,6 +7,7 @@ import {
   type MonthlyMode,
   type RepeatFreq,
 } from '@continuum/shared'
+import { DateOnlyField } from './DateTimeLocalField'
 
 const COLORS = ['', '#0f6e8c', '#d32f2f', '#f9a825', '#43a047', '#8e24aa', '#039be5']
 
@@ -31,6 +32,7 @@ export function EventDetailsFields(props: {
   onChange: (next: EventDetailsValue) => void
   defaultReminderMinutes: number
   start?: string
+  firstDayOfWeek?: number
 }) {
   const freq = freqFromRrule(props.value.recurrence)
   const until = untilFromRrule(props.value.recurrence) ?? ''
@@ -89,16 +91,15 @@ export function EventDetailsFields(props: {
       {freq !== 'none' ? (
         <label className="flex flex-col gap-1 text-sm">
           Repeat until
-          <input
-            type="date"
-            className="cc-native-field w-full min-w-0 rounded border border-[var(--cc-border)] px-2 py-1.5"
+          <DateOnlyField
             value={until}
-            onChange={(e) =>
+            firstDayOfWeek={props.firstDayOfWeek ?? 0}
+            onChange={(iso) =>
               props.onChange({
                 ...props.value,
                 recurrence: rruleFromParts({
                   freq,
-                  until: e.target.value || undefined,
+                  until: iso || undefined,
                   monthly,
                   start: props.start,
                 }),

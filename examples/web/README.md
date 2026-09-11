@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="../../branding/assets/logo-mark.svg" alt="Golden Path" width="64" />
+</p>
+
 # Golden Path Web (PWA)
 
-Vite + TypeScript PWA stub demonstrating offline service worker, Vitest, Playwright, and Lighthouse CI budgets.
+FOSS apps with a clear path from idea to release — Vite + TypeScript PWA stub (offline service worker, Vitest, Playwright, Lighthouse CI). Brand kit: [`branding/BRANDING.md`](../../branding/BRANDING.md).
 
 ## Repository layout
 
@@ -12,9 +16,10 @@ examples/web/
     style.css           # layout only — no user-facing copy
     design-tokens.css   # generated colors/spacing (run sync-design-tokens.py)
     theme.ts            # theme preference (system/light/dark)
-    components/         # ThemeToggle, etc. — labels via t()
+    components/         # SettingsPanel, AboutPanel — labels via t()
   public/               # manifest, service worker, static assets
   dist/                 # npm run build output → GitHub Pages (do not edit or commit)
+
 ```
 
 **`docs/` is agent documentation, not this app.** The live site is built from `examples/web/dist/` via `.github/workflows/pages.yml`. See [`docs/WEB_PROJECT_LAYOUT.md`](../../docs/WEB_PROJECT_LAYOUT.md).
@@ -23,12 +28,19 @@ examples/web/
 
 ```bash
 npm ci
-npm test          # Vitest unit tests
+npm test          # Vitest unit tests (maxWorkers 50%; override with VITEST_MAX_WORKERS=1 if a race appears)
 npm run build     # Production build → dist/
 npm run preview   # Preview server
-npx playwright test  # E2E + axe + visual snapshots
+npx playwright test  # E2E + axe + home/Settings/About/Feedback snapshots
 npm run lighthouse   # Lighthouse CI budgets
+
 ```
+
+Optional task runner (not required for CI): install [just](https://github.com/casey/just), then `just test`.
+
+## Why these tools?
+
+Vite + TypeScript keep the PWA small and typed. Vitest covers units, Playwright covers the browser, and Lighthouse CI enforces a real performance budget so “it builds” is not the only bar.
 
 ## PWA features
 

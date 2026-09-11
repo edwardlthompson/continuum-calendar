@@ -1,1 +1,1 @@
-Continuum Calendar Golden Path Android exemplar (not the product app)
+FOSS Android skeleton for agent-project-bootstrap

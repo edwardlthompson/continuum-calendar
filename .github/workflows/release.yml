@@ -26,6 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Validate CI refs
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: bash scripts/check-ci-refs.sh --release
+
       - name: Verify tag matches .template-version
         run: |
           TAG="${GITHUB_REF#refs/tags/v}"
@@ -51,11 +56,15 @@ jobs:
     steps:
       - name: Resolve release tag
         id: tag
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
         run: |
-          if [ "${{ github.event_name }}" = "release" ]; then
-            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ inputs.tag }}" ]; then
-            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          if [ "$EVENT_NAME" = "release" ]; then
+            echo "tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+          elif [ -n "$INPUT_TAG" ]; then
+            echo "tag=${INPUT_TAG}" >> "$GITHUB_OUTPUT"
           else
             echo "tag=" >> "$GITHUB_OUTPUT"
           fi
@@ -65,17 +74,27 @@ jobs:
           # SBOM backfill (workflow_dispatch + tag input): build from main, upload to existing tag
           ref: ${{ inputs.tag != '' && github.ref || steps.tag.outputs.tag || github.ref }}
 
+      - name: Validate CI refs
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: bash scripts/check-ci-refs.sh --release
+
       - name: Finalize release tag from .template-version
         if: steps.tag.outputs.tag == ''
         id: tag_ver
         run: echo "tag=v$(tr -d '[:space:]' < .template-version)" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag matches .template-version
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          STEP_TAG: ${{ steps.tag.outputs.tag }}
+          STEP_TAG_VER: ${{ steps.tag_ver.outputs.tag }}
         run: |
-          if [ -n "${{ inputs.tag }}" ]; then
-            EFFECTIVE="${{ inputs.tag }}"
+          if [ -n "$INPUT_TAG" ]; then
+            EFFECTIVE="$INPUT_TAG"
           else
-            EFFECTIVE="${{ steps.tag.outputs.tag || steps.tag_ver.outputs.tag }}"
+            EFFECTIVE="${STEP_TAG:-$STEP_TAG_VER}"
           fi
           TAG="${EFFECTIVE#v}"
           VERSION=$(tr -d '[:space:]' < .template-version)
@@ -96,7 +115,7 @@ jobs:
         run: bash scripts/pre-release-gate.sh
 
       - name: Generate root SBOM
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.20.6
         with:
           path: .
           format: cyclonedx-json
@@ -104,7 +123,7 @@ jobs:
 
       - name: Generate web stack SBOM slice
         if: hashFiles('examples/web/package.json') != ''
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.20.6
         with:
           path: examples/web
           format: cyclonedx-json
@@ -112,7 +131,7 @@ jobs:
 
       - name: Generate python stack SBOM slice
         if: hashFiles('examples/python/pyproject.toml') != ''
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.20.6
         with:
           path: examples/python
           format: cyclonedx-json
@@ -120,7 +139,7 @@ jobs:
 
       - name: Generate node stack SBOM slice
         if: hashFiles('examples/node/package.json') != ''
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.20.6
         with:
           path: examples/node
           format: cyclonedx-json
@@ -128,7 +147,7 @@ jobs:
 
       - name: Generate android stack SBOM slice
         if: hashFiles('examples/android/app/build.gradle.kts') != ''
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.20.6
         with:
           path: examples/android
           format: cyclonedx-json
@@ -136,7 +155,7 @@ jobs:
 
       - name: Generate rust stack SBOM slice
         if: hashFiles('examples/rust/Cargo.lock') != ''
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.20.6
         with:
           path: examples/rust
           format: cyclonedx-json
@@ -144,14 +163,16 @@ jobs:
 
       - name: Generate go stack SBOM slice
         if: hashFiles('examples/go/go.sum') != ''
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.20.6
         with:
           path: examples/go
           format: cyclonedx-json
           output-file: sbom-go.cyclonedx.json
 
       - name: Generate Winget manifest stub
-        run: bash scripts/generate-winget-manifest.sh "AgentProjectBootstrap.Template" "$(cat .template-version | tr -d '[:space:]')"
+        run: |
+          bash scripts/generate-winget-manifest.sh "AgentProjectBootstrap.Template" "$(tr -d '[:space:]' < .template-version)"
+          bash scripts/validate-winget-stub.sh
 
       - name: Generate provenance attestation
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v2.2.0
@@ -167,11 +188,18 @@ jobs:
             echo "FAIL: release $TAG not found (merge Release Please PR first)"
             exit 1
           fi
-          FILES="packaging/winget/manifest.stub.yaml sbom.cyclonedx.json"
-          [ -f sbom-web.cyclonedx.json ] && FILES="$FILES sbom-web.cyclonedx.json"
-          [ -f sbom-python.cyclonedx.json ] && FILES="$FILES sbom-python.cyclonedx.json"
-          [ -f sbom-node.cyclonedx.json ] && FILES="$FILES sbom-node.cyclonedx.json"
-          [ -f sbom-android.cyclonedx.json ] && FILES="$FILES sbom-android.cyclonedx.json"
-          [ -f sbom-rust.cyclonedx.json ] && FILES="$FILES sbom-rust.cyclonedx.json"
-          [ -f sbom-go.cyclonedx.json ] && FILES="$FILES sbom-go.cyclonedx.json"
-          gh release upload "$TAG" $FILES --clobber
+          FILES=(packaging/winget/manifest.stub.yaml sbom.cyclonedx.json)
+          if [ -f openvex.json ]; then
+            cp openvex.json openvex-upload.json
+          else
+            cp schemas/golden-path/openvex.example.json openvex-upload.json
+          fi
+          mv openvex-upload.json openvex.json
+          FILES+=(openvex.json)
+          [ -f sbom-web.cyclonedx.json ] && FILES+=(sbom-web.cyclonedx.json)
+          [ -f sbom-python.cyclonedx.json ] && FILES+=(sbom-python.cyclonedx.json)
+          [ -f sbom-node.cyclonedx.json ] && FILES+=(sbom-node.cyclonedx.json)
+          [ -f sbom-android.cyclonedx.json ] && FILES+=(sbom-android.cyclonedx.json)
+          [ -f sbom-rust.cyclonedx.json ] && FILES+=(sbom-rust.cyclonedx.json)
+          [ -f sbom-go.cyclonedx.json ] && FILES+=(sbom-go.cyclonedx.json)
+          gh release upload "$TAG" "${FILES[@]}" --clobber

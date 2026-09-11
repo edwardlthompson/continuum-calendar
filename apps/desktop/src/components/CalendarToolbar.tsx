@@ -1,5 +1,6 @@
 import type { Ref } from 'react'
 import { hotkeyTitle } from '../hooks/desktopHotkeys'
+import { DateOnlyField } from './DateTimeLocalField'
 
 export type MainView = 'agenda' | 'rolling' | 'month' | 'year'
 
@@ -12,6 +13,7 @@ export function CalendarToolbar(props: {
   onJumpDate: (iso: string) => void
   onToday: () => void
   searchRef?: Ref<HTMLInputElement>
+  firstDayOfWeek?: number
 }) {
   const btn = (id: MainView, label: string, hint: string) => (
     <button
@@ -49,20 +51,15 @@ export function CalendarToolbar(props: {
         aria-label="Search events"
         title={hotkeyTitle('Search events', '/ or F')}
       />
-      <label
-        className="flex items-center gap-1 text-sm text-[var(--cc-muted)]"
-        title={hotkeyTitle('Jump to date', 'G')}
-      >
+      <div className="flex items-center gap-1 text-sm text-[var(--cc-muted)]" title={hotkeyTitle('Jump to date', 'G')}>
         Jump
-        <input
-          type="date"
-          className="cc-native-field rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+        <DateOnlyField
           value={props.jumpDate}
-          onChange={(e) => props.onJumpDate(e.target.value)}
-          aria-label="Jump to date"
-          title={hotkeyTitle('Jump to date', 'G')}
+          onChange={props.onJumpDate}
+          firstDayOfWeek={props.firstDayOfWeek}
+          ariaLabel="Jump to date"
         />
-      </label>
+      </div>
     </div>
   )
 }

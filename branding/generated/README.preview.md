@@ -21,6 +21,12 @@
   <img src="https://img.shields.io/badge/android-stack-3DDC84?style=flat-square" alt="android" />
 </p>
 
+```mermaid
+flowchart TD
+  Readme[README] --> Start[START_HERE]
+  Start --> Board[BUILD_PLAN]
+```
+
 ## Pitch
 
 Golden Path is the reference product identity shipped with agent-project-bootstrap: a privacy-respecting FOSS stack with design tokens, CI guardrails, and agent-ready sprints so you can go from template to a shippable app without reinventing the foundation.

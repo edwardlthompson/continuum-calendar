@@ -9,6 +9,10 @@ Continuum Calendar needs a desktop shell (Tauri) and an Android fork (Fossify) t
 
 ## Decision
 
+**Selected pattern:** 🔲 MVVM  🔲 Clean Architecture  🔲 Hexagonal (Ports & Adapters)
+
+Continuum already ships a monorepo. The three application-layer patterns stay an open pick for new UI work (Fossify/Android leans MVVM; `packages/shared` is the contract port).
+
 - Use a **npm workspaces monorepo** with:
   - `apps/desktop` — Tauri 2 + React + Vite + Tailwind + FullCalendar
   - `apps/mobile` — FossifyOrg/Calendar fork (submodule after human approval)

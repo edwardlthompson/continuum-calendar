@@ -68,3 +68,4 @@ $meta = Get-Item -LiteralPath $InstallExe
 Write-Host ("Installed: " + $meta.FullName)
 Write-Host ("Size: " + $meta.Length + "  LastWriteTime: " + $meta.LastWriteTime)
 Write-Host "Done. Launch from Start Menu or the path above (not target\debug)."
+# Start at login uses the installed path above (release-only).

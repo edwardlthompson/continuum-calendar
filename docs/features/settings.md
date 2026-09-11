@@ -24,6 +24,15 @@
 | View | `examples/web/src/components/SettingsPanel.ts` | `examples/android/.../ui/settings/` |
 | Tests | `settings/*.test.ts` | `src/test/.../settings/` |
 | Wiring | `appBootstrap.ts` + `AppShell.ts` | `GoldenPathApp.kt` (composition root) |
+## Tests
+
+- Automated: yes — desktop `apps/desktop/src/settings/settingsCatalog.test.ts`
+- Coverage: settings catalog search plus panel wiring
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack multi`
 
 ## Out of scope (Sprint 2)
 

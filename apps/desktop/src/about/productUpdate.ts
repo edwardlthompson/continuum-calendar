@@ -1,6 +1,8 @@
 export const MS_DAY = 86_400_000
 
-export type ProductKind = 'exe' | 'apk'
+export type ProductKind = 'exe' | 'apk' | 'appimage'
+
+export type DesktopOs = 'windows' | 'linux' | 'other'
 
 export interface NamedAsset {
   name: string
@@ -27,13 +29,28 @@ export function isNewerVersion(current: string, latest: string): boolean {
   return compareVersions(current, latest) < 0
 }
 
+export function detectDesktopOs(ua: string): DesktopOs {
+  if (/Windows/i.test(ua)) return 'windows'
+  if (/Linux/i.test(ua) && !/Android/i.test(ua)) return 'linux'
+  return 'other'
+}
+
+/** Desktop GitHub Release asset kind for this host (null on unsupported OS). */
+export function productKindForOs(os: DesktopOs): Exclude<ProductKind, 'apk'> | null {
+  if (os === 'windows') return 'exe'
+  if (os === 'linux') return 'appimage'
+  return null
+}
+
 export function parseAssetVersion(name: string, kind: ProductKind): string | null {
   const src = name.trim()
   if (!src) return null
   const re =
     kind === 'exe'
       ? /Continuum-Calendar-(\d+\.\d+\.\d+)/i
-      : /continuum-calendar-(\d+\.\d+\.\d+)-foss\.apk/i
+      : kind === 'appimage'
+        ? /Continuum[- _]?Calendar[- _](\d+\.\d+\.\d+).*\.AppImage$/i
+        : /continuum-calendar-(\d+\.\d+\.\d+)-foss\.apk/i
   return re.exec(src)?.[1] ?? null
 }
 

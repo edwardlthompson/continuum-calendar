@@ -18,6 +18,12 @@
 {{stack_badges}}
 </p>
 
+```mermaid
+flowchart TD
+  Readme[README] --> Start[START_HERE]
+  Start --> Board[BUILD_PLAN]
+```
+
 ## Pitch
 
 {{pitch}}

@@ -81,6 +81,26 @@ fun Project.resolveContinuumGoogleAndroidClientId(): String {
     return ""
 }
 
+fun Project.resolveContinuumGoogleAndroidReleaseClientId(): String {
+    (findProperty("CONTINUUM_GOOGLE_ANDROID_RELEASE_CLIENT_ID") as String?)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
+    System.getenv("CONTINUUM_GOOGLE_ANDROID_RELEASE_CLIENT_ID")?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
+    val localProps = rootProject.file("local.properties")
+    if (localProps.exists()) {
+        val props = Properties()
+        FileInputStream(localProps).use { props.load(it) }
+        props.getProperty("continuum.google.android.release.client.id")?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
+    }
+    return resolveContinuumGoogleAndroidClientId()
+}
+
+fun Project.continuumAndroidRedirectScheme(clientId: String, release: Boolean): String {
+    if (clientId.contains(".apps.googleusercontent.com")) {
+        return "com.googleusercontent.apps." + clientId.substringBefore(".apps.googleusercontent.com")
+    }
+    val appId = project.property("APP_ID").toString()
+    return if (release) appId else "$appId.debug"
+}
+
 fun Project.resolveDesktopEnvValue(key: String): String {
     val desktopEnv = rootProject.rootDir.resolve("../desktop/.env")
     val desktopEnvAlt = rootProject.rootDir.parentFile?.resolve("desktop/.env")
@@ -125,12 +145,8 @@ android {
         // Needed when using a Desktop OAuth client for Android browser/PKCE token exchange.
         buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_SECRET", "\"$continuumClientSecret\"")
         // Custom Tabs redirect scheme: com.googleusercontent.apps.<android-client-prefix>
-        val authScheme = if (continuumAndroidClientId.contains(".apps.googleusercontent.com")) {
-            "com.googleusercontent.apps." + continuumAndroidClientId.substringBefore(".apps.googleusercontent.com")
-        } else {
-            "${project.property("APP_ID")}.debug"
-        }
-        manifestPlaceholders["appAuthRedirectScheme"] = authScheme
+        manifestPlaceholders["appAuthRedirectScheme"] =
+            project.continuumAndroidRedirectScheme(continuumAndroidClientId, release = false)
     }
 
     signingConfigs {
@@ -163,6 +179,10 @@ android {
             applicationIdSuffix = ".debug"
         }
         release {
+            val releaseAndroidId = project.resolveContinuumGoogleAndroidReleaseClientId()
+            buildConfigField("String", "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID", "\"$releaseAndroidId\"")
+            manifestPlaceholders["appAuthRedirectScheme"] =
+                project.continuumAndroidRedirectScheme(releaseAndroidId, release = true)
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -246,7 +266,7 @@ val patchFossifyCommons by tasks.registering(Exec::class) {
     group = "continuum"
     description = "Patch Fossify commons FakeVersionCheck for org.continuumcalendar.*"
     workingDir = continuumRepoRoot
-    commandLine("python", "scripts/patch-fossify-commons-fake-version.py")
+    commandLine("python3", "scripts/patch-fossify-commons-fake-version.py")
     dependsOn(tasks.named("resolveCommonsUpstream"))
 }
 
@@ -268,6 +288,7 @@ dependencies {
     implementation(libs.bundles.room)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.browser)
+    implementation(libs.androidx.security.crypto)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.runner)

@@ -10,6 +10,14 @@
 
 > Legacy `.cursorrules` is deprecated. Use `.cursor/rules/*.mdc` and this file instead.
 
+## Project Overview & Architecture
+
+<!-- bootstrap-project-card -->
+**Product:** Continuum Calendar
+**Purpose:** FOSS cross-platform calendar with rolling week views, explicit empty days, Google Calendar/Contacts sync, and Android homescreen widgets
+**Stack:** multi
+<!-- /bootstrap-project-card -->
+
 ## Architecture Constraints
 
 - Pure FOSS under MIT license; no proprietary closed-source SDKs in production path

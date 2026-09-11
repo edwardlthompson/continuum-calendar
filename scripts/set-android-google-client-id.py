@@ -7,18 +7,25 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ANDROID_LOCAL = ROOT / "apps" / "mobile" / "local.properties"
-KEY = "continuum.google.android.client.id"
+DEBUG_KEY = "continuum.google.android.client.id"
+RELEASE_KEY = "continuum.google.android.release.client.id"
 
 
 def main() -> int:
-    if len(sys.argv) < 2 or not sys.argv[1].strip():
+    args = [a for a in sys.argv[1:] if a.strip()]
+    release = False
+    if args and args[0] in ("--release", "-r"):
+        release = True
+        args = args[1:]
+    if not args:
         print(
             "Usage: python scripts/set-android-google-client-id.py "
-            "<ANDROID_CLIENT_ID>.apps.googleusercontent.com",
+            "[--release] <ANDROID_CLIENT_ID>.apps.googleusercontent.com",
             file=sys.stderr,
         )
         return 2
-    client_id = sys.argv[1].strip()
+    client_id = args[0].strip()
+    key = RELEASE_KEY if release else DEBUG_KEY
     if "apps.googleusercontent.com" not in client_id:
         print("Client ID should look like ….apps.googleusercontent.com", file=sys.stderr)
         return 2
@@ -29,19 +36,24 @@ def main() -> int:
     out: list[str] = []
     found = False
     for line in lines:
-        if line.strip().startswith(f"{KEY}="):
-            out.append(f"{KEY}={client_id}")
+        if line.strip().startswith(f"{key}="):
+            out.append(f"{key}={client_id}")
             found = True
         else:
             out.append(line)
     if not found:
         if out and out[-1].strip():
             out.append("")
-        out.append("# Continuum Android OAuth (Custom Tabs) — same GCP project as desktop")
-        out.append(f"{KEY}={client_id}")
+        comment = (
+            "# Continuum Android OAuth release client — same GCP project as desktop"
+            if release
+            else "# Continuum Android OAuth (Custom Tabs) — same GCP project as desktop"
+        )
+        out.append(comment)
+        out.append(f"{key}={client_id}")
     ANDROID_LOCAL.parent.mkdir(parents=True, exist_ok=True)
     ANDROID_LOCAL.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
-    print(f"Updated {ANDROID_LOCAL} ({KEY})")
+    print(f"Updated {ANDROID_LOCAL} ({key})")
     print("Rebuild/reinstall the APK, then Settings → Continuum → Sync with desktop.")
     return 0
 

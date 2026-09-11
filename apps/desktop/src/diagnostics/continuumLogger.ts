@@ -1,5 +1,9 @@
 /** FOSS local diagnostics — no network telemetry. Persists to localStorage + optional download. */
 
+import { persistPendingCrash } from '../crash-capture/pendingCrash.ts'
+import { getSaveCrashes } from '../feedback/saveCrashes.ts'
+import { sanitizeReportText } from '../privacy-report/sanitize.ts'
+
 const LOG_KEY = 'continuum.error.log'
 const CRASH_KEY = 'continuum.last.crash'
 const MAX_CHARS = 200_000
@@ -56,10 +60,17 @@ export const continuumLogger = {
     append('error', message, err)
   },
   crash(message: string, err?: unknown) {
-    append('crash', message, err)
+    const record = {
+      message: sanitizeReportText(message),
+      stack: sanitizeReportText(
+        err instanceof Error ? (err.stack ?? err.message) : String(err ?? ''),
+        true,
+      ),
+    }
+    persistPendingCrash(record, getSaveCrashes())
+    append('crash', record.message, record.stack)
     try {
-      const body = `[${stamp()}] ${message}\n${err instanceof Error ? err.stack : String(err ?? '')}`
-      localStorage.setItem(CRASH_KEY, body.slice(0, 8000))
+      localStorage.setItem(CRASH_KEY, `${record.message}\n${record.stack}`.slice(0, 8000))
     } catch {
       /* ignore */
     }

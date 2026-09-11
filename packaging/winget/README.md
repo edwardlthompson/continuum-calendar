@@ -1,11 +1,18 @@
 # Winget Manifest Stub
 
-Generate package manifests here when building native desktop binaries.
+Publish runbook: [`docs/WINGET.md`](../../docs/WINGET.md).
 
-See https://github.com/microsoft/winget-pkgs for submission guidelines.
+Committed example (placeholder SHA-256, `example.com` URL):
 
-When releasing native desktop apps:
+```bash
+bash scripts/validate-winget-stub.sh packaging/winget/example/manifest.yaml
 
-1. Build reproducible binaries
-2. Generate manifest YAML per Winget schema
-3. Submit PR to microsoft/winget-pkgs
+```
+
+```bash
+bash scripts/generate-winget-manifest.sh Example.Publisher.App 1.2.3 packaging/winget
+bash scripts/validate-winget-stub.sh packaging/winget/manifest.stub.yaml
+
+```
+
+Submit the filled YAML to https://github.com/microsoft/winget-pkgs. `[HUMAN]` opens that PR.

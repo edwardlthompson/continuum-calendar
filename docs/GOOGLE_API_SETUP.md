@@ -23,13 +23,14 @@ Until Continuum ships its published client ID in release binaries:
 
 - **Android works today** via Settings → Continuum → **Connect Google calendars** (uses the Google account already on the phone).
 - **Desktop Sign in** needs Continuum’s public Desktop client ID embedded at build time (`VITE_GOOGLE_CLIENT_ID`) by whoever packages Continuum — still not something end users create or manage.
+- Google **blocks** OAuth inside embedded WebViews. Continuum always opens the **system browser** and completes via a loopback redirect (`http://127.0.0.1:<port>/`). There is no “paste Client ID” path for end users.
 
 ## Maintainer checklist (once per Continuum release, not per user)
 
 1. Google Cloud project for Continuum Calendar (product).
 2. Enable APIs: Calendar, People, Drive (App Data), Tasks.
-3. OAuth consent screen: External, scopes listed below. While Publishing status is **Testing**, add every Google account that should sign in as a **Test user** (or publish the app). If the user clicks Continue on the unverified-app warning and then sees **An unknown error has occurred**, they are not a test user (or a requested scope is missing from the consent screen). Desktop sign-in requests **Calendar only** so that Continue is less likely to break.
-4. Create OAuth clients: Desktop + Android (package + SHA-1) in the **same** Google Cloud project (Drive App Data is per project — different projects = settings never sync across devices).
+3. OAuth consent screen: External, scopes listed below. While Publishing status is **Testing**, add every Google account that should sign in as a **Test user** (or publish the app). If the user clicks Continue on the unverified-app warning and then sees **An unknown error has occurred**, they are not a test user (or a requested scope is missing from the consent screen). Desktop sign-in requests **Calendar + Drive App Data** (`include_granted_scopes`) so Continuum can peer-sync settings with the phone. Do **not** add Contacts, Tasks, or `prompt=consent` while Testing (KB-028). Existing Calendar-only sessions skip Drive until the user taps **Sign in again**.
+4. Create OAuth clients: Desktop + Android (package + SHA-1) in the **same** Google Cloud project (Drive App Data is per project — different projects = settings never sync across devices). Release APK: `org.continuumcalendar.app` + release SHA-1 (`python scripts/set-android-google-client-id.py --release …`). Debug APK: `.debug` package + debug SHA-1.
 5. Ship Continuum’s **Desktop client ID + client secret** in the Windows EXE (Google’s installed-app type; the “secret” is not confidential and the token endpoint requires it). Ship the **Android client ID only** in the APK (no `BuildConfig` secret). Keep `.env` / `local.properties` gitignored — never commit secrets.
 6. Continuum peer remotes (desktop ↔ Android) live in Drive App Data (same GCP project Client ID on both — `scripts/set-desktop-google-client-id.py` also writes `apps/mobile/local.properties`):
    - `continuum-settings.json` — Continuum preferences (24h, first day of week, privacy, etc.)
@@ -66,6 +67,13 @@ python scripts/set-desktop-google-client-id.py YOUR_CLIENT_ID.apps.googleusercon
 
 ```
 
+4. Rebuild/install so Sign-in is one-click (no Settings paste):
+
+```bash
+cd apps/desktop && npm run install:local
+
+```
+
 Google’s token endpoint requires the Desktop client secret (`invalid_request — client_secret is missing` without it). Vite bakes `VITE_GOOGLE_*` into release EXEs from this gitignored `.env`. Do not strip the secret in `PROD`. Do **not** set `VITE_GOOGLE_CLIENT_SECRET=` (empty) in `.env.production` — that overrides `.env` and ships a broken installer. Desktop 0.17.2+ exchanges the code from native Rust (not the WebView) so CORS cannot block `oauth2.googleapis.com/token`.
 
-4. Restart `npm run tauri:dev` so Vite picks up the env var.
+5. Restart `npm run tauri:dev` (or relaunch the installed app) so the baked env is live.

@@ -4,9 +4,11 @@ use std::sync::Mutex;
 use tauri::Emitter;
 
 mod autostart_guard;
+mod default_calendar;
 mod dev_ui_guard;
 mod location;
 mod oauth;
+mod token_vault;
 mod tray;
 mod tray_promote;
 mod window_behavior;
@@ -101,6 +103,11 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             oauth::start_oauth_loopback,
             oauth::google_oauth_token,
+            oauth::open_external_url,
+            token_vault::save_google_tokens,
+            token_vault::load_google_tokens,
+            default_calendar::claim_default_calendar,
+            default_calendar::is_default_calendar,
             take_pending_open_paths,
             read_text_file_limited,
             location::suggest_locations,

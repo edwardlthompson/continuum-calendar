@@ -26,8 +26,8 @@ export function humanizeOAuthFailure(err: unknown): string {
   }
   if (isInsufficientDriveScope(raw)) {
     return (
-      'Local Continuum files cannot sync to the phone while Google sign-in is Calendar-only. ' +
-      'Save the event to Google Calendar, then pull calendars on the phone.'
+      'Phone settings sync needs Google Drive App Data. Click Sign in again and approve Drive ' +
+      '(app data only). Calendar stays connected.'
     )
   }
   if (/redirect_uri_mismatch/i.test(raw)) {
@@ -45,6 +45,11 @@ export function humanizeOAuthFailure(err: unknown): string {
 /** Token can call Calendar API but not Drive App Data (phone peer sync). */
 export function hasDriveAppDataScope(scope: string): boolean {
   return scope.includes('https://www.googleapis.com/auth/drive.appdata')
+}
+
+/** True when Drive App Data peer sync must not run (missing scope, not a hard failure). */
+export function shouldSkipDrivePeerSync(scope: string | undefined | null): boolean {
+  return !hasDriveAppDataScope(scope ?? '')
 }
 
 export function isInsufficientDriveScope(err: unknown): boolean {

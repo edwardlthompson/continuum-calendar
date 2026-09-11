@@ -30,14 +30,21 @@ Thumbs.db
 .cursor-session-state.json
 .cursor/agent-progress.json
 .cursor/last-feature-gate.json
+.cursor/sprint-smoke.json
 .cursor/parallel-scope-lock.json
 .cursor/worktrees/
 .cursor/mcp.json
 .cursor/mcp-audit.log
 .cursor/environment.json
 .cursor/sandbox.json
+.cursor/automations.yaml
 CURSOR_RADAR_REPORT.md
 CURSOR_RADAR_BACKLOG.md
+CURSOR_RADAR_SUGGESTIONS.md
+CURSOR_RADAR_BUILD_PLAN_DRAFT.md
+.cursor/gates-status.md
+.cursor/upd-status.md
+.cursor/encoding-strict
 
 # Cursor plugin pack output (see scripts/pack-cursor-plugin.sh)
 dist/cursor-plugin/
@@ -51,10 +58,13 @@ playwright-report/
 .env
 .env.*
 !.env.example
+.envrc
+!.envrc.example
 
 # Live user configs (examples committed; copies from init)
 .app-update.json
 donations.json
+openvex.json
 examples/web/public/app-update.json
 examples/web/public/donations.json
 examples/android/app/src/main/assets/app-update.json
@@ -72,8 +82,15 @@ examples/rust/target/
 # Android extras
 examples/android/.cxx/
 examples/android/captures/
+apps/mobile/.gradle/
+apps/mobile/build/
+apps/mobile/app/build/
+apps/mobile/local.properties
 *.apk
 *.aab
+*.jks
+*.keystore
+*.p12
 
 # Node / tooling
 .turbo/
@@ -87,6 +104,10 @@ examples/android/captures/
 # Logs
 *.log
 
+# Optional Nix (flake.nix wraps scripts/ only)
+result
+.direnv/
+
 # Ephemeral agent outputs (examples tracked)
 CODE_REVIEW.md
 RELEASE_NOTES.md
@@ -96,7 +117,8 @@ scratchpad.md
 # Nested Fossify history removed for monorepo vendor
 .mobile-git-bak/
 
-# Local OAuth / device dumps (never commit)
+# Local OAuth / device dumps / agent screenshots (never commit)
 .cursor/auth-prefs.xml
 .cursor/auth-check.txt
 .cursor/settings-prefs.xml
+.cursor/*.png

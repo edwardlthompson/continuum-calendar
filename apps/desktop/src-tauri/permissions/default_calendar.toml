@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-claim-default-calendar"
+description = "Allow writing the Continuum .desktop entry and claiming calendar MIME defaults"
+commands.allow = ["claim_default_calendar"]
+
+[[permission]]
+identifier = "allow-is-default-calendar"
+description = "Allow querying whether Continuum is the default text/calendar handler"
+commands.allow = ["is_default_calendar"]

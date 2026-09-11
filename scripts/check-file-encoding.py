@@ -11,22 +11,7 @@ EXTS = {
     ".webmanifest",
 }
 ROOT_TEXT_FILES = {"LICENSE", ".template-version", "CODEOWNERS"}
-SKIP_DIRS = {
-    ".git",
-    "node_modules",
-    ".venv",
-    "dist",
-    "coverage",
-    "target",
-    "build",
-    ".gradle",
-    ".cxx",
-    "__pycache__",
-    ".turbo",
-    ".parcel-cache",
-    "test-results",
-    "playwright-report",
-}
+SKIP_DIRS = {".git", "node_modules", ".venv", "dist", "coverage", "target", "build", ".gradle"}
 
 
 def is_bad_encoding(path: str) -> bool:

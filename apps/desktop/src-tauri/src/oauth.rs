@@ -75,6 +75,22 @@ pub fn google_oauth_token(body: String) -> Result<String, String> {
     }
 }
 
+/// Open http(s)/mailto in the system default browser (Linux/Windows/macOS).
+#[tauri::command]
+pub fn open_external_url(url: String) -> Result<(), String> {
+    let trimmed = url.trim();
+    if trimmed.is_empty() || trimmed.len() > 16_384 {
+        return Err("URL is empty or too large".into());
+    }
+    let ok = trimmed.starts_with("https://")
+        || trimmed.starts_with("http://")
+        || trimmed.starts_with("mailto:");
+    if !ok {
+        return Err("Only http(s) and mailto URLs can be opened".into());
+    }
+    open::that_detached(trimmed).map_err(|e| format!("Could not open browser: {e}"))
+}
+
 fn handle_oauth_conn(app: &AppHandle, stream: &mut std::net::TcpStream) -> bool {
     let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
     let mut buf = [0u8; 8192];
@@ -105,8 +121,10 @@ fn handle_oauth_conn(app: &AppHandle, stream: &mut std::net::TcpStream) -> bool 
         return true;
     }
     if let Some(payload) = parse_oauth_query(path) {
-        let body = "<!DOCTYPE html><html><body style=\"font-family:system-ui;padding:2rem\">\
-            <p>Signed in — you can close this tab and return to Continuum Calendar.</p>\
+        let body = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Signed in</title></head>\
+            <body style=\"font-family:system-ui,sans-serif;padding:2rem;line-height:1.5;max-width:28rem\">\
+            <h1 style=\"font-size:1.25rem;margin:0 0 0.5rem\">You're signed in</h1>\
+            <p style=\"margin:0;color:#444\">You can close this tab and return to Continuum.</p>\
             </body></html>";
         let _ = write_http(stream, 200, body);
         if let Err(e) = app.emit("oauth-callback", payload) {

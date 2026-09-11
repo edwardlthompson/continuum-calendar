@@ -6,6 +6,7 @@ import type {
 } from '@continuum/shared'
 import { logicalCalendarId } from '@continuum/shared'
 import { ensureFreshTokens } from '../auth/googleAuth'
+import { applySeriesHydration, inferGoogleSeriesId } from './googleSeriesEdit'
 
 const CALENDAR_BASE = 'https://www.googleapis.com/calendar/v3'
 const PEOPLE_BASE = 'https://people.googleapis.com/v1'
@@ -71,6 +72,10 @@ function mapGoogleEvent(raw: Record<string, unknown>, calendarId: string): Calen
     busy: raw.transparency !== 'transparent' && eventType !== 'birthday',
     eventType,
     recurrence: recurrence?.length ? recurrence : undefined,
+    recurringEventId: inferGoogleSeriesId(
+      String(raw.id),
+      raw.recurringEventId ? String(raw.recurringEventId) : undefined,
+    ),
     timeZone: startTz,
     visibility,
     color: raw.colorId ? googleColorToHex(undefined, String(raw.colorId)) : undefined,
@@ -207,6 +212,57 @@ async function fetchAllGoogleEventPages(
   return { items, nextSyncToken }
 }
 
+const seriesMasterCache = new Map<string, CalendarEvent>()
+
+function seriesCacheKey(calendarId: string, eventId: string): string {
+  return `${calendarId}\0${eventId}`
+}
+
+export async function getGoogleEvent(calendarId: string, eventId: string): Promise<CalendarEvent> {
+  const cached = seriesMasterCache.get(seriesCacheKey(calendarId, eventId))
+  if (cached) return cached
+  const headers = await authHeaders()
+  const res = await fetch(
+    `${CALENDAR_BASE}/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
+    { headers },
+  )
+  if (!res.ok) throw new Error(`Calendar get failed: ${res.status}`)
+  const mapped = mapGoogleEvent((await res.json()) as Record<string, unknown>, calendarId)
+  if (mapped.recurrence?.length && !mapped.recurringEventId) {
+    seriesMasterCache.set(seriesCacheKey(calendarId, mapped.id), mapped)
+  }
+  return mapped
+}
+
+async function hydrateGoogleSeries(calendarId: string, events: CalendarEvent[]): Promise<CalendarEvent[]> {
+  for (const e of events) {
+    if (e.recurrence?.length && !e.recurringEventId) {
+      seriesMasterCache.set(seriesCacheKey(calendarId, e.id), e)
+    }
+  }
+  const ids = [...new Set(events.map((e) => e.recurringEventId).filter((id): id is string => Boolean(id)))]
+  const masters = new Map<string, CalendarEvent>()
+  const missing: string[] = []
+  for (const id of ids) {
+    const hit = seriesMasterCache.get(seriesCacheKey(calendarId, id))
+    if (hit?.recurrence?.length) masters.set(id, hit)
+    else missing.push(id)
+  }
+  for (let i = 0; i < missing.length; i += 6) {
+    await Promise.all(
+      missing.slice(i, i + 6).map(async (id) => {
+        try {
+          const m = await getGoogleEvent(calendarId, id)
+          if (m.recurrence?.length) masters.set(id, m)
+        } catch {
+          /* instance remains a one-off until the next sync */
+        }
+      }),
+    )
+  }
+  return applySeriesHydration(events, masters)
+}
+
 export async function listGoogleEvents(
   calendarId: string,
   timeMin: Date,
@@ -220,10 +276,11 @@ export async function listGoogleEvents(
     maxResults: '2500',
   })
   const { items, nextSyncToken } = await fetchAllGoogleEventPages(calendarId, params)
+  const mapped = items
+    .filter((item) => item.status !== 'cancelled')
+    .map((item) => mapGoogleEvent(item, calendarId))
   return {
-    events: items
-      .filter((item) => item.status !== 'cancelled')
-      .map((item) => mapGoogleEvent(item, calendarId)),
+    events: await hydrateGoogleSeries(calendarId, mapped),
     nextSyncToken,
   }
 }
@@ -240,7 +297,7 @@ export async function syncGoogleEventsIncremental(
     if (item.status === 'cancelled') deletedIds.push(String(item.id))
     else events.push(mapGoogleEvent(item, calendarId))
   }
-  return { events, deletedIds, nextSyncToken }
+  return { events: await hydrateGoogleSeries(calendarId, events), deletedIds, nextSyncToken }
 }
 
 export async function createGoogleEvent(
@@ -279,7 +336,11 @@ export async function updateGoogleEvent(event: CalendarEvent): Promise<CalendarE
     return createGoogleEvent(event.calendarId, rest)
   }
   if (!res.ok) throw new Error(`Calendar update failed: ${res.status}`)
-  return mapGoogleEvent((await res.json()) as Record<string, unknown>, event.calendarId)
+  const mapped = mapGoogleEvent((await res.json()) as Record<string, unknown>, event.calendarId)
+  if (mapped.recurrence?.length && !mapped.recurringEventId) {
+    seriesMasterCache.set(seriesCacheKey(event.calendarId, mapped.id), mapped)
+  }
+  return mapped
 }
 
 export async function deleteGoogleEvent(calendarId: string, eventId: string): Promise<void> {

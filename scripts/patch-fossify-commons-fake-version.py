@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Patch Fossify commons so FakeVersionCheck accepts Continuum's applicationId.
+Patch Fossify commons so FakeVersionCheck accepts Continuum's applicationId
+and About does not show hello@fossify.org.
 
 Upstream checks packageName.startsWith("org.fossify."). Continuum uses
 org.continuumcalendar.app — rewrite the 12-byte UTF-8 constant to "org.continuu"
@@ -13,8 +14,6 @@ Point settings.gradle.kts at libs/m2 and set commons version to 6.1.6-continuum.
 from __future__ import annotations
 
 import io
-import re
-import shutil
 import zipfile
 from pathlib import Path
 
@@ -31,6 +30,9 @@ TARGET_CLASSES = (
     "org/fossify/commons/compose/extensions/ActivityExtensionsKt.class",
     "org/fossify/commons/activities/BaseSimpleActivity.class",
 )
+# Commons AboutScreen always shows R.string.my_email (hello@fossify.org).
+MY_EMAIL_FOSSIFY = b'<string name="my_email">hello@fossify.org</string>'
+MY_EMAIL_BLANK = b'<string name="my_email"></string>'
 
 
 def find_upstream() -> tuple[Path, Path]:
@@ -48,8 +50,15 @@ def patch_class(data: bytes) -> bytes:
     if NEW in data and OLD not in data:
         return data
     if OLD not in data:
-        raise SystemExit(f"{TARGET_CLASS}: expected {OLD!r}")
+        raise SystemExit(f"expected {OLD!r} in FakeVersionCheck class")
     return data.replace(OLD, NEW)
+
+
+def patch_my_email(data: bytes) -> tuple[bytes, int]:
+    count = data.count(MY_EMAIL_FOSSIFY)
+    if count:
+        data = data.replace(MY_EMAIL_FOSSIFY, MY_EMAIL_BLANK)
+    return data, count
 
 
 def main() -> int:
@@ -60,6 +69,7 @@ def main() -> int:
 
     buf = io.BytesIO()
     patched: set[str] = set()
+    email_hits = 0
     with zipfile.ZipFile(src_aar, "r") as zin, zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zout:
         for info in zin.infolist():
             raw = zin.read(info.filename)
@@ -76,10 +86,16 @@ def main() -> int:
                             print(f"Patched {jinfo.filename}: {OLD!r} -> {NEW!r}")
                         jout.writestr(jinfo, jraw)
                 raw = jbuf.getvalue()
+            elif info.filename.endswith(".xml"):
+                raw, count = patch_my_email(raw)
+                email_hits += count
             zout.writestr(info, raw)
     missing = set(TARGET_CLASSES) - patched
     if missing:
         raise SystemExit(f"Missing classes in commons AAR: {sorted(missing)}")
+    if email_hits == 0:
+        raise SystemExit("commons AAR had no my_email Fossify string to blank")
+    print(f"Blanked my_email in {email_hits} XML string(s)")
     OUT_AAR.write_bytes(buf.getvalue())
 
     pom = src_pom.read_text(encoding="utf-8")

@@ -6,6 +6,16 @@
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
   "icons": [
     {
       "src": "/icon.svg",
@@ -19,5 +29,10 @@
       "type": "image/svg+xml",
       "purpose": "any"
     }
+  ],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "browser"
   ]
 }

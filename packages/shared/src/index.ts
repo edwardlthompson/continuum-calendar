@@ -9,7 +9,12 @@ export type {
 } from './events.js'
 export type { ContactSummary } from './contacts.js'
 export type { GoogleOAuthTokens } from './oauth.js'
-export { GOOGLE_SCOPES, GOOGLE_SCOPE_STRING, isTokenExpired } from './oauth.js'
+export {
+  GOOGLE_SCOPES,
+  GOOGLE_SCOPE_STRING,
+  GOOGLE_DESKTOP_SIGNIN_SCOPE,
+  isTokenExpired,
+} from './oauth.js'
 export type { CalendarSource, CalendarAccount, CalendarListEntry, SyncCursor } from './calendars.js'
 export { logicalCalendarId } from './calendars.js'
 export type {

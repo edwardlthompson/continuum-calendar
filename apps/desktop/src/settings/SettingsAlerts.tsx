@@ -1,6 +1,7 @@
 import { textMatches } from './settingsCatalog'
 import { SettingsNumber, SettingsRow } from './settingsUi'
 import type { SettingsSectionProps } from './settingsTypes'
+import { TimeOnlyField } from '../components/DateTimeLocalField'
 
 export function SettingsReminders({ form, query }: SettingsSectionProps) {
   const show = (...labels: string[]) => textMatches(query, ...labels)
@@ -44,24 +45,22 @@ export function SettingsScheduling({ form, query }: SettingsSectionProps) {
       {show('Working hours', 'hours') ? (
         <SettingsRow label="Working hours">
           <span className="flex items-center gap-1">
-            <input
-              type="time"
-              className="rounded border border-[var(--cc-border)] cc-native-field px-1"
+            <TimeOnlyField
+              ariaLabel="Working hours start"
               value={form.settings.workingHours.start}
-              onChange={(e) =>
+              onChange={(start) =>
                 form.persistSettings({
-                  workingHours: { ...form.settings.workingHours, start: e.target.value || '09:00' },
+                  workingHours: { ...form.settings.workingHours, start: start || '09:00' },
                 })
               }
             />
             –
-            <input
-              type="time"
-              className="rounded border border-[var(--cc-border)] cc-native-field px-1"
+            <TimeOnlyField
+              ariaLabel="Working hours end"
               value={form.settings.workingHours.end}
-              onChange={(e) =>
+              onChange={(end) =>
                 form.persistSettings({
-                  workingHours: { ...form.settings.workingHours, end: e.target.value || '17:00' },
+                  workingHours: { ...form.settings.workingHours, end: end || '17:00' },
                 })
               }
             />

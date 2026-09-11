@@ -23,7 +23,7 @@
 - 🔲 `scripts/setup-github-repo.sh` (Dependabot alerts, private reporting, branch protection)
 - 🔲 Confirm **CI**, **Security Scan**, **CodeQL**, and **Template Upgrade Simulation (Windows)** on the first push (`check-github-ci.sh --wait 300`; `setup-github-repo.sh` also requires **Repo Hygiene** and **Feature Gate**)
 - 🔲 Paste `docs/GITHUB_ABOUT.md` into GitHub → Settings → General → About (description + topics)
-- 🔲 If you have a donation URL, confirm `.github/FUNDING.yml` exists
+- 🔲 If you have a donation URL, confirm `.github/FUNDING.yml` exists and review `docs/help/DONATIONS.md`
 - 🔲 Review `SECURITY.md` reporting channel
 
 ## Week 3 — Golden Path and first feature

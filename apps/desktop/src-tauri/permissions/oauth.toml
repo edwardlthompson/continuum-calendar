@@ -7,3 +7,8 @@ commands.allow = ["start_oauth_loopback"]
 identifier = "allow-google-oauth-token"
 description = "Allow native POST to Google's OAuth token endpoint"
 commands.allow = ["google_oauth_token"]
+
+[[permission]]
+identifier = "allow-open-external-url"
+description = "Allow opening http(s)/mailto URLs in the system browser (OAuth + donate links)"
+commands.allow = ["open_external_url"]

@@ -5,7 +5,9 @@ import {
   humanizeOAuthFailure,
   isExpiredGoogleAuth,
   isTestingModeOAuthError,
+  shouldSkipDrivePeerSync,
 } from './oauthErrors.ts'
+import { GOOGLE_DESKTOP_SIGNIN_SCOPE, GOOGLE_SCOPES } from '../../../../packages/shared/src/oauth.ts'
 
 test('access_denied points at Test users', () => {
   const msg = humanizeOAuthFailure(new Error('403:access_denied'))
@@ -38,12 +40,12 @@ test('invalid_grant asks to sign in again and keep local edits', () => {
   assert.equal(isExpiredGoogleAuth('Calendar list failed: 401'), false)
 })
 
-test('Drive 403 tells the user to use Google Calendar for the phone', () => {
+test('Drive 403 tells the user to Sign in again for Drive App Data', () => {
   const msg = humanizeOAuthFailure(
     new Error('Drive local-events list failed: 403 Request had insufficient authentication scopes.'),
   )
-  assert.match(msg, /Google Calendar/i)
-  assert.match(msg, /phone/i)
+  assert.match(msg, /Drive App Data/i)
+  assert.match(msg, /Sign in again/i)
 })
 
 test('hasDriveAppDataScope reads the Drive App Data URL', () => {
@@ -54,4 +56,17 @@ test('hasDriveAppDataScope reads the Drive App Data URL', () => {
     ),
     true,
   )
+})
+
+test('shouldSkipDrivePeerSync when Calendar-only', () => {
+  assert.equal(shouldSkipDrivePeerSync(GOOGLE_SCOPES.calendar), true)
+  assert.equal(shouldSkipDrivePeerSync(GOOGLE_DESKTOP_SIGNIN_SCOPE), false)
+  assert.equal(shouldSkipDrivePeerSync(undefined), true)
+})
+
+test('desktop sign-in scope is Calendar plus Drive App Data', () => {
+  assert.match(GOOGLE_DESKTOP_SIGNIN_SCOPE, /calendar/)
+  assert.ok(GOOGLE_DESKTOP_SIGNIN_SCOPE.includes(GOOGLE_SCOPES.driveAppData))
+  assert.doesNotMatch(GOOGLE_DESKTOP_SIGNIN_SCOPE, /contacts/)
+  assert.doesNotMatch(GOOGLE_DESKTOP_SIGNIN_SCOPE, /tasks/)
 })

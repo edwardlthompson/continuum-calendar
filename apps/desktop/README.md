@@ -4,7 +4,7 @@ Tauri 2 + React + TypeScript + Vite + Tailwind CSS + FullCalendar.
 
 ## Commands
 
-`ash
+```bash
 # From repo root
 npm install
 npm run dev:desktop      # Vite only
@@ -14,14 +14,30 @@ npm run tauri:dev        # Tauri window + Vite
 npm run dev
 npm run tauri:dev
 npm run build
-npm run install:local    # tauri build --no-bundle → %LOCALAPPDATA%\Continuum Calendar\app.exe
-`
+npm run install:local    # release binary → ~/.local (Linux) or %LOCALAPPDATA% (Windows); Linux also writes XDG autostart + icons + claims default calendar (text/calendar, webcal)
+bash scripts/claim-default-calendar.sh   # re-claim defaults without a full rebuild
+npm run tauri:build      # NSIS (Windows) or AppImage (Linux)
+npm run rename:appimage  # Linux: stable Continuum-Calendar-{ver}-x86_64.AppImage name
 
-**Do not** copy src-tauri\target\debug\app.exe into the install folder or Start with Windows.
-That binary always loads http://localhost:5173 and shows Edge ERR_CONNECTION_REFUSED when Vite is down (KB-035).
-Use
-pm run install:local (or
-pm run tauri:build) for anything you expect to run as the product app.
+```
+
+**Do not** copy `src-tauri/target/debug/app` (or `app.exe`) into the install folder or enable Start at login for that binary.
+That build always loads `http://localhost:5173` and fails when Vite is down (KB-035).
+Use `npm run install:local` (or `npm run tauri:build`) for anything you expect to run as the product app.
+
+## Linux system packages (Ubuntu / Debian)
+
+```bash
+sudo apt install libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
+  librsvg2-dev patchelf build-essential curl wget file libssl-dev \
+  libgtk-3-dev libsoup-3.0-dev
+
+```
+
+Runtime tray indicators need `libayatana-appindicator3-1` (usually pulled in with the -dev package).
+
+Release asset name for GitHub Releases: `Continuum-Calendar-{version}-x86_64.AppImage`
+(after `npm run tauri:build` and `npm run rename:appimage`).
 
 ## Features (prototype)
 
@@ -44,4 +60,4 @@ Shortcuts are disabled while focus is in a text field. The full list also lives 
 
 ## Env
 
-See root .env.example and [docs/GOOGLE_API_SETUP.md](../../docs/GOOGLE_API_SETUP.md).
+See root `.env.example` and [docs/GOOGLE_API_SETUP.md](../../docs/GOOGLE_API_SETUP.md).

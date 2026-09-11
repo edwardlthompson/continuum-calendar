@@ -19,7 +19,7 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     id: 'account',
     title: 'Account & Google',
     blurb: 'Sign-in, Calendar sync, birthdays',
-    keywords: ['google', 'sign in', 'privacy', 'birthdays', 'contacts', 'peer', 'sync'],
+    keywords: ['google', 'sign in', 'privacy', 'birthdays', 'contacts', 'peer', 'sync', 'oauth', 'client id', 'secret', 'drive', 'tasks'],
   },
   {
     id: 'appearance',
@@ -48,14 +48,27 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
   {
     id: 'window',
     title: 'Window & startup',
-    blurb: 'Minimize, close, Start with Windows, shortcuts',
-    keywords: ['minimize', 'taskbar', 'tray', 'close', 'quit', 'boot', 'startup', 'login', 'keyboard', 'shortcut', 'hotkey'],
+    blurb: 'Minimize, close, Start at login, shortcuts',
+    keywords: ['minimize', 'taskbar', 'tray', 'close', 'quit', 'boot', 'startup', 'login', 'windows', 'keyboard', 'shortcut', 'hotkey'],
   },
   {
     id: 'files',
     title: 'Import & export',
-    blurb: 'ICS, CalDAV, settings backup, logs',
-    keywords: ['export', 'import', 'ics', 'caldav', 'subscribe', 'reset', 'error log', 'json'],
+    blurb: 'ICS, CalDAV, settings backup, logs, default app',
+    keywords: [
+      'export',
+      'import',
+      'ics',
+      'caldav',
+      'subscribe',
+      'reset',
+      'error log',
+      'crash',
+      'feedback',
+      'json',
+      'default calendar',
+      'webcal',
+    ],
   },
 ]
 

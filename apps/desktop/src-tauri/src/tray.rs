@@ -105,12 +105,19 @@ fn apply_badge(app: &AppHandle, count: u32, png: Vec<u8>, overlay: Vec<u8>, tip:
         update = format!("missing {:?}", build_tray(app, fallback_icon(app), &tip).err());
     }
     if let Some(win) = app.get_webview_window("main") {
-        if count > 0 && !overlay.is_empty() {
-            if let Ok(img) = Image::from_bytes(&overlay) {
-                let _ = win.set_overlay_icon(Some(img));
+        #[cfg(windows)]
+        {
+            if count > 0 && !overlay.is_empty() {
+                if let Ok(img) = Image::from_bytes(&overlay) {
+                    let _ = win.set_overlay_icon(Some(img));
+                }
+            } else {
+                let _ = win.set_overlay_icon(None);
             }
-        } else {
-            let _ = win.set_overlay_icon(None);
+        }
+        #[cfg(not(windows))]
+        {
+            let _ = (win, count, &overlay);
         }
     }
     let promote = crate::tray_promote::promote_own_icon();

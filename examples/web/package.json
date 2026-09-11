@@ -17,15 +17,15 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
-    "@biomejs/biome": "^2.5.8",
+    "@biomejs/biome": "^2.5.13",
     "@lhci/cli": "^0.15.1",
-    "@playwright/test": "^1.62.1",
-    "fast-check": "^4.3.0",
+    "@playwright/test": "^1.63.0",
+    "fast-check": "^4.9.0",
     "jsdom": "^30.0.1",
     "typescript": "~7.0.2",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10",
-    "@vitest/coverage-v8": "^4.1.8"
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0",
+    "@vitest/coverage-v8": "^5.0.0"
   },
   "overrides": {
     "tmp": ">=0.2.6",
@@ -37,6 +37,7 @@
     "nanoid": ">=3.3.18",
     "@puppeteer/browsers": ">=3.2.0",
     "proxy-agent": ">=8.0.2",
-    "postcss": ">=8.5.23"
+    "postcss": ">=8.5.23",
+    "qs": ">=6.16.0"
   }
 }

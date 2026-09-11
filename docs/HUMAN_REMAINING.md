@@ -1,9 +1,9 @@
 # Continuum Calendar — HUMAN checklist (GitHub public)
 
-> **Distribution target:** GitHub Releases only (Windows desktop + FOSS Android APK).  
-> F-Droid, Winget, and Play Store are **out of scope** for this ship.  
-> Run commands from repo root: `cd "C:\Users\edwar\Continuum Calendar"`  
-> On Windows: `.\scripts\...` or `pwsh -File .\scripts\...` — not bare `pwsh scripts\...`.  
+> **Distribution target:** GitHub Releases only (Windows EXE + Linux AppImage + FOSS Android APK).
+> F-Droid, Winget, Flatpak, and Play Store are **out of scope** for this ship.
+> Run commands from repo root: `cd "C:\Users\edwar\Continuum Calendar"` (Windows) or the Linux clone path.
+> On Windows: `.\scripts\...` or `pwsh -File .\scripts\...` — not bare `pwsh scripts\...`.
 > Brand: [`docs/BRAND.md`](BRAND.md) · OAuth: [`docs/GOOGLE_API_SETUP.md`](GOOGLE_API_SETUP.md) · Board: [`BUILD_PLAN.md`](../BUILD_PLAN.md)
 
 **Do not commit** `.env`, `local.properties`, keystores, or client secrets.
@@ -22,7 +22,13 @@
 | Commons “fake version” gate patched for Continuum package | ✅ |
 | Maintainer Google OAuth / Sync with desktop (debug) | ✅ |
 | GitHub repo is **public** | ✅ (`edwardlthompson/continuum-calendar`) |
-
+| LICENSE copyright Edward Thompson | ✅ |
+| Consent privacy URL + Continuum `docs/PRIVACY.md` | ✅ (URL live; `main` text updates after push) |
+| F-002 Desktop + Android debug + **release** Android client (`org.continuumcalendar.app`, custom URI) | ✅ (2026-09-11) |
+| F-003 token vault + EncryptedSharedPreferences | ✅ (2026-09-11) |
+| Quarterly ROADMAP review | ✅ (2026-09-11) |
+| Linux AppImage on GitHub Release `v0.25.2` | ✅ (2026-09-11; copied from v0.25.1) |
+| Windows EXE + FOSS APK on GitHub Release `v0.25.2` | ✅ (2026-09-11; copied 0.17.3 EXE + 1.10.7 APK from v0.25.1) |
 ---
 
 ## Priority for first public GitHub Release
@@ -36,7 +42,6 @@
 | 5 | Approve F-003 secure token storage (or accept risk for v1) | Soft — approve in chat | 2 min |
 | 6 | Repo harden (Dependabot + branch protection) | Soft for v1 | ~10 min |
 | 7 | Triage Dependabot mediums (F-009) | Soft for v1 | ~15–30 min |
-
 Agent polish (not HUMAN, not required for GitHub-only v1): Commons About / Fossify suite CTAs still show upstream strings — ask the agent after Release if you want a clean About screen.
 
 ---
@@ -56,6 +61,7 @@ https://www.googleapis.com/auth/calendar
 https://www.googleapis.com/auth/contacts.readonly
 https://www.googleapis.com/auth/drive.appdata
 https://www.googleapis.com/auth/tasks
+
 ```
 
 4. While **Testing**: add every GitHub downloader’s Google account as a test user, **or** start verification for wide use.
@@ -69,7 +75,11 @@ https://www.googleapis.com/auth/tasks
 ```powershell
 python scripts/set-desktop-google-client-id.py PASTE_DESKTOP_CLIENT_ID.apps.googleusercontent.com PASTE_DESKTOP_CLIENT_SECRET
 # Creates/updates apps/desktop/.env — do not commit
+# Linux one-click Sign-in (bake into release install):
+cd apps/desktop; npm run install:local
+# Or overnight iterate without install:
 npm run tauri:dev -w @continuum/desktop
+
 ```
 
 3. For **public Release builds**: inject **Client ID** via CI secrets / build env; omit secret from the published binary. If Google still requires a Desktop secret for token exchange on your client type, document that limitation in the Release notes until a pure public+PKCE path lands — secret stays on CI/maintainer hosts only.
@@ -80,8 +90,11 @@ Release `applicationId`: `org.continuumcalendar.app` + **release** keystore SHA-
 
 v0.16.2 release keystore SHA-1 (add this fingerprint on the Android OAuth client): `72:40:1C:C3:82:8B:26:80:6A:D2:C1:F3:B9:97:52:76:13:C0:7F:4F`. Keystore files are gitignored at `apps/mobile/keystore.jks` + `keystore.properties` — **back them up off this machine** or you cannot update this APK.
 
+**Done 2026-09-11:** Android client **Continuum Calendar Android** exists for `org.continuumcalendar.app` + that SHA-1, with **Enable custom URI scheme**. Bake with `python scripts/set-android-google-client-id.py --release <ID>` (gitignored `continuum.google.android.release.client.id`). Debug APKs keep using a debug Android client or the Desktop fallback.
+
 ```text
 [HUMAN] F-002 done: Desktop + Android OAuth clients are public / PKCE; no client_secret in GitHub Release binaries. Consent screen scopes set.
+
 ```
 
 ---
@@ -94,9 +107,10 @@ Edit [`LICENSE`](../LICENSE) — replace template line:
 
 ```text
 Copyright (c) 2026 agent-project-bootstrap contributors
+
 ```
 
-with your copyright, e.g. `Copyright (c) 2026 Edward Thompson` (or your org).  
+with your copyright, e.g. `Copyright (c) 2026 Edward Thompson` (or your org).
 Keep `apps/mobile/` as **GPL-3** (Fossify fork); do not relicense the Android tree as MIT.
 
 ### 2.2 Privacy Policy
@@ -109,11 +123,11 @@ Rewrite [`docs/PRIVACY.md`](PRIVACY.md) from the template into Continuum product
 | Calendar events | Sync & display | Device + user’s Google account |
 | Continuum settings JSON | Peer sync | Google Drive **App Data** (app-private) |
 | Update check metadata | Optional update check | GitHub Releases API — no PII |
-
 Publish a stable HTTPS URL (e.g. GitHub Pages `…/PRIVACY` or `docs/PRIVACY.md` on default branch) and paste it into the OAuth consent screen.
 
 ```text
 [HUMAN] Privacy + LICENSE updated for Continuum; consent screen privacy URL set to <URL>.
+
 ```
 
 ---
@@ -122,7 +136,8 @@ Publish a stable HTTPS URL (e.g. GitHub Pages `…/PRIVACY` or `docs/PRIVACY.md`
 
 **Channel:** GitHub Releases only — attach:
 
-- Windows desktop installer / bundle (Tauri)
+- Windows desktop installer / bundle (Tauri NSIS EXE)
+- Linux AppImage (`Continuum-Calendar-{version}-x86_64.AppImage` via `npm run tauri:build` + `npm run rename:appimage`)
 - FOSS Android APK (`org.continuumcalendar.app`, signed with your release keystore)
 - Optional: SBOM if CI already produces one
 
@@ -136,6 +151,7 @@ Current remote: `edwardlthompson/agent-project-bootstrap`. For a public Continuu
 python scripts/agent-run.py check-repo-hygiene
 # Local gates you normally trust before ship — e.g.:
 # python scripts/agent-run.py validate-bootstrap -- --quick
+
 ```
 
 Confirm Release artifacts were built **with** public Client IDs and **without** secrets (§1).
@@ -152,6 +168,7 @@ Use your usual Release Please / `gh release create` / Actions release workflow. 
 ```text
 [HUMAN] First GitHub Release published: v0.16.2 with desktop + FOSS APK.
 https://github.com/edwardlthompson/continuum-calendar/releases/tag/v0.16.2
+
 ```
 
 ---
@@ -164,16 +181,18 @@ GitHub **does not expose an API** to set the repo Social preview image — it mu
 cd "C:\Users\edwar\Continuum Calendar"
 .\scripts\open-github-social-preview.ps1
 # optional: .\scripts\open-github-social-preview.ps1 -Repo YOUR_USER/Continuum-Calendar
+
 ```
 
 Manual path if you skip the script:
 
 1. Open `https://github.com/<owner>/<repo>/settings` → scroll to **Social preview** → **Edit** → **Upload an image…**
-2. Upload [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upload.jpg) (1280×640, under 1 MB — GitHub’s limit).  
+2. Upload [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upload.jpg) (1280×640, under 1 MB — GitHub’s limit).
    Full-res master remains [`docs/brand/github-social-neon.png`](brand/github-social-neon.png).
 
 ```text
 [HUMAN] GitHub social preview set to docs/brand/github-social-neon-upload.jpg
+
 ```
 
 ---
@@ -189,12 +208,14 @@ Today tokens may live in less-hardened stores. For a cautious public v1, approve
 
 ```text
 [HUMAN] F-003 approved: encrypted OS-backed storage on desktop + EncryptedSharedPreferences on Android. Agent may implement after Release if deferred.
+
 ```
 
 Or explicitly defer:
 
 ```text
 [HUMAN] F-003 deferred for v1 GitHub ship; tracked as follow-up. Accepting higher token-storage risk until implemented.
+
 ```
 
 ---
@@ -205,12 +226,14 @@ Or explicitly defer:
 gh auth status
 .\scripts\setup-github-repo.ps1
 # optional: .\scripts\setup-github-repo.ps1 -Repo YOUR_USER/Continuum-Calendar
+
 ```
 
 Enable Dependabot alerts, private vulnerability reporting, and `main` branch protection (required checks as the script / UI lists). About blurb: [`docs/GITHUB_ABOUT.md`](GITHUB_ABOUT.md).
 
 ```text
 [HUMAN] Dependabot alerts + private vulnerability reporting + branch protection enabled on main.
+
 ```
 
 ---
@@ -222,10 +245,12 @@ Playbook: [`docs/SECURITY_TRIAGE.md`](SECURITY_TRIAGE.md).
 ```powershell
 gh browse --settings
 # or open …/security/dependabot on the Continuum repo
+
 ```
 
 ```text
 [HUMAN] F-009: Dependabot mediums triaged (fixed or deferred with DECISION_LOG rationale).
+
 ```
 
 ---
@@ -235,12 +260,11 @@ gh browse --settings
 | Item | Why deferred |
 |------|----------------|
 | F-Droid submission | GitHub-only distribution |
-| Winget / other package indexes | GitHub-only distribution |
+| Winget / Flatpak / other package indexes | GitHub-only distribution |
 | Google Play | FOSS / sideload path |
 | Commons About full debrand | Agent follow-up; does not block install from Releases |
 | Non-en Fastlane locale polish | No store listing this ship |
 | Weekly / quarterly maintenance | After v1 is live |
-
 ---
 
 ## Quick reference
@@ -257,7 +281,6 @@ gh browse --settings
 | Social upload (≤1 MB) | [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upload.jpg) |
 | Privacy draft | [`docs/PRIVACY.md`](PRIVACY.md) |
 | Security triage | [`docs/SECURITY_TRIAGE.md`](SECURITY_TRIAGE.md) |
-
 ---
 
 ## After you finish a block

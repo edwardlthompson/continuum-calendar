@@ -1,46 +1,45 @@
 # ROADMAP — Continuum Calendar
 
+Last reviewed: 2026-09-11 (quarterly).
+
 ## Vision
 
-A FOSS calendar ecosystem that treats **time as a continuum**: rolling views anchored on today, schedules that show open days, and practical Google Calendar/Contacts integration on desktop with an Android widget that mirrors those ideas.
+A FOSS calendar ecosystem that treats **time as a continuum**: rolling views anchored on today, schedules that show open days, and practical Google Calendar integration on desktop with an Android companion that mirrors those ideas.
 
-## Phase 0 — Foundation (current)
+## Shipped (Phase 0–1 + mobile fork)
 
-- Bootstrap from `agent-project-bootstrap`
-- Monorepo: desktop Tauri app, shared types, mobile fork docs
-- Prototype rolling week + theme + free-slot copy + Google API module stubs
+- Bootstrap from `agent-project-bootstrap` (child of v1.4.0)
+- Desktop Tauri app: rolling week, agenda empty days, Google Calendar Sign in (PKCE + loopback), Drive App Data peer sync
+- Packaged Linux AppImage (`npm run install:local`) and Windows NSIS target
+- Android Fossify fork (`org.continuumcalendar.app`): CalDAV Google calendars + optional Continuum OAuth for desktop peer sync
+- GitHub Releases as the distribution channel (EXE + AppImage + FOSS APK)
+- v0.25.1 GitHub Release assets: Linux AppImage + Windows EXE + FOSS APK
+- Optional Google Tasks agenda overlay (Connect Google Tasks; default Sign in stays Calendar + Drive)
+- Rolling-week Android homescreen widget
+- Optional Ubuntu `Desktop AppImage` workflow (`workflow_dispatch`)
 
-## Phase 1 — Desktop MVP
+## Now (packaging & hardening)
 
-- Complete Google OAuth (PKCE) with secure storage
-- Two-way Calendar sync
-- Contacts-powered attendee autocomplete
-- Agenda list mode with explicit empty days
-- Packaged installers via Tauri (Windows first)
+- Public OAuth clients already exist (Desktop + Android debug). Release Android client uses package `org.continuumcalendar.app` + release SHA-1
+- Consent screen: External / In production; privacy URL on Branding
+- F-003: desktop app-config token vault (mode 0600) + Android EncryptedSharedPreferences
+- ADB device smoke after Sign in
 
-## Phase 2 — Mobile fork
+## Next
 
-- Submodule FossifyOrg/Calendar into `apps/mobile`
-- Settings: `show_empty_days_in_agenda`, theme Material You + L/D/System
-- System Contacts quick-invite
-- Rolling week homescreen widget with free gaps
-
-## Phase 3 — Parity & polish
-
-- Shared free-slot algorithms tested on both platforms
-- Offline mock mode + conflict handling for sync
-- Accessibility pass (WCAG 2.2 desktop; Android a11y)
-- F-Droid / GitHub Releases distribution
+- Contacts attendee autocomplete (desktop still omits Contacts scope while KB-028 applies)
+- OAuth verification if the 100-user cap on unapproved sensitive scopes becomes a problem
 
 ## Non-goals (near term)
 
 - iOS client
 - Proprietary Play Services dependency for core features
+- F-Droid / Winget / Play Store (GitHub Releases only)
 - Multi-account enterprise admin console
 
 ## Success metrics
 
 - Rolling week always places today in column 1
 - Empty days remain visible in agenda and widget
-- User can create a meeting with contact autocomplete in ≤3 interactions (desktop)
+- Sign in with Google is one tap after a maintainer bake — end users never create a Cloud project
 - Theme preference survives restart on desktop and mobile

@@ -13,6 +13,7 @@ import {
   type LocalEventTombstone,
 } from '@continuum/shared'
 import { ensureFreshTokens } from '../auth/googleAuth'
+import { shouldSkipDrivePeerSync } from '../auth/oauthErrors'
 import { getDeviceId } from '../auth/tokenStore'
 import {
   loadCalendars,
@@ -34,9 +35,10 @@ function updatedBy() {
   return { platform: 'desktop' as const, deviceId: getDeviceId(), appVersion: '0.1.0' }
 }
 
-async function bearer(): Promise<string> {
+async function bearer(): Promise<string | null> {
   const tokens = await ensureFreshTokens()
   if (!tokens) throw new Error('Not authenticated')
+  if (shouldSkipDrivePeerSync(tokens.scope)) return null
   return tokens.accessToken
 }
 
@@ -238,6 +240,9 @@ export async function reconcileLocalEventsPeer(opts?: {
     'Local events peer reconcile',
     async () => {
       const accessToken = await bearer()
+      if (!accessToken) {
+        return { events: loadEvents(), calendars: loadCalendars(), action: 'noop' as const }
+      }
       const meta = await findFileId(accessToken)
       let remote: ContinuumLocalEventsEnvelope | null = null
       let etag: string | null = localStorage.getItem(LOCAL_ETAG)
@@ -320,9 +325,12 @@ export async function reconcileLocalEventsPeer(opts?: {
   return result
 }
 
-export async function pushLocalEventsNow(): Promise<void> {
+export async function pushLocalEventsNow(): Promise<boolean> {
   markLocalEventsPending()
+  const tokens = await ensureFreshTokens()
+  if (!tokens || shouldSkipDrivePeerSync(tokens.scope)) return false
   await reconcileLocalEventsPeer({ force: true })
+  return true
 }
 
 /** After local upsert — mark pending; caller may await push when signed in. */

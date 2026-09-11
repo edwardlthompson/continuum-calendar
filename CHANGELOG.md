@@ -6,18 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.25.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.0...v0.25.1) (2026-08-24)
-
-
-### Changed
-
-* **release:** prepare desktop tray, conflicts, and shortcuts release ([f8d463f](https://github.com/edwardlthompson/continuum-calendar/commit/f8d463f03f66c6b6715834a075bbbd7da2e0f0d9))
-
-
-### Documentation
-
-* **changelog:** restore Unreleased and fold notes into 0.25.0 ([e4ff6ce](https://github.com/edwardlthompson/continuum-calendar/commit/e4ff6ce7e94f98b71c76dbe4c685facf587b63cb))
-
 ## [Unreleased]
 
 ### Added
@@ -27,7 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **desktop:** clickable overlap warnings jump the calendar to each conflict day; save dialog adds **View on calendar**
 * **desktop:** **Today** toolbar button returns to the current day (shortcut **T**)
 * **desktop:** keyboard shortcut glossary in Settings → Window & startup; toolbar hovers show shortcut hints
-* **desktop:** `npm run install:local` script for release-only local installs
+* **desktop:** Google tokens persist in the app-config vault (mode 0600) instead of `localStorage`
+* **desktop:** Google Tasks on the agenda via Settings → Connect Google Tasks (default Sign in stays Calendar + Drive)
+* **desktop:** Google sync pulls primary plus visible calendars only
+* **android:** Rolling week homescreen widget (today-first strip)
+* **ci:** optional Ubuntu `Desktop AppImage` workflow (`workflow_dispatch`)
 
 ### Fixed
 
@@ -37,6 +29,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **desktop:** restore the Tauri notification-area icon via stale UID sweep + session-new promote; idle days show the app logo with optional count overlay (KB-036)
 * **desktop:** overlap warnings ignore fully past conflicts
 * **shared:** conflict detection skips overlaps whose window has already ended
+
+## [0.25.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.0...v0.25.1) (2026-08-24)
+
+### Changed
+
+* **release:** prepare desktop tray, conflicts, and shortcuts release ([f8d463f](https://github.com/edwardlthompson/continuum-calendar/commit/f8d463f03f66c6b6715834a075bbbd7da2e0f0d9))
+
+### Documentation
+
+* **changelog:** restore Unreleased and fold notes into 0.25.0 ([e4ff6ce](https://github.com/edwardlthompson/continuum-calendar/commit/e4ff6ce7e94f98b71c76dbe4c685facf587b63cb))
 
 ## [0.25.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.24.0...v0.25.0) (2026-08-22)
 

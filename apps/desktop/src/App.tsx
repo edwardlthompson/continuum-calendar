@@ -38,6 +38,7 @@ import {
   humanizeOAuthFailure,
   isGoogleConfigured,
   isInsufficientDriveScope,
+  hasDriveAppDataScope,
   parseOAuthCallback,
   signInWithGoogle,
   signOutGoogle,
@@ -74,7 +75,7 @@ import {
   notifyNewPeerEventsFromPull,
   rescheduleReminders,
 } from './services/notifications'
-import { getDeviceId } from './auth/tokenStore'
+import { getDeviceId, peekStoredTokenScope } from './auth/tokenStore'
 import { copyFreeSlotsToClipboard } from './utils/freeSlots'
 import { importIcsFromUrl, importIcsText, looksLikeIcsFileName } from './services/icsImport'
 import { discoverCalDavCalendars, loadCalDavAccounts, saveCalDavAccounts, type CalDavAccount } from './services/caldav'
@@ -87,8 +88,10 @@ import {
   createGoogleEvent,
   createGoogleEventCopy,
   deleteGoogleEvent,
+  getGoogleEvent,
   updateGoogleEvent,
 } from './services/googleCalendar'
+import { googleSeriesWritePlan, inferGoogleSeriesId } from './services/googleSeriesEdit'
 import {
   noteLocalEventsChanged,
   pushLocalEventsNow,
@@ -116,7 +119,7 @@ import {
   toNativeArgs,
   type WindowBehavior,
 } from './services/windowBehavior'
-import { readStartWithWindows } from './services/windowsAutostart'
+import { readStartAtLogin } from './services/loginAutostart'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 
@@ -157,11 +160,14 @@ export default function App() {
   })
   const searchRef = useRef<HTMLInputElement>(null)
   const [windowBehavior, setWindowBehavior] = useState<WindowBehavior>(loadWindowBehavior)
-  const [startWithWindows, setStartWithWindows] = useState(false)
+  const [startAtLogin, setStartAtLogin] = useState(false)
   const [authStatus, setAuthStatus] = useState<GoogleAuthStatus>(() =>
     loadNeedsReauth() ? 'needs-reauth' : 'signed-out',
   )
   const signedIn = authStatus === 'signed-in'
+  const [signInPending, setSignInPending] = useState(false)
+  const [tokenScope, setTokenScope] = useState(peekStoredTokenScope)
+  const needsDriveReconnect = signedIn && !hasDriveAppDataScope(tokenScope)
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const statusTimerRef = useRef<number | null>(null)
   const [editing, setEditing] = useState<Partial<CalendarEvent> | null>(null)
@@ -203,6 +209,7 @@ export default function App() {
       if (!settings.useGoogleCalendar && (e.source === 'google' || cal?.source === 'google')) {
         return false
       }
+      if (e.calendarId === 'google-tasks') return settings.useGoogleCalendar
       const onPrimary =
         e.source === 'google' &&
         (primaryIds.has(e.calendarId) || cal?.logicalId === 'google:primary')
@@ -330,12 +337,12 @@ export default function App() {
       if (remote.themeMode !== mode) setMode(remote.themeMode)
       setCalendars((prev) => applyBirthdayCalendarVisibility(prev, remote.showContactBirthdays))
     } catch (e) {
-      if (isTransientPeerError(e)) {
+      if (isTransientPeerError(e) || isInsufficientDriveScope(e)) {
         // Rate-limited warning already emitted by peerSyncControl.
         return
       }
       continuumLogger.error('Peer settings reconcile failed', e)
-      flash(e instanceof Error ? e.message : 'Settings sync failed')
+      flash(humanizeOAuthFailure(e))
     }
   }, [flash, mode, setMode])
 
@@ -364,7 +371,8 @@ export default function App() {
         }
       } catch (e) {
         markPendingPeerPush()
-        flash(e instanceof Error ? e.message : 'Settings sync failed')
+        if (isInsufficientDriveScope(e)) return
+        flash(humanizeOAuthFailure(e))
       }
     },
     [applySettings, flash, settings, signedIn],
@@ -406,7 +414,7 @@ export default function App() {
         flash('Local events published for peer devices')
       }
     } catch (e) {
-      if (isTransientPeerError(e)) return
+      if (isTransientPeerError(e) || isInsufficientDriveScope(e)) return
       continuumLogger.error('Local events peer reconcile failed', e)
       flash(humanizeOAuthFailure(e))
     }
@@ -459,10 +467,12 @@ export default function App() {
       const stored = await getStoredTokens()
       if (!stored) {
         setAuthStatus('signed-out')
+        setTokenScope('')
         return
       }
       const fresh = await ensureFreshTokens()
       setAuthStatus(authStatusFromTokens(Boolean(fresh)))
+      setTokenScope(peekStoredTokenScope())
     })()
     return onAuthExpired(() => {
       setAuthStatus('needs-reauth')
@@ -479,6 +489,7 @@ export default function App() {
         .then(async () => {
           clearNeedsReauth()
           setAuthStatus('signed-in')
+          setTokenScope(peekStoredTokenScope())
           window.history.replaceState({}, '', '/')
           flash('Signed in with Google')
           await hydrateSettingsFromDrive()
@@ -706,28 +717,30 @@ export default function App() {
   const rangeEnd = useMemo(() => addDays(rangeStart, 7), [rangeStart])
 
   async function onSignIn() {
+    if (signInPending) return
     if (!isGoogleConfigured()) {
       window.alert(
         [
-          'Sign in with Google lets YOU connect YOUR calendar — Continuum never collects passwords.',
+          'This Continuum build is missing OAuth packaging.',
           '',
-          'Google requires Continuum (the app) to ship a public Client ID. That is a one-time product setup by Continuum maintainers, not something each user creates.',
+          'Sign in with Google uses your system browser (Google blocks in-app WebViews).',
+          'Maintainers must bake Continuum’s Desktop Client ID, then rebuild:',
+          '  python scripts/set-desktop-google-client-id.py <CLIENT_ID> <CLIENT_SECRET>',
+          '  npm run install:local   # from apps/desktop',
           '',
-          'This build does not have Continuum’s Client ID embedded yet.',
-          'Set VITE_GOOGLE_CLIENT_ID in apps/desktop/.env (see docs/GOOGLE_API_SETUP.md), then restart the app.',
-          '',
-          'On Android you can sync today without that: Settings → Continuum → Connect Google calendars',
-          '(uses the Google account already on your phone).',
+          'See docs/GOOGLE_API_SETUP.md. End users never paste a Client ID.',
         ].join('\n'),
       )
       return
     }
+    setSignInPending(true)
     try {
       flash('Opening Google sign-in in your browser…')
       const result = await signInWithGoogle()
       if (result === 'pending-redirect') return
       clearNeedsReauth()
       setAuthStatus('signed-in')
+      setTokenScope(peekStoredTokenScope())
       flash('Signed in with Google')
       await hydrateSettingsFromDrive()
       await runMultiSync()
@@ -736,6 +749,8 @@ export default function App() {
       const msg = humanizeOAuthFailure(e)
       flash(msg)
       window.alert(msg)
+    } finally {
+      setSignInPending(false)
     }
   }
 
@@ -743,6 +758,7 @@ export default function App() {
     await signOutGoogle()
     clearNeedsReauth()
     setAuthStatus('signed-out')
+    setTokenScope('')
     flash('Signed out')
   }
 
@@ -818,8 +834,59 @@ export default function App() {
     scope?: RecurrenceEditScope,
     occurrenceStart?: string,
   ) {
+    const googleSeriesId = draft.recurringEventId
+    if (googleSeriesId && scope && occurrenceStart && draft.id) {
+      try {
+        const fullDraft = { ...draft, id: draft.id } as CalendarEvent & { id: string }
+        const saved: CalendarEvent[] = []
+        if (scope === 'following') {
+          const master = await getGoogleEvent(draft.calendarId, googleSeriesId)
+          const [head, tail] = applyRecurrenceEdit('following', master, occurrenceStart, {
+            ...fullDraft,
+            id: master.id,
+            recurrence: fullDraft.recurrence ?? master.recurrence,
+          })
+          saved.push(await updateGoogleEvent(head))
+          const { id: _id, etag: _etag, updated: _updated, htmlLink: _link, source: _source, ...rest } = tail
+          saved.push(await createGoogleEvent(draft.calendarId || 'primary', rest))
+        } else {
+          const master = scope === 'this' ? fullDraft : await getGoogleEvent(draft.calendarId, googleSeriesId)
+          const plan = googleSeriesWritePlan(scope, fullDraft, master)
+          for (const p of plan.patch) {
+            saved.push(await updateGoogleEvent(p))
+          }
+        }
+        let next = upsertEvents(saved)
+        if (scope === 'all') {
+          next = upsertEvents(
+            next
+              .filter((e) => e.recurringEventId === googleSeriesId)
+              .map((e) => ({
+                ...e,
+                title: draft.title,
+                description: draft.description,
+                location: draft.location,
+                recurrence: draft.recurrence ?? e.recurrence,
+              })),
+          )
+        }
+        setEvents(next)
+        setEditing(null)
+        flash('Event saved')
+      } catch (e) {
+        continuumLogger.error('Google series save failed', e)
+        flash(e instanceof Error ? e.message : 'Google save failed')
+      }
+      return
+    }
     const master = draft.id ? events.find((e) => e.id === seriesEventId(draft.id ?? '')) : undefined
-    if (master?.recurrence?.length && scope && occurrenceStart) {
+    if (
+      master?.recurrence?.length &&
+      scope &&
+      occurrenceStart &&
+      master.source !== 'google' &&
+      draft.source !== 'google'
+    ) {
       const next = applyRecurrenceEdit(scope, master, occurrenceStart, {
         ...master,
         ...draft,
@@ -832,7 +899,7 @@ export default function App() {
       if (wroteLocal) noteLocalEventsChanged()
       if (signedIn && wroteLocal) {
         void pushLocalEventsNow()
-          .then(() => flash('Event saved · synced to peers'))
+          .then((pushed) => flash(pushed ? 'Event saved · synced to peers' : 'Event saved'))
           .catch((e) => {
             continuumLogger.error('Local events push failed', e)
             flash(humanizeOAuthFailure(e))
@@ -920,7 +987,7 @@ export default function App() {
       noteLocalEventsChanged()
       if (signedIn) {
         void pushLocalEventsNow()
-          .then(() => flash('Event saved · synced to peers'))
+          .then((pushed) => flash(pushed ? 'Event saved · synced to peers' : 'Event saved'))
           .catch(async (e) => {
             if (settings.useGoogleCalendar && isInsufficientDriveScope(e)) {
               try {
@@ -1032,13 +1099,38 @@ export default function App() {
 
   function openNewEvent(partial: Partial<CalendarEvent> = {}) {
     const defaults = newEventDefaults(displayCalendars, settings.defaultWriteCalendarId)
+    const now = new Date()
+    const inHour = new Date(now.getTime() + 60 * 60 * 1000)
     setEditing({
       title: '',
+      start: toLocalDateTimeValue(now),
+      end: toLocalDateTimeValue(inHour),
       ...partial,
       calendarId: partial.calendarId ?? defaults.calendarId,
       source: partial.source ?? defaults.source,
       reminders: partial.reminders ?? [{ minutes: settings.defaultReminderMinutes, method: 'popup' }],
     })
+  }
+
+  async function openEditEvent(ev: CalendarEvent) {
+    const inferred = inferGoogleSeriesId(ev.id, ev.recurringEventId)
+    if (ev.source === 'google' && inferred) {
+      let next: CalendarEvent = { ...ev, recurringEventId: inferred, occurrenceStart: ev.start }
+      if (!next.recurrence?.length) {
+        try {
+          const master = await getGoogleEvent(ev.calendarId, inferred)
+          if (master.recurrence?.length) {
+            next = { ...next, recurrence: master.recurrence, timeZone: next.timeZone ?? master.timeZone }
+          }
+        } catch (e) {
+          continuumLogger.error('Google series master fetch failed', e)
+        }
+      }
+      setEditing(next)
+      return
+    }
+    const seriesMaster = events.find((e) => e.id === seriesEventId(ev.id)) ?? ev
+    setEditing({ ...seriesMaster, occurrenceStart: ev.start })
   }
 
   function onImportIcs(file: File) {
@@ -1135,7 +1227,7 @@ export default function App() {
   }, [windowBehavior])
 
   useEffect(() => {
-    void readStartWithWindows().then(setStartWithWindows)
+    void readStartAtLogin().then(setStartAtLogin)
   }, [])
 
   useEffect(() => {
@@ -1321,16 +1413,21 @@ export default function App() {
           ) : (
             <button
               type="button"
-              className="rounded bg-[var(--cc-accent)] px-2 py-1 text-sm text-white"
+              className="rounded bg-[var(--cc-accent)] px-2 py-1 text-sm text-white disabled:opacity-60"
               aria-label={authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
+              disabled={signInPending}
               title={
                 isGoogleConfigured()
                   ? 'Connect your Google Calendar, Contacts, and Tasks'
-                  : 'Continuum Sign in with Google (your account — Continuum never collects passwords)'
+                  : 'This build needs Continuum OAuth packaging (docs/GOOGLE_API_SETUP.md)'
               }
               onClick={() => void onSignIn()}
             >
-              {authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
+              {signInPending
+                ? 'Waiting for browser…'
+                : authStatus === 'needs-reauth'
+                  ? 'Sign in again'
+                  : 'Sign in with Google'}
             </button>
           )}
           <button
@@ -1344,7 +1441,14 @@ export default function App() {
           </button>
         </div>
       </header>
-      {authStatus === 'needs-reauth' ? <AuthReconnectBanner onSignIn={() => void onSignIn()} /> : null}
+      {authStatus === 'needs-reauth' ? (
+        <AuthReconnectBanner onSignIn={() => void onSignIn()} />
+      ) : needsDriveReconnect ? (
+        <AuthReconnectBanner
+          onSignIn={() => void onSignIn()}
+          message="Sign in again to sync Continuum settings with your phone. Google will ask for Drive App Data (private app folder only)."
+        />
+      ) : null}
       <CalendarToolbar
         view={view}
         onView={setView}
@@ -1354,6 +1458,7 @@ export default function App() {
         onJumpDate={jumpCalendarTo}
         onToday={goToday}
         searchRef={searchRef}
+        firstDayOfWeek={settings.firstDayOfWeek}
       />
 
       <div className="flex min-h-0 flex-1 gap-5">
@@ -1428,6 +1533,7 @@ export default function App() {
                 }
                 defaultReminderMinutes={settings.defaultReminderMinutes}
                 googleSignedIn={signedIn && settings.useGoogleCalendar}
+                firstDayOfWeek={settings.firstDayOfWeek}
                 onCancel={() => setEditing(null)}
                 onSave={(e, scope, occ) => void onSaveEvent(e, scope, occ)}
                 onDelete={editing.id ? () => requestDeleteEvent(editing) : undefined}
@@ -1446,8 +1552,7 @@ export default function App() {
                 workingHours={settings.workingHours}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
                 onSelectEvent={(ev) => {
-                  const master = events.find((e) => e.id === seriesEventId(ev.id)) ?? ev
-                  setEditing({ ...master, occurrenceStart: ev.start })
+                  void openEditEvent(ev)
                 }}
                 onOpenDay={(dateKey) => {
                   const startHm = (settings.workingHours.start || '09:00').slice(0, 5)
@@ -1478,8 +1583,7 @@ export default function App() {
                 weeklyViewDays={settings.weeklyViewDays}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
                 onSelectEvent={(ev) => {
-                  const master = events.find((e) => e.id === seriesEventId(ev.id)) ?? ev
-                  setEditing({ ...master, occurrenceStart: ev.start })
+                  void openEditEvent(ev)
                 }}
                 onSelectSlot={(start, end) =>
                   openNewEvent({
@@ -1502,14 +1606,18 @@ export default function App() {
               applySettings,
               authStatus,
               signedIn,
+              signInPending,
+              needsDriveReconnect,
               resolvedTheme: resolved,
               lastSyncedAt: syncInfo.lastSyncedAt,
               lastSyncError: syncInfo.lastError,
               onSignIn: () => void onSignIn(),
+              onConnectTasks: () => void onSignIn(),
+              tasksConnected: tokenScope.includes('https://www.googleapis.com/auth/tasks'),
               windowBehavior,
               setWindowBehavior,
-              startWithWindows,
-              setStartWithWindows,
+              startAtLogin,
+              setStartAtLogin,
               holidayPack,
               setHolidayPack,
               calendars,

@@ -3,6 +3,7 @@ import { test } from 'node:test'
 import {
   formatPhotonProperties,
   mergeLocationSuggestions,
+  mapsSearchUrl,
   parsePhotonFeatures,
   recentEventLocations,
 } from './locationSuggest.ts'
@@ -42,4 +43,13 @@ test('recentEventLocations filters and de-dupes', () => {
 
 test('mergeLocationSuggestions puts history first', () => {
   assert.deepEqual(mergeLocationSuggestions(['Home'], ['Library', 'Home'], 12), ['Home', 'Library'])
+})
+
+test('mapsSearchUrl is null until there is a query', () => {
+  assert.equal(mapsSearchUrl(''), null)
+  assert.equal(mapsSearchUrl('   '), null)
+  assert.equal(
+    mapsSearchUrl('AC Hotel San Juan'),
+    'https://www.google.com/maps/search/?api=1&query=AC%20Hotel%20San%20Juan',
+  )
 })

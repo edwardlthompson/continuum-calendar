@@ -12,6 +12,7 @@ constraintlayout = "2.2.1"
 swiperefreshlayout = "1.2.0"
 work = "2.11.2"
 browser = "1.8.0"
+security-crypto = "1.0.0"
 #Room
 room = "2.8.4"
 #junit
@@ -39,6 +40,7 @@ androidx-print = { module = "androidx.print:print", version.ref = "print" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security-crypto" }
 #Room
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }

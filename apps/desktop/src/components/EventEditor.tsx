@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import type { CalendarEvent, CalendarListEntry, RecurrenceEditScope } from '@continuum/shared'
 import { freqFromRrule } from '@continuum/shared'
+import { joinDateTime, splitDateTime, toLocalInput } from '../utils/dateTimeLocal'
 import { AttendeeField } from './AttendeeField'
+import { DateTimeLocalField } from './DateTimeLocalField'
 import { EventDetailsFields, type EventDetailsValue } from './EventDetailsFields'
 import { LocationField } from './LocationField'
 
@@ -18,15 +20,7 @@ interface EventEditorProps {
   onDelete?: () => void
   onCancel: () => void
   googleSignedIn: boolean
-}
-
-function toLocalInput(iso?: string, allDay?: boolean): string {
-  if (!iso) return ''
-  if (allDay) return iso.slice(0, 10)
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso.slice(0, 16)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  firstDayOfWeek?: number
 }
 
 export function EventEditor({
@@ -38,6 +32,7 @@ export function EventEditor({
   onDelete,
   onCancel,
   googleSignedIn,
+  firstDayOfWeek = 0,
 }: EventEditorProps) {
   const writable = calendars.filter((c) => c.writable !== false && c.source !== 'holidays')
   const [title, setTitle] = useState(initial?.title ?? '')
@@ -59,8 +54,13 @@ export function EventEditor({
 
   const [scopeOpen, setScopeOpen] = useState(false)
   const selectedCal = writable.find((c) => c.id === calendarId) ?? writable[0]
-  const occurrenceStart = initial?.occurrenceStart
-  const isSeries = Boolean(initial?.id && (initial.recurrence?.length || freqFromRrule(details.recurrence) !== 'none'))
+  const occurrenceStart = initial?.occurrenceStart ?? (initial?.recurringEventId ? initial.start : undefined)
+  const isSeries = Boolean(
+    initial?.id &&
+      (initial.recurringEventId ||
+        initial.recurrence?.length ||
+        freqFromRrule(details.recurrence) !== 'none'),
+  )
 
   function finishSave(scope?: RecurrenceEditScope) {
     let startIso: string
@@ -93,6 +93,7 @@ export function EventEditor({
         color: details.color,
         etag: initial?.etag,
         recurrenceExceptions: initial?.recurrenceExceptions,
+        recurringEventId: initial?.recurringEventId,
       },
       scope,
       occurrenceStart,
@@ -149,30 +150,35 @@ export function EventEditor({
               />
             </label>
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={allDay} onChange={(e) => setAllDay(e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={allDay}
+                onChange={(e) => {
+                  const next = e.target.checked
+                  setAllDay(next)
+                  setStart((s) => joinDateTime(splitDateTime(s).date, splitDateTime(s).time, next))
+                  setEnd((s) => joinDateTime(splitDateTime(s).date, splitDateTime(s).time, next))
+                }}
+              />
               All day
             </label>
             <div className="grid min-w-0 gap-2 sm:grid-cols-2">
-              <label className="flex min-w-0 flex-col gap-1 text-sm">
-                Start
-                <input
-                  type={allDay ? 'date' : 'datetime-local'}
-                  className="cc-native-field w-full min-w-0 rounded border border-[var(--cc-border)] px-2 py-1.5"
-                  value={allDay ? start.slice(0, 10) : start}
-                  onChange={(e) => setStart(e.target.value)}
-                  required
-                />
-              </label>
-              <label className="flex min-w-0 flex-col gap-1 text-sm">
-                End
-                <input
-                  type={allDay ? 'date' : 'datetime-local'}
-                  className="cc-native-field w-full min-w-0 rounded border border-[var(--cc-border)] px-2 py-1.5"
-                  value={allDay ? end.slice(0, 10) : end}
-                  onChange={(e) => setEnd(e.target.value)}
-                  required
-                />
-              </label>
+              <DateTimeLocalField
+                label="Start"
+                allDay={allDay}
+                value={start}
+                onChange={setStart}
+                required
+                firstDayOfWeek={firstDayOfWeek}
+              />
+              <DateTimeLocalField
+                label="End"
+                allDay={allDay}
+                value={end}
+                onChange={setEnd}
+                required
+                firstDayOfWeek={firstDayOfWeek}
+              />
             </div>
             <LocationField value={location} onChange={setLocation} />
             <label className="flex min-w-0 flex-col gap-1 text-sm">
@@ -190,6 +196,7 @@ export function EventEditor({
               onChange={setDetails}
               defaultReminderMinutes={defaultReminderMinutes}
               start={start}
+              firstDayOfWeek={firstDayOfWeek}
             />
             <AttendeeField attendees={attendees} onChange={setAttendees} googleSignedIn={googleSignedIn} />
           </div>

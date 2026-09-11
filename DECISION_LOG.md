@@ -17,6 +17,48 @@
 
 ## Entries
 
+### 2026-09-11 — F-003 token vault + EncryptedSharedPreferences
+- **Status:** Accepted
+- **Context:** Desktop tokens lived in WebView `localStorage`; Android used plaintext `SharedPreferences`. F-003 asked to approve OS-backed storage before a public ship.
+- **Decision:** Desktop writes `google-tokens.json` under the Tauri app-config dir with Unix mode `0600` (migrate off `localStorage` once). Android uses `EncryptedSharedPreferences` (`androidx.security:security-crypto`) with a one-time copy from the old prefs file. Not a hardware keychain / Keystore-wrapped OS credential store.
+- **Alternatives considered:** `tauri-plugin-store` (extra plugin; still a file). Defer to v1 (rejected — user asked to automate HUMAN items including F-003).
+- **Consequences:** Sign-in sessions move to the config dir after the next `install:local`. Android debug builds keep the debug Android OAuth client; release builds use `continuum.google.android.release.client.id`.
+
+### 2026-09-11 — F-002 / F-004 OAuth consent + release Android client
+- **Status:** Accepted
+- **Context:** Ship blockers required public Desktop + Android clients, LICENSE copyright, and a Continuum privacy URL on the Google consent screen.
+- **Decision:** Consent is External / In production; Branding already had app name Continuum Calendar and privacy URL `https://github.com/edwardlthompson/continuum-calendar/blob/main/docs/PRIVACY.md`. Rewrote `docs/PRIVACY.md` for Continuum (kept DPIA headings). Created Android OAuth client `Continuum Calendar Android` for `org.continuumcalendar.app` + release SHA-1, custom URI scheme on. Desktop client already existed; `.env` stays gitignored.
+- **Alternatives considered:** GitHub Pages privacy.html as the only URL (added as a Pages mirror; consent keeps the GitHub blob URL). Publishing Contacts/Tasks scopes (rejected — KB-028).
+- **Consequences:** Unverified sensitive-scope cap of 100 users still applies until Google verification. `docs/PRIVACY.md` on `main` updates only after a push. Windows EXE and FOSS APK still need attaching from those build hosts.
+
+### 2026-09-11 — Quarterly ROADMAP review
+- **Status:** Accepted
+- **Context:** ROADMAP still listed Phase 0 as current while desktop 0.17.x and the Android fork had shipped.
+- **Decision:** Mark Phase 0–1 and the mobile fork as shipped; remaining work is packaging, F-003 (now implemented), Tasks/Contacts UI, widget, and CI AppImage.
+- **Alternatives considered:** Keep Phase 0 wording (rejected — misleading).
+- **Consequences:** Next quarterly review ~2026-12.
+
+### 2026-09-11 — Child template catch-up to agent-project-bootstrap v1.4.0
+- **Status:** Accepted
+- **Context:** Continuum was on `.template-version` 0.25.1; upstream latest is v1.4.0. Needed current `/upgrade` and Golden Path gates without overwriting the product app.
+- **Decision:** Copy Canon (commands, rules, skills, scripts, help) and merge Mixed (workflows, gitignore, bootstrap keys). Keep Sacred `AGENTS.md` body (additive project card only), `docs/spec.md`, `examples/`, and `apps/`.
+- **Alternatives considered:** Overwrite `examples/` so new GP tests pass (rejected — Sacred). Rewrite product README/BUILD_PLAN/ADR-0001 for badge/tally/architecture gates (rejected — child wins).
+- **Consequences:** `validate-bootstrap --quick` still fails checks that require Golden Path example slices, product README badges, and START_HERE glossary links. Feature-gate `multi` is blocked by those example/docs checks plus missing local `ruff` for the python example stack.
+
+### 2026-09-11 — Desktop Sign in requests Calendar + Drive App Data
+- **Status:** Accepted
+- **Context:** Calendar-only tokens (KB-028) caused Drive App Data peer sync to 403; Settings painted a red `Drive list failed: 403` dump. Consent is In production for this project.
+- **Decision:** Request Calendar + `drive.appdata` with `include_granted_scopes=true`. Skip Drive API calls (no red error) until the stored token includes that scope; banner + Sign in again upgrades existing sessions. Still omit Contacts, Tasks, and `prompt=consent`.
+- **Alternatives considered:** Keep Calendar-only and hide the error forever (rejected — phone settings never sync). Auto-open OAuth on every launch (rejected — surprising). Add Contacts/Tasks in the same consent (rejected — KB-028).
+- **Consequences:** Users with Calendar-only tokens must Sign in again once. If Testing-mode Continue breaks after adding Drive, revert to Calendar-only and keep the skip path.
+
+### 2026-09-10 — Default calendar MIME + system-browser OAuth only
+- **Status:** Accepted
+- **Context:** Users want Continuum as the Thunderbird-style default calendar app and one-click Google Sign-in without pasting a Client ID. Google blocks OAuth in embedded WebViews (`disallowed_useragent`).
+- **Decision:** Claim `text/calendar`, `application/ics`, `webcal`/`webcals` via `.desktop` + `xdg-mime` (`claim_default_calendar` / `claim-default-calendar.sh`). Keep system browser + loopback OAuth; bake Continuum’s Desktop client with `set-desktop-google-client-id.py` — no end-user paste UX.
+- **Alternatives considered:** In-app WebView OAuth (rejected by Google); Settings paste Client ID as primary path (rejected for product UX).
+- **Consequences:** Sign-in stays broken until a maintainer bakes `.env` and rebuilds. Flatpak portal default-app quirks out of scope for this cut.
+
 ### 2026-08-23 — Product install only via tauri build (no localhost EXE)
 - **Status:** Accepted
 - **Context:** Agents used `cargo build --release` + copy, or launched `target\debug\app.exe` for tray A/B. Debug always hits `devUrl` localhost:5173; without Vite the user sees Edge `ERR_CONNECTION_REFUSED` and thinks Continuum is broken (KB-035).

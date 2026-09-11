@@ -177,8 +177,8 @@
 |-------|--------|
 | **Symptom** | Desktop Sign in: pick account → Continue on unverified warning → Google page “An unknown error has occurred”; no `code` hits loopback |
 | **Cause** | OAuth consent is Testing; Google blocks accounts that are not listed as test users. Four sensitive scopes made Continue even more brittle |
-| **Fix** | Add the exact Gmail under Audience → Test users; desktop requests Calendar only; native Rust token POST; never set empty `VITE_GOOGLE_CLIENT_SECRET=` in `.env.production` |
-| **Prevention** | Confirm header version is 0.17.3+; do not treat this as an app crash until the account is a test user. Do not add `drive.appdata` or `prompt=consent` to desktop sign-in while Publishing status is Testing — Google then shows “Sorry, something went wrong there” after Continue |
+| **Fix** | Add the exact Gmail under Audience → Test users; desktop requests Calendar + Drive App Data (not Contacts/Tasks); native Rust token POST; never set empty `VITE_GOOGLE_CLIENT_SECRET=` in `.env.production` |
+| **Prevention** | Confirm header version is 0.17.3+; do not treat this as an app crash until the account is a test user. Do not add Contacts, Tasks, or `prompt=consent` to desktop sign-in while Publishing status is Testing — Google then shows “Sorry, something went wrong there” after Continue. Calendar-only tokens skip Drive peer sync instead of painting a 403 |
 ### KB-029 — Room `Cannot access database on the main thread` after overlap save
 
 | Field | Detail |

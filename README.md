@@ -6,8 +6,17 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-2ea043?style=flat-square" alt="MIT" />
+  <img src="https://img.shields.io/badge/template-1.4.0-0969da?style=flat-square" alt="Template" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
   <img src="https://img.shields.io/badge/desktop%20%7C%20Android-open-0969da?style=flat-square" alt="Platforms" />
+  <a href="https://github.com/edwardlthompson/continuum-calendar/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/edwardlthompson/continuum-calendar/ci.yml?style=flat-square&label=CI" alt="CI" /></a>
+  <img src="https://img.shields.io/badge/AGENT-2ea043?style=flat-square" alt="AGENT" />
+  <img src="https://img.shields.io/badge/HUMAN-0969da?style=flat-square" alt="HUMAN" />
+  <img src="https://img.shields.io/badge/ADB-bf8700?style=flat-square" alt="ADB" />
+  <img src="https://img.shields.io/badge/AUTO-656d76?style=flat-square" alt="AUTO" />
+  <img src="https://img.shields.io/badge/web-stack-646cff?style=flat-square" alt="web" />
+  <img src="https://img.shields.io/badge/python-stack-3776AB?style=flat-square" alt="python" />
+  <img src="https://img.shields.io/badge/android-stack-3DDC84?style=flat-square" alt="android" />
 </p>
 
 **Your week, your devices, your rules — without a subscription.**
@@ -31,7 +40,6 @@ Most polished calendars either lock serious features behind paywalls, or treat y
 | **Screenshot title redaction** for demos & sharing | Rare outside enterprise suites |
 | **Light / Dark / System themes**, 24-hour time, first day of week — synced both ways | Preference sync as a subscription perk |
 | **MIT FOSS** — audit it, fork it, keep it forever | Closed source you can’t leave |
-
 You sign in with **your** Google account when you want Calendar, Contacts autocomplete, or Continuum peer remotes. Continuum never sees your password, never runs a Continuum login database, and never phones home by default.
 
 ---
@@ -52,6 +60,7 @@ You sign in with **your** Google account when you want Calendar, Contacts autoco
 ```bash
 npm install
 npm run tauri:dev   # or: npm run dev:desktop
+
 ```
 
 Maintainers: embed Continuum’s Google Client ID in `apps/desktop/.env` — see [`docs/GOOGLE_API_SETUP.md`](docs/GOOGLE_API_SETUP.md). End users only click **Sign in with Google**.
@@ -85,7 +94,6 @@ Build the Fossify-based Continuum app from `apps/mobile`, then:
 | `packages/shared` | Shared types & Continuum settings / local-events protocol |
 | `docs/` | Setup, parity matrix, architecture |
 | `BUILD_PLAN.md` | Active task board |
-
 More for contributors and agents: [`docs/START_HERE.md`](docs/START_HERE.md) · [`docs/PARITY_MATRIX.md`](docs/PARITY_MATRIX.md) · [`docs/architecture/OVERVIEW.md`](docs/architecture/OVERVIEW.md).
 
 ---
@@ -93,3 +101,5 @@ More for contributors and agents: [`docs/START_HERE.md`](docs/START_HERE.md) · 
 ## License
 
 MIT — see [`LICENSE`](LICENSE). Use it, share it, improve it. Continuum stays free because the calendar should be yours.
+
+GitHub Pages demo: https://edwardlthompson.github.io/continuum-calendar/

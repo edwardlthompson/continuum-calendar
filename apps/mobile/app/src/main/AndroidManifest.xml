@@ -313,6 +313,22 @@
         </receiver>
 
         <receiver
+            android:name=".continuum.RollingWeekWidgetProvider"
+            android:exported="true"
+            android:icon="@drawable/img_widget_list_preview"
+            android:label="@string/rolling_week_widget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_rolling_week_info" />
+        </receiver>
+
+        <receiver
             android:name=".helpers.MyWidgetDateProvider"
             android:exported="true"
             android:icon="@drawable/img_widget_date_preview"

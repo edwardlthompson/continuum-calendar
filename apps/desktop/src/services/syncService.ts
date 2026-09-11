@@ -1,5 +1,6 @@
 import type { CalendarEvent, CalendarListEntry } from '@continuum/shared'
 import { listGoogleCalendars, listGoogleEvents, syncGoogleEventsIncremental } from './googleCalendar'
+import { googleCalendarIdsToSync } from './googleCalendarSyncIds'
 import { ensureFreshTokens } from '../auth/googleAuth'
 import {
   loadCalendars,
@@ -21,14 +22,15 @@ export interface SyncStatus {
 let lastStatus: SyncStatus = { lastSyncedAt: null, lastError: null, source: 'idle' }
 
 const CURSOR_PAGINATE_MIGRATE_KEY = 'continuum.syncCursors.paginate.v2'
+const SERIES_HYDRATE_MIGRATE_KEY = 'continuum.syncCursors.seriesHydrate.v1'
 
 /** One-time: drop Google sync tokens so the next pull is a full paginated window (invites included). */
-function migrateClearGoogleCursorsForPagination(): boolean {
+function migrateClearGoogleCursors(key: string): boolean {
   try {
-    if (localStorage.getItem(CURSOR_PAGINATE_MIGRATE_KEY)) return false
+    if (localStorage.getItem(key)) return false
     const kept = loadCursors().filter((c) => c.source !== 'google')
     localStorage.setItem('continuum.syncCursors.v1', JSON.stringify(kept))
-    localStorage.setItem(CURSOR_PAGINATE_MIGRATE_KEY, '1')
+    localStorage.setItem(key, '1')
     return true
   } catch {
     return false
@@ -169,7 +171,9 @@ export interface MultiSyncResult {
 
 /** Refresh calendarList and sync Google calendars (partial success OK). */
 export async function syncAllVisibleGoogleCalendars(): Promise<MultiSyncResult> {
-  const forcedFull = migrateClearGoogleCursorsForPagination()
+  const forcedFull =
+    migrateClearGoogleCursors(CURSOR_PAGINATE_MIGRATE_KEY) ||
+    migrateClearGoogleCursors(SERIES_HYDRATE_MIGRATE_KEY)
 
   const tokens = await ensureFreshTokens()
   if (!tokens) {
@@ -186,13 +190,8 @@ export async function syncAllVisibleGoogleCalendars(): Promise<MultiSyncResult> 
     errors.push(e instanceof Error ? e.message : 'calendarList failed')
   }
 
-  // Sync every Google calendar (visibility is display-only). Invites/Meetings can live
-  // on primary or on secondary calendars that were unchecked in the sidebar.
   const primary = resolvePrimaryGoogleCalendar(calendars)
-  const idSet = new Set(calendars.filter((c) => c.source === 'google').map((c) => c.id))
-  if (primary) idSet.add(primary.id)
-  else idSet.add('primary')
-  const ids = [...idSet]
+  const ids = googleCalendarIdsToSync(calendars)
 
   let events = upsertEvents([])
   for (const id of ids) {

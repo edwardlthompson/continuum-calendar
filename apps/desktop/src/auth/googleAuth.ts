@@ -1,16 +1,8 @@
 import {
-  GOOGLE_SCOPES,
-  GOOGLE_SCOPE_STRING,
+  GOOGLE_DESKTOP_SIGNIN_SCOPE,
   isTokenExpired,
   type GoogleOAuthTokens,
 } from '@continuum/shared'
-
-/**
- * Calendar only while the OAuth app is in Testing (KB-028). Extra scopes
- * (Drive, Contacts, Tasks) plus prompt=consent make Google show
- * "Sorry, something went wrong there" after Continue.
- */
-const SIGNIN_SCOPE = GOOGLE_SCOPES.calendar
 import { createPkcePair, randomString } from './pkce'
 import { loadTokens, saveTokens } from './tokenStore'
 import { openExternal } from '../about/openExternal'
@@ -22,6 +14,7 @@ export {
   humanizeOAuthFailure,
   isInsufficientDriveScope,
   isTestingModeOAuthError,
+  shouldSkipDrivePeerSync,
 } from './oauthErrors'
 
 const AUTH_STATE_KEY = 'continuum.oauth.state'
@@ -31,15 +24,20 @@ const AUTH_REDIRECT_KEY = 'continuum.oauth.redirect'
 const DEFAULT_WEB_REDIRECT = 'http://localhost:5173/oauth/callback'
 
 const CLIENT_ID_STORE_KEY = 'continuum.google.clientId'
+const CLIENT_SECRET_STORE_KEY = 'continuum.google.clientSecret'
 
 function envClientId(): string {
   return (import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '').trim()
 }
 
+function envClientSecret(): string {
+  return (import.meta.env.VITE_GOOGLE_CLIENT_SECRET ?? '').trim()
+}
+
 function clientSecret(): string {
   // Desktop/installed OAuth clients: Google does not treat this value as confidential
   // and the token endpoint rejects the code without it. Keep it out of git (.env).
-  return (import.meta.env.VITE_GOOGLE_CLIENT_SECRET ?? '').trim()
+  return envClientSecret() || (localStorage.getItem(CLIENT_SECRET_STORE_KEY) ?? '').trim()
 }
 
 /** Prefer env, then last-used client id persisted beside tokens. */
@@ -50,6 +48,32 @@ function clientId(fallbackFromTokens?: string | null): string {
 function rememberClientId(id: string): void {
   const trimmed = id.trim()
   if (trimmed) localStorage.setItem(CLIENT_ID_STORE_KEY, trimmed)
+}
+
+/** Read the Client ID used for Sign in (env or Settings). */
+export function getGoogleClientId(): string {
+  return clientId()
+}
+
+/** Persist a Desktop OAuth Client ID from Settings (gitignored at rest in localStorage). */
+export function setGoogleClientId(id: string): void {
+  const trimmed = id.trim()
+  if (trimmed) localStorage.setItem(CLIENT_ID_STORE_KEY, trimmed)
+  else localStorage.removeItem(CLIENT_ID_STORE_KEY)
+}
+
+export function getGoogleClientSecret(): string {
+  return clientSecret()
+}
+
+export function setGoogleClientSecret(secret: string): void {
+  const trimmed = secret.trim()
+  if (trimmed) localStorage.setItem(CLIENT_SECRET_STORE_KEY, trimmed)
+  else localStorage.removeItem(CLIENT_SECRET_STORE_KEY)
+}
+
+export function isGoogleClientIdFromEnv(): boolean {
+  return Boolean(envClientId())
 }
 
 function configuredRedirectUri(): string {
@@ -67,8 +91,8 @@ function requireClientId(fallbackFromTokens?: string | null): string {
   const id = clientId(fallbackFromTokens)
   if (!id) {
     throw new Error(
-      'Missing Google Client ID. Run: python scripts/set-desktop-google-client-id.py <CLIENT_ID> <CLIENT_SECRET> ' +
-        'then restart the desktop app.',
+      'Missing Google Client ID. Paste it under Settings → Account & Google, or run: ' +
+        'python scripts/set-desktop-google-client-id.py <CLIENT_ID> <CLIENT_SECRET>',
     )
   }
   return id
@@ -120,12 +144,15 @@ export async function beginGoogleSignIn(redirectUri = configuredRedirectUri()): 
   const state = randomString(16)
   persistPkce(state, verifier, redirectUri)
   rememberClientId(id)
+  const extra = (sessionStorage.getItem('continuum.oauth.extraScopes') ?? '').trim()
+  sessionStorage.removeItem('continuum.oauth.extraScopes')
   const params = new URLSearchParams({
     client_id: id,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: SIGNIN_SCOPE,
+    scope: extra ? `${GOOGLE_DESKTOP_SIGNIN_SCOPE} ${extra}` : GOOGLE_DESKTOP_SIGNIN_SCOPE,
     access_type: 'offline',
+    include_granted_scopes: 'true',
     state,
     code_challenge: challenge,
     code_challenge_method: 'S256',
@@ -167,7 +194,7 @@ export async function exchangeCodeForTokens(code: string, state: string): Promis
     accessToken: data.access_token,
     refreshToken: data.refresh_token,
     expiresAt: Date.now() + data.expires_in * 1000,
-    scope: data.scope ?? GOOGLE_SCOPE_STRING,
+    scope: data.scope ?? GOOGLE_DESKTOP_SIGNIN_SCOPE,
     tokenType: data.token_type,
     clientId: id,
   }

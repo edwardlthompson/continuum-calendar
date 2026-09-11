@@ -1,16 +1,16 @@
 # Continuum Calendar — Brand & public readiness
 
-> Product visual identity and what still blocks a public release.  
-> Canonical CSS: [`apps/desktop/src/styles/brand.css`](../apps/desktop/src/styles/brand.css)  
-> Canonical mark (Android launcher look — bristled cyan+amber ∞): [`apps/desktop/public/continuum-mark.png`](../apps/desktop/public/continuum-mark.png)  
+> Product visual identity and what still blocks a public release.
+> Canonical CSS: [`apps/desktop/src/styles/brand.css`](../apps/desktop/src/styles/brand.css)
+> Canonical mark (Android launcher look — bristled cyan+amber ∞): [`apps/desktop/public/continuum-mark.png`](../apps/desktop/public/continuum-mark.png)
 > Remaining HUMAN steps (paste scripts): [`docs/HUMAN_REMAINING.md`](HUMAN_REMAINING.md)
 
 ## Brand system
 
 ### Name
 
-- **Product:** Continuum Calendar  
-- **Short:** Continuum  
+- **Product:** Continuum Calendar
+- **Short:** Continuum
 - **Do not ship as:** Fossify Calendar, Simple Calendar, or any FossifyOrg store identity
 
 ### Colors
@@ -27,7 +27,6 @@
 | Mark cyan | `#00E5FF` | Left C + right yin-yang dot |
 | Mark purple | `#E040FB` | Right C + left yin-yang dot (vaporwave) |
 | Mark bg | `#0B1220` | Icon plate (dark) |
-
 **Avoid:** purple-on-white AI defaults; cream + terracotta “AI brochure” look; generic Material calendar glyph as the product mark.
 
 CSS variables live under `--cc-*` / `--cc-brand-*` in `brand.css`. Shared constant for Open days: `CONTINUUM_OPEN_DAY_COLOR` in `@continuum/shared`.
@@ -40,6 +39,7 @@ CSS variables live under `--cc-*` / `--cc-brand-*` in `brand.css`. Shared consta
 
 ```bash
 python scripts/generate-infinity-mark.py
+
 ```
 
 | Asset | Path |
@@ -55,27 +55,27 @@ python scripts/generate-infinity-mark.py
 | Neon square (marketing / splash) | `docs/brand/logo-neon-3d.png` |
 | Desktop splash asset | `apps/desktop/public/continuum-splash-neon.png` |
 | Android splash asset | `apps/mobile/.../drawable-nodpi/continuum_splash_neon.png` |
-
 SVG copies are simplified silhouettes for places that require vectors; **flat PNG/WebP = app icon**. Neon 3D = README, GitHub social, desktop/Android splash only.
 
 **GitHub social image:** no public API — HUMAN step. Helper opens Settings + file:
 
 ```powershell
 .\scripts\open-github-social-preview.ps1
+
 ```
 
 Upload [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upload.jpg) (1280×640, under 1 MB). Full-res master: [`docs/brand/github-social-neon.png`](brand/github-social-neon.png). Checklist: [`docs/HUMAN_REMAINING.md`](HUMAN_REMAINING.md) §4.
 
 ### Typography
 
-- Desktop UI: Segoe UI / IBM Plex Sans / system-ui  
+- Desktop UI: Segoe UI / IBM Plex Sans / system-ui
 - Wordmark: bold Continuum with accent on Calendar optional via `.cc-brand-wordmark`
 
 ---
 
 ## Public release — what else is needed
 
-**Channel:** GitHub Releases only (desktop + FOSS APK). F-Droid / Winget / Play are deferred.  
+**Channel:** GitHub Releases only (Windows EXE + Linux AppImage + FOSS APK). F-Droid / Winget / Flatpak / Play are deferred.
 **Paste steps:** [`docs/HUMAN_REMAINING.md`](HUMAN_REMAINING.md).
 
 ### Done for identity
@@ -88,17 +88,17 @@ Upload [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upl
 2. **Public Google OAuth clients** in release builds (no `client_secret` in artifacts)
 3. **Consent screen** External + scopes (+ privacy URL)
 4. **Privacy Policy** + **LICENSE** copyright (root MIT; mobile stays GPL-3)
-5. **GitHub Release** with signed desktop + FOSS APK
+5. **GitHub Release** with signed Windows EXE + Linux AppImage + FOSS APK
 
 ### Soft for v1 (do soon after)
 
-- F-003 secure token storage approval + implement  
-- Dependabot / branch protection / medium triage  
+- F-003 secure token storage approval + implement
+- Dependabot / branch protection / medium triage
 - Commons About / Fossify suite CTA debrand (agent)
 
 ### Deferred
 
-- F-Droid, Winget, Play  
+- F-Droid, Winget, Flatpak, Play
 - Non-en Fastlane polish · threat-model deep fill · feature polish rows in `BUILD_PLAN`
 
 ---
@@ -112,13 +112,12 @@ Upload [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upl
 | Internal docs noting “fork ancestry” | `org.fossify.calendar` applicationId / OAuth schemes |
 | | Fastlane en-US “Fossify Calendar”; mobile README badges |
 | | User-visible “Fossify” in About / thank-you |
-
 Approved package id: **`org.continuumcalendar.app`**. Canonical mark: `python scripts/generate-infinity-mark.py` (not the old teal-C generator).
 
 ### Identity leftovers (non-blocking for GitHub v1)
 
-1. ✅ Continuum ∞ mark → mipmaps + Tauri + public PNGs  
-2. ✅ `APP_ID` + OAuth schemes + Fastlane en-US / README  
-3. 🔲 Override About strings / hide Fossify thank-you (Commons) — agent follow-up  
-4. ✅ Commons FakeVersionCheck patched (`6.1.6-continuum`)  
+1. ✅ Continuum ∞ mark → mipmaps + Tauri + public PNGs
+2. ✅ `APP_ID` + OAuth schemes + Fastlane en-US / README
+3. 🔲 Override About strings / hide Fossify thank-you (Commons) — agent follow-up
+4. ✅ Commons FakeVersionCheck patched (`6.1.6-continuum`)
 5. 🔲 Non-en Fastlane locales — deferred (no store this ship)

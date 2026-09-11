@@ -1,5 +1,5 @@
 import { saveWindowBehavior } from '../services/windowBehavior'
-import { writeStartWithWindows } from '../services/windowsAutostart'
+import { writeStartAtLogin } from '../services/loginAutostart'
 import { DESKTOP_HOTKEY_CATALOG } from '../hooks/desktopHotkeys'
 import { textMatches } from './settingsCatalog'
 import { SettingsFieldSelect, SettingsRow } from './settingsUi'
@@ -49,16 +49,16 @@ export function SettingsWindow({ form, query }: SettingsSectionProps) {
         </SettingsRow>
       ) : null}
       {show('Start', 'Windows', 'boot', 'startup', 'login') ? (
-        <SettingsRow label="Start with Windows">
+        <SettingsRow label="Start at login">
           <input
             type="checkbox"
-            checked={form.startWithWindows}
+            checked={form.startAtLogin}
             onChange={(e) => {
               const on = e.target.checked
-              form.setStartWithWindows(on)
-              void writeStartWithWindows(on).catch((err: unknown) => {
-                form.setStartWithWindows(!on)
-                form.flash(err instanceof Error ? err.message : 'Could not update Start with Windows')
+              form.setStartAtLogin(on)
+              void writeStartAtLogin(on).catch((err: unknown) => {
+                form.setStartAtLogin(!on)
+                form.flash(err instanceof Error ? err.message : 'Could not update Start at login')
               })
             }}
           />

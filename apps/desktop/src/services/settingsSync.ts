@@ -11,6 +11,7 @@ import {
   type ContinuumSettingsEnvelope,
 } from '@continuum/shared'
 import { ensureFreshTokens } from '../auth/googleAuth'
+import { isInsufficientDriveScope, shouldSkipDrivePeerSync } from '../auth/oauthErrors'
 import { getDeviceId } from '../auth/tokenStore'
 import { continuumLogger } from '../diagnostics/continuumLogger'
 import { runPeerDriveOp } from './peerSyncControl'
@@ -24,6 +25,10 @@ const LOCAL_SYNC_ERROR = 'continuum.settings.syncError'
 const LOCAL_PENDING_PEER = 'continuum.settings.pendingPeerPush'
 
 let lastSyncError: string | null = localStorage.getItem(LOCAL_SYNC_ERROR)
+if (lastSyncError && isInsufficientDriveScope(lastSyncError)) {
+  lastSyncError = null
+  localStorage.removeItem(LOCAL_SYNC_ERROR)
+}
 
 export function markPendingPeerPush(): void {
   localStorage.setItem(LOCAL_PENDING_PEER, '1')
@@ -47,9 +52,14 @@ function setSettingsSyncError(msg: string | null): void {
   else localStorage.removeItem(LOCAL_SYNC_ERROR)
 }
 
-async function bearer(): Promise<string> {
+/** Access token for Drive App Data, or null when Calendar-only (skip peer sync). */
+async function bearer(): Promise<string | null> {
   const tokens = await ensureFreshTokens()
   if (!tokens) throw new Error('Not authenticated')
+  if (shouldSkipDrivePeerSync(tokens.scope)) {
+    setSettingsSyncError(null)
+    return null
+  }
   return tokens.accessToken
 }
 
@@ -138,6 +148,7 @@ async function findSettingsFileId(accessToken: string): Promise<{ id: string; et
 
 export async function pullSettingsFromDrive(): Promise<ContinuumSettingsEnvelope | null> {
   const accessToken = await bearer()
+  if (!accessToken) return null
   const meta = await findSettingsFileId(accessToken)
   if (!meta) {
     setSettingsSyncError(null)
@@ -159,6 +170,18 @@ export async function pullSettingsFromDrive(): Promise<ContinuumSettingsEnvelope
 
 export async function pushSettingsPatch(patch: Partial<ContinuumSettings>): Promise<ContinuumSettingsEnvelope> {
   const accessToken = await bearer()
+  if (!accessToken) {
+    markPendingPeerPush()
+    setSettingsSyncError(null)
+    const next = await prepareSettingsWrite({
+      remote: loadLocalEnvelope(),
+      lastAppliedRevision: getLastAppliedRevision(),
+      pendingPatch: patch,
+      updatedBy: updatedBy(),
+    })
+    persistLocal(next, localStorage.getItem(LOCAL_ETAG))
+    return next
+  }
   let remote = loadLocalEnvelope()
   let etag = localStorage.getItem(LOCAL_ETAG)
   const meta = await findSettingsFileId(accessToken)
@@ -250,6 +273,10 @@ export async function pollSettingsOnce(): Promise<ContinuumSettings | null> {
     })
     return polled
   } catch (e) {
+    if (isInsufficientDriveScope(e)) {
+      setSettingsSyncError(null)
+      return null
+    }
     const msg = e instanceof Error ? e.message : 'Settings sync failed'
     setSettingsSyncError(msg)
     // Transient failures are rate-limited inside runPeerDriveOp.
@@ -274,6 +301,9 @@ export async function reconcilePeerSettings(opts?: {
     'Peer settings reconcile',
     async () => {
       const accessToken = await bearer()
+      if (!accessToken) {
+        return { settings: loadLocalSettings(), action: 'noop' as const }
+      }
       const meta = await findSettingsFileId(accessToken)
       let remote: ContinuumSettingsEnvelope | null = null
       if (meta) {
@@ -331,6 +361,10 @@ export async function pullAndApplySettingsOnSignIn(): Promise<ContinuumSettings 
     const { settings } = await reconcilePeerSettings({ force: true })
     return settings
   } catch (e) {
+    if (isInsufficientDriveScope(e)) {
+      setSettingsSyncError(null)
+      return loadLocalSettings()
+    }
     const msg = e instanceof Error ? e.message : 'Settings sync failed'
     setSettingsSyncError(msg)
     continuumLogger.error('Peer settings reconcile failed', e)

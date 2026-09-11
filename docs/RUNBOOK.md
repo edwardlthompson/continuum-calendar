@@ -10,7 +10,6 @@ For services and APIs, expose:
 |----------|---------|----------|
 | `/health` | Liveness | `200` when process is up |
 | `/ready` | Readiness | `200` when dependencies are reachable |
-
 Static PWAs and CLIs may skip HTTP endpoints; document stack-specific checks instead.
 
 ## Structured Logging
@@ -33,6 +32,8 @@ Static PWAs and CLIs may skip HTTP endpoints; document stack-specific checks ins
 2. Confirm health checks pass
 3. Log incident in `DECISION_LOG.md` if user-impacting
 
+Android upload-key rollback (same keystore + `mapping.txt`): [`ANDROID_SIGNING.md`](ANDROID_SIGNING.md).
+
 ## Common Failures
 
 | Symptom | Check | Fix |
@@ -40,21 +41,18 @@ Static PWAs and CLIs may skip HTTP endpoints; document stack-specific checks ins
 | CI failing on lint | Local `pre-commit run --all-files` | Fix and push |
 | Dependabot alert | `docs/SECURITY_TRIAGE.md` | Merge bump PR |
 | State lost after upgrade | Migration tests | Fix schema migration |
-
 ## Backup & Restore
 
 | Target | RPO | RTO | Procedure |
 |--------|-----|-----|-----------|
 | User data | _Define_ | _Define_ | _Document per stack_ |
 | Repository | N/A (git) | Immediate | `git clone` |
-
 ## SLOs (`[HUMAN]` defines)
 
 | Service | SLI | Target |
 |---------|-----|--------|
 | _Example: API availability_ | Uptime | _99.9%_ |
 | _Example: page load_ | p95 latency | _< 2s_ |
-
 ## Escalation
 
 1. Check `BUILD_PLAN.md` Ongoing Maintenance

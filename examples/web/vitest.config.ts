@@ -7,6 +7,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["src/test/setup-localStorage.ts"],
     exclude: ["e2e/**", "node_modules/**"],
+    maxWorkers: process.env.VITEST_MAX_WORKERS || "50%",
     coverage: {
       provider: "v8",
       include: [
@@ -16,6 +17,11 @@ export default defineConfig({
         "src/settings/preferences.ts",
         "src/appBootstrap.ts",
         "src/greet.ts",
+        "src/nav/nav.ts",
+        "src/nav/persist.ts",
+        "src/nav/history.ts",
+        "src/nav/session.ts",
+        "src/nav/controller.ts",
       ],
       thresholds: {
         lines: 90,

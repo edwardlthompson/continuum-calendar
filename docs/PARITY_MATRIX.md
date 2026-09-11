@@ -1,5 +1,7 @@
 # Continuum parity matrix (desktop ↔ Android)
 
+> Desktop shell notes: **Windows** ships EXE + taskbar overlay badge; **Linux** ships AppImage + tray tooltip count (no taskbar overlay). Shared calendar UI is OS-agnostic.
+
 | Capability | Desktop | Android | Settings key / sync |
 |------------|---------|---------|---------------------|
 | Google account connect | Sign in with Google (PKCE; Tauri uses system browser + loopback; needs `VITE_GOOGLE_CLIENT_ID`) | **Connect Google calendars** via phone Google account / CalDAV | tokens local only |
@@ -8,7 +10,7 @@
 | Default main view | **Agenda** (rolling week secondary) | `EVENTS_LIST_VIEW` / agenda list | — |
 | FAB new event | Bottom-right FAB | Fossify FAB | `defaultWriteCalendarId` |
 | Header overflow menu | Copy free slots / Propose / Jump / Open calendar link | Main menu actions | — |
-| Google Tasks scope | In shared OAuth scopes | In ContinuumConsts | optional / **deferred UI** |
+| Google Tasks scope | Optional Connect Google Tasks (not default Sign in, KB-028) | In ContinuumConsts | due tasks as all-day agenda rows |
 | CalDAV (other servers) | Direct client | CalendarContract | passwords local |
 | Local calendars | SQLite/store | Fossify local | peer via `continuum-local-events.json` |
 | Local events peer sync | Drive App Data LWW + tombstones | Room `SOURCE_SIMPLE_CALENDAR` / ICS ↔ same file | `continuum-local-events.json` |
@@ -37,12 +39,12 @@
 | Settings App Data sync | **Peer remote:** either device seeds/pushes/pulls Drive `continuum-settings.json` (CAS). Sign-in reconciles (seed if empty, push pending, else pull). 1s FG poll. | **Peer remote:** same file; CalDAV for calendars + Continuum Google API for settings. Poller runs `reconcilePeerRemote`. Same GCP Client ID project as desktop. | envelope revision |
 | Event editor | Repeat, TZ, up to 3 reminders, busy/visibility/color, location search, attendees | Fossify `EventActivity` | `defaultReminderMinutes` |
 | Location autocomplete | History + Photon via native `ureq` (User-Agent) | History + Geocoder, then Photon | — |
-| Date / calendar pickers | Native `date` / `datetime-local` / `<select>` themed via `color-scheme` | Fossify themed `DatePickerDialog` | — |
-| Recurrence | Daily/weekly/monthly/yearly + until (local expand; Google RRULE on create) | Repeat interval / rule / until | — |
+| Date / calendar pickers | In-app calendar + hour/minute menus (WebKitGTK native `datetime-local`/`select` freeze or overlay HTML) | Fossify themed `DatePickerDialog` | — |
+| Recurrence | Daily/weekly/monthly/yearly + until; Google instances hydrate master RRULE so this/following/all works | Repeat interval / rule / until | — |
 | Time zone on event | IANA picker | Per-event TZ picker | — |
 | Extra reminders | Up to 3 popup reminders | Up to 3 reminders + type | — |
 | Busy / free / visibility / event color | Busy checkbox, visibility, color swatches | Availability, access, color | — |
-| Open location on map | OSM search link | `geo:` / map intent | — |
+| Open location on map | Google Maps search link (Photon still suggests places) | `geo:` / map intent | — |
 | Month “today” cell | Red inset ring (`--cc-brand-now`) | Red cell surround (`continuum_brand_now`) | — |
 | Reminders / notifications | OS toast | AlarmManager | reminder fields on events |
 | Contacts autocomplete | People API | ContactsContract + People | — |
@@ -52,5 +54,8 @@
 | Event search | Header search (/) | Fossify search | — |
 | Recurrence edit scope | This / following / all | Fossify one/all | — |
 | Holiday pack | Settings country pack (US/CA/GB/DE) | Fossify holidays | desktop local |
-| Tray remaining-today | Taskbar overlay + tray tooltip counts down | N/A | — |
+| Tray remaining-today | Windows: taskbar overlay + tray tooltip; Linux: tray tooltip only | N/A | — |
+| Start at login | Desktop Settings (release install only; XDG on Linux, Run key heal on Windows) | N/A | — |
+| In-app update asset | Windows `…-setup.exe`; Linux `Continuum-Calendar-{ver}-x86_64.AppImage` | APK `…-foss.apk` | — |
+| Local install helper | `npm run install:local` → Windows `%LOCALAPPDATA%` / Linux `~/.local/share/continuum-calendar` | sideload APK | — |
 Logical calendar ids: `{source}:{calendarId}` e.g. `google:primary`.
