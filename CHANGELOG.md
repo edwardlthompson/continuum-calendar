@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.2](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.1...v0.25.2) (2026-09-11)
+
+
+### Changed
+
+* **deps-dev:** Bump the web-dependencies group across 1 directory with 5 updates ([#28](https://github.com/edwardlthompson/continuum-calendar/issues/28)) ([ab45be6](https://github.com/edwardlthompson/continuum-calendar/commit/ab45be68503930158c8878664c87991fa559eaac))
+* **deps:** Bump the android-dependencies group ([#24](https://github.com/edwardlthompson/continuum-calendar/issues/24)) ([69c828b](https://github.com/edwardlthompson/continuum-calendar/commit/69c828b4f540dc7c1e015be7188fce7f6e9c81ac))
+* **deps:** Bump the github-actions group across 1 directory with 2 updates ([#29](https://github.com/edwardlthompson/continuum-calendar/issues/29)) ([cb10a81](https://github.com/edwardlthompson/continuum-calendar/commit/cb10a8118c1e9203ae144a5ee635a0afb23595dc))
+* **deps:** Bump the node-dependencies group across 1 directory with 6 updates ([#26](https://github.com/edwardlthompson/continuum-calendar/issues/26)) ([31bff2a](https://github.com/edwardlthompson/continuum-calendar/commit/31bff2a3b2157b7ac8f4e8e2a89b1e12eebd5510))
+
 ## [0.25.1](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.0...v0.25.1) (2026-08-24)
 
 
