@@ -6,13 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.26.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.2...v0.26.0) (2026-09-11)
-
-
-### Added
-
-* ship Tasks overlay, rolling-week widget, and Golden Path catch-up ([5ea6c37](https://github.com/edwardlthompson/continuum-calendar/commit/5ea6c37076320be30f47d4171f1cf387220b29e2))
-
 ## [Unreleased]
 ### Added
 
@@ -35,6 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **desktop:** restore the Tauri notification-area icon via stale UID sweep + session-new promote; idle days show the app logo with optional count overlay (KB-036)
 * **desktop:** overlap warnings ignore fully past conflicts
 * **shared:** conflict detection skips overlaps whose window has already ended
+
+## [0.26.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.2...v0.26.0) (2026-09-11)
+
+
+### Added
+
+* ship Tasks overlay, rolling-week widget, and Golden Path catch-up ([5ea6c37](https://github.com/edwardlthompson/continuum-calendar/commit/5ea6c37076320be30f47d4171f1cf387220b29e2))
 
 ## [0.25.2](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.1...v0.25.2) (2026-09-11)
 
