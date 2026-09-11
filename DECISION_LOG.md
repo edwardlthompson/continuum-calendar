@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-11 — First stable public release (v1.0.0)
+- **Status:** Accepted
+- **Context:** Continuum on GitHub was still tagged 0.x (`v0.26.0`) while the product was treated as feature-complete for GitHub-only distribution.
+- **Decision:** Graduate to **v1.0.0**. Desktop source (`tauri.conf.json`, Cargo crate, `@continuum/desktop`) is 1.0.0. Android FOSS APK stays **1.10.7** (Fossify lineage) so sideloaded upgrades do not go backwards.
+- **Alternatives considered:** v0.27.0 (still beta). v1.0.0 with Android also renamed 1.0.0 (rejected — would downgrade from 1.10.7).
+- **Consequences:** Next Release Please bump is 1.x. Attached GitHub installers may still be the last Windows/Android CI bits until those hosts rebuild.
+
 ### 2026-09-11 — F-003 token vault + EncryptedSharedPreferences
 - **Status:** Accepted
 - **Context:** Desktop tokens lived in WebView `localStorage`; Android used plaintext `SharedPreferences`. F-003 asked to approve OS-backed storage before a public ship.

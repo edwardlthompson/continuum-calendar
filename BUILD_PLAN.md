@@ -8,18 +8,11 @@
 
 | Label | Owner |
 |-------|--------|
-| `AGENT` | Cursor Agent (code / docs / CI) |
-| `HUMAN` | You (OAuth, legal, releases, product calls) |
-| `ADB` | You + Android device/emulator |
-| `AUTO` | GitHub Actions / Dependabot (Monday crons cover most of this) |
+| `[AGENT]` | Cursor Agent (code / docs / CI) |
+| `[HUMAN]` | You (OAuth, legal, releases, product calls) |
+| `[ADB]` | You + Android device/emulator |
+| `[AUTO]` | GitHub Actions / Dependabot (Monday crons cover most of this) |
 Status: 🔲 open · ✅ done (archive) · ❌ blocked
-
-> **Wrap-up** archived in COMPLETED_TASKS.md (2026-09-11). Remaining `[AGENT]` / `[HUMAN]` / `[ADB]` / `[AUTO]` rows: none.
-> **Backlog (Tasks/widget/CI)** archived in COMPLETED_TASKS.md (2026-09-11).
-> **Ship OAuth/ADB** archived in COMPLETED_TASKS.md (OAuth clients, token vault, ADB smoke; 2026-09-11).
-> **Sprint GP** archived in COMPLETED_TASKS.md (Golden Path catch-up v1.4.0, smoked 2026-09-11).
-> **Sprint L1** archived in COMPLETED_TASKS.md @ `9c6f1e0` (local Linux install + tray verified 2026-09-10).
-> Older sprints (A1–A4, B1, CC0–CC4, I1, Sprint 0, /ship) live in `COMPLETED_TASKS.md`.
 
 ---
 
@@ -27,7 +20,7 @@ Status: 🔲 open · ✅ done (archive) · ❌ blocked
 
 Paste-ready steps: [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md)
 
-Ship blockers for `v0.25.2` are done (AppImage + Windows EXE + FOSS APK copied onto the GitHub Release). Active board is empty.
+Ship blockers for `v1.0.0` are done (first stable GitHub Release). Active board is empty.
 
 ---
 
@@ -51,14 +44,7 @@ Not a checklist. GitHub Monday cron already runs CI wait, security triage, templ
 
 ## Archive
 
-| Sprint | Complete | Archive |
-|--------|----------|---------|
-| Sprint 0 — Template Customization | 2026-08-20 | `COMPLETED_TASKS.md` |
-| Sprint I1 — Ideas 1–6 | 2026-08-20 | `COMPLETED_TASKS.md` |
-| Sprint L1 — Linux AppImage parity | 2026-09-10 | `COMPLETED_TASKS.md` |
-| Sprint GP — Golden Path catch-up v1.4.0 | 2026-09-11 | `COMPLETED_TASKS.md` |
-| Ship OAuth/ADB | 2026-09-11 | `COMPLETED_TASKS.md` |
-| Backlog — Tasks, widget, AppImage CI | 2026-09-11 | `COMPLETED_TASKS.md` |
+Finished work: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md).
 
 ### Open PRs (synced)
 

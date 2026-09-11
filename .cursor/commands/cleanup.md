@@ -31,8 +31,7 @@ Remove the archived ✅ rows from the active board.
 **Finished sprint (audit, maintainer, release):**
 
 - Delete or collapse the sprint section on the active board
-- Add a summary line: `> **{Sprint ID}** archived in COMPLETED_TASKS.md @ \`{short-sha}\`.`
-- Append a row to the **Archived Sprints** table (Sprint, Complete, `COMPLETED_TASKS.md`)
+- Do not list archived sprints on `BUILD_PLAN.md`. The Archive section stays a single link to [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md)
 
 **Finished feature (Sprint 2+ per-feature block):**
 

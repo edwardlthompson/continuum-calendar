@@ -13,7 +13,7 @@ A FOSS calendar ecosystem that treats **time as a continuum**: rolling views anc
 - Packaged Linux AppImage (`npm run install:local`) and Windows NSIS target
 - Android Fossify fork (`org.continuumcalendar.app`): CalDAV Google calendars + optional Continuum OAuth for desktop peer sync
 - GitHub Releases as the distribution channel (EXE + AppImage + FOSS APK)
-- v0.25.1 GitHub Release assets: Linux AppImage + Windows EXE + FOSS APK
+- **v1.0.0** first stable public release
 - Optional Google Tasks agenda overlay (Connect Google Tasks; default Sign in stays Calendar + Drive)
 - Rolling-week Android homescreen widget
 - Optional Ubuntu `Desktop AppImage` workflow (`workflow_dispatch`)

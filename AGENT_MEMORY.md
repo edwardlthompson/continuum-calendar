@@ -7,7 +7,7 @@
 
 | Layer | Technology | Version | Notes |
 |-------|-----------|---------|-------|
-| Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 0.17.3 | `apps/desktop` |
+| Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 1.0.0 | `apps/desktop` |
 | Mobile | FossifyOrg/Calendar fork (Kotlin) | 1.10.7 / 25 | `apps/mobile` (`org.continuumcalendar.app`) |
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest template-aligned tag: `v0.25.2` (AppImage + 0.17.3 EXE + 1.10.7 APK on the GitHub Release)
+- Latest tag: `v1.0.0` (first stable public release; AppImage + EXE + FOSS APK on the GitHub Release)
 
 ### Key Constraints
 
@@ -48,6 +48,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-09-11 | 1.0.0 stable | Left 0.x beta; GitHub tag v1.0.0; desktop source version 1.0.0; Android stays 1.10.7 | Rebuild Windows EXE / signed APK on those hosts so About matches 1.0.0 |
 | 2026-09-11 | Wrap-up ship | BUILD_PLAN 0 open; Dependabot #24–#29 + release #33 merged; installers on v0.25.2; Tasks/widget/GP catch-up committed | Copy EXE/APK onto each future tag; leftover node hono 4.13.7 / vitest 4.1.11 if Dependabot reopens |
 | 2026-09-11 | /cleanup + backlog | Archived OAuth/ADB; EXE+APK on v0.25.1; Tasks/widget/AppImage CI | `docs/PRIVACY.md` still needs a push to `main`; Dependabot PRs remain |
 | 2026-09-11 | HUMAN OAuth/legal/token vault | Console + local bake; F-002 release Android client; F-003 vault; F-004 privacy; ROADMAP | ADB device smoke and Windows EXE/APK attach still need those hosts; `docs/PRIVACY.md` on `main` after push |
@@ -65,5 +66,5 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ## Template Provenance
 
 - **Source template:** `edwardlthompson/agent-project-bootstrap`
-- **Template version:** `0.26.0` (see `.template-version`; parent template catch-up is v1.4.0)
+- **Template version:** `1.0.0` (see `.template-version`; parent template catch-up is v1.4.0)
 - **Last update check:** See `.template-update.json`

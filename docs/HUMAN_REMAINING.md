@@ -27,8 +27,8 @@
 | F-002 Desktop + Android debug + **release** Android client (`org.continuumcalendar.app`, custom URI) | ✅ (2026-09-11) |
 | F-003 token vault + EncryptedSharedPreferences | ✅ (2026-09-11) |
 | Quarterly ROADMAP review | ✅ (2026-09-11) |
-| Linux AppImage on GitHub Release `v0.25.2` | ✅ (2026-09-11; copied from v0.25.1) |
-| Windows EXE + FOSS APK on GitHub Release `v0.25.2` | ✅ (2026-09-11; copied 0.17.3 EXE + 1.10.7 APK from v0.25.1) |
+| Linux AppImage on GitHub Release `v1.0.0` | ✅ (2026-09-11; copied from v0.26.0) |
+| Windows EXE + FOSS APK on GitHub Release `v1.0.0` | ✅ (2026-09-11; copied 0.17.3 EXE + 1.10.7 APK) |
 ---
 
 ## Priority for first public GitHub Release

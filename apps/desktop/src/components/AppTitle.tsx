@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 /** Header title plus the installed binary version (Tauri `getVersion`). */
 export function AppTitle() {
-  const [version, setVersion] = useState('0.17.3')
+  const [version, setVersion] = useState('1.0.0')
 
   useEffect(() => {
     void import('@tauri-apps/api/app')

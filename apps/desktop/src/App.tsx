@@ -182,7 +182,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [hideConflictBanner, setHideConflictBanner] = useState(false)
   const [launchPrompt, setLaunchPrompt] = useState<LaunchPrompt | null>(null)
-  const installedVersionRef = useRef('0.17.3')
+  const installedVersionRef = useRef('1.0.0')
 
   const [syncInfo, setSyncInfo] = useState(getSyncStatus())
   const [syncing, setSyncing] = useState(false)
