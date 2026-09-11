@@ -29,6 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **desktop:** overlap warnings ignore fully past conflicts
 * **shared:** conflict detection skips overlaps whose window has already ended
 
+## [0.26.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.2...v0.26.0) (2026-09-11)
+
+
+### Added
+
+* ship Tasks overlay, rolling-week widget, and Golden Path catch-up ([5ea6c37](https://github.com/edwardlthompson/continuum-calendar/commit/5ea6c37076320be30f47d4171f1cf387220b29e2))
+
 ## [0.25.2](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.1...v0.25.2) (2026-09-11)
 
 ### Changed
