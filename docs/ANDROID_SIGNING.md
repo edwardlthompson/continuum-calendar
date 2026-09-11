@@ -2,6 +2,32 @@
 
 > Upload keys stay **outside git**. This template never ships a keystore.
 
+## Continuum Calendar release key
+
+Maintainer keystore lives **outside git** at `$HOME/keys/continuum-release.jks` (mode `600`). Local Gradle reads gitignored `apps/mobile/keystore.properties`. The same material is stored as **GitHub Environment** secrets on `release-signing` (`ANDROID_KEYSTORE_BASE64`, `SIGNING_KEY_ALIAS`, `SIGNING_KEY_PASSWORD`, `SIGNING_STORE_PASSWORD`).
+
+| Variable | Role |
+|----------|------|
+| `SIGNING_STORE_FILE` | Absolute path to the Continuum release keystore |
+| `SIGNING_STORE_PASSWORD` | Keystore password |
+| `SIGNING_KEY_ALIAS` | Key alias (`continuum`) |
+| `SIGNING_KEY_PASSWORD` | Key password |
+
+`.github/workflows/ci.yml` `android-release` must **not** receive these secrets (unsigned hash-compare only). Optional signed FOSS APKs: `.github/workflows/android-signed-foss.yml` (`workflow_dispatch`, environment `release-signing`).
+
+**New key (2026-09-11, this Linux host):** package `org.continuumcalendar.app`, alias `continuum`.
+
+- SHA-1: `4A:93:68:05:E1:8F:43:28:E0:31:33:B2:CD:8B:E4:AF:71:70:E2:82`
+- SHA-256: `16:F3:2E:23:C6:53:43:79:49:50:67:80:3F:A4:20:78:32:9E:BF:83:B6:BE:2D:45:F4:1D:35:43:12:11:40:93`
+
+Add that SHA-1 on the Google **Android** OAuth client. It **cannot** update sideloaded APKs signed with the lost v0.16.2 key (`72:40:1C:C3:82:8B:26:80:6A:D2:C1:F3:B9:97:52:76:13:C0:7F:4F`). Uninstall `org.continuumcalendar.app` first, or keep using the `.debug` package.
+
+Local signed build:
+
+```bash
+cd apps/mobile && ./gradlew :app:assembleFossRelease
+```
+
 ## Upload keystore
 
 Create one upload keystore on a machine you control (`keytool -genkeypair`). Store the `.jks` / `.keystore` / `.p12` file outside the repo (password manager or encrypted disk). **Never commit** those files — `.gitignore` already lists `*.jks`, `*.keystore`, and `*.p12`.

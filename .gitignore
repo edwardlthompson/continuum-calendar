@@ -91,6 +91,7 @@ apps/mobile/local.properties
 *.jks
 *.keystore
 *.p12
+keystore.properties
 
 # Node / tooling
 .turbo/

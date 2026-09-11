@@ -12,7 +12,8 @@
     "SBOM Diff (Dependabot)",
     "OpenSSF Scorecard",
     "pages build and deployment",
-    "Linux AppImage"
+    "Linux AppImage",
+    "Android signed FOSS release"
   ],
   "map_doc": "docs/CI_REQUIRED_CHECKS.md"
 }

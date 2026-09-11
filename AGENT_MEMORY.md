@@ -8,7 +8,7 @@
 | Layer | Technology | Version | Notes |
 |-------|-----------|---------|-------|
 | Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 1.0.0 | `apps/desktop` |
-| Mobile | FossifyOrg/Calendar fork (Kotlin) | 1.10.7 / 25 | `apps/mobile` (`org.continuumcalendar.app`) |
+| Mobile | FossifyOrg/Calendar fork (Kotlin) | 1.0.0 / 26 | `apps/mobile` (`org.continuumcalendar.app`); release key `$HOME/keys/continuum-release.jks` |
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
 | License | MIT | - | Pure FOSS |
@@ -48,6 +48,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-09-11 | Release keystore | New `$HOME/keys/continuum-release.jks`; GitHub env `release-signing`; local `assembleFossRelease` signed | Add new SHA-1 on Google Android OAuth client; uninstall old release APKs before sideload |
 | 2026-09-11 | 1.0.0 stable | Left 0.x beta; GitHub tag v1.0.0; desktop source version 1.0.0; Android stays 1.10.7 | Rebuild Windows EXE / signed APK on those hosts so About matches 1.0.0 |
 | 2026-09-11 | Wrap-up ship | BUILD_PLAN 0 open; Dependabot #24–#29 + release #33 merged; installers on v0.25.2; Tasks/widget/GP catch-up committed | Copy EXE/APK onto each future tag; leftover node hono 4.13.7 / vitest 4.1.11 if Dependabot reopens |
 | 2026-09-11 | /cleanup + backlog | Archived OAuth/ADB; EXE+APK on v0.25.1; Tasks/widget/AppImage CI | `docs/PRIVACY.md` still needs a push to `main`; Dependabot PRs remain |

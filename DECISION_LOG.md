@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-11 — Continuum Android release keystore (new maintainer key)
+- **Status:** Accepted
+- **Context:** The original Continuum release JKS was not on this Linux host. Sideloaded `org.continuumcalendar.app` still used SHA-1 `72:40:1C:C3:82:8B:26:80:6A:D2:C1:F3:B9:97:52:76:13:C0:7F:4F`. Default CI must stay unsigned.
+- **Decision:** Generate a new PKCS12 key at `$HOME/keys/continuum-release.jks` (alias `continuum`). Wire local builds via gitignored `apps/mobile/keystore.properties`. Store the same material as GitHub Environment `release-signing` secrets. Optional signed APKs via `workflow_dispatch` (`.github/workflows/android-signed-foss.yml`), never on required `android-release`.
+- **Alternatives considered:** Reuse Hermes/AstroAlarm keys (rejected — wrong product identity). Attach store passwords to default CI (rejected — `docs/ANDROID_SIGNING.md`).
+- **Consequences:** New SHA-1 `4A:93:68:05:E1:8F:43:28:E0:31:33:B2:CD:8B:E4:AF:71:70:E2:82` must be added to the Google Android OAuth client. Existing release installs cannot upgrade until uninstall. Back up `~/keys/continuum-release.jks` and `continuum-release.env` off-box.
+
 ### 2026-09-11 — First stable public release (v1.0.0)
 - **Status:** Accepted
 - **Context:** Continuum on GitHub was still tagged 0.x (`v0.26.0`) while the product was treated as feature-complete for GitHub-only distribution.
