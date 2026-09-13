@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-13 — Trivy HIGH js-yaml + Fastlane rubyzip
+- **Status:** Accepted
+- **Context:** Security Scan failed on `main` after v1.1.0 prep: `js-yaml` 4.3.1 (CVE-2026-84375) in holiday-generator, and `rubyzip` 2.4.1 (CVE-2026-85396) via Fastlane.
+- **Decision:** Override `js-yaml` to **4.3.2**. Ignore CVE-2026-85396 in `.trivyignore` because Fastlane still requires `rubyzip >= 2, < 3` and there is no 2.x patch.
+- **Alternatives considered:** Force rubyzip 3.4 in the Gemfile (rejected — Bundler cannot resolve against Fastlane). Drop Fastlane (rejected — metadata still used).
+- **Consequences:** Dependabot High `js-yaml` should close. Revisit rubyzip when Fastlane allows 3.x.
+
 ### 2026-09-13 — Linux desktop is a .deb, one instance
 - **Status:** Accepted
 - **Context:** Linux was packaged as an AppImage plus a `~/.local` copy, so two launchers could run. The user asked for a single instance and a `.deb` install.

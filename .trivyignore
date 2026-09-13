@@ -1,0 +1,4 @@
+# Fastlane 2.x requires rubyzip >=2,<3. CVE-2026-85396 is only fixed in rubyzip 3.4+.
+# Holiday-generator / Play metadata zip extract is not a network-facing path.
+# Revisit when Fastlane allows rubyzip 3.x.
+CVE-2026-85396

@@ -57,6 +57,8 @@ Recommended cadence: **Monday** (aligned with scheduled security scans and `heal
 | Alert | Decision | Rationale |
 |-------|----------|-----------|
 | `glib` medium (`apps/desktop/src-tauri/Cargo.lock`) | Defer | Do not bump to 0.20 — GTK4 desktop stack. Standing AUTO row; re-check when a 0.19.x patch exists. |
+| `js-yaml` high (holiday-generator) | Fix | Override **4.3.2** (CVE-2026-84375). |
+| `rubyzip` high (Fastlane `Gemfile.lock`) | Defer | Fastlane requires `< 3`; `.trivyignore` CVE-2026-85396 until Fastlane allows 3.4+. |
 ### SARIF triage (M35 / 2026-08-15)
 
 | Check | Decision | Rationale |
