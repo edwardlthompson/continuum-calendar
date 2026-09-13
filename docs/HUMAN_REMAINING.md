@@ -29,7 +29,7 @@
 | Quarterly ROADMAP review | ✅ (2026-09-11) |
 | Linux `.deb` on GitHub Release `v1.1.0` | ✅ (2026-09-13; `continuum-calendar_1.0.0_amd64.deb`) |
 | Windows EXE + FOSS APK on GitHub Release `v1.0.0` | ✅ (2026-09-11; copied 0.17.3 EXE + 1.10.7 APK) |
-| Windows EXE + FOSS APK on GitHub Release `v1.1.0` | ✅ (2026-09-13; 0.17.3 EXE + signed `continuum-calendar-1.0.0-foss.apk` vc26) |
+| Windows EXE + FOSS APK on GitHub Release `v1.1.1` | ✅ (2026-09-13; NSIS `Continuum-Calendar-1.0.0_x64-setup.exe` + signed FOSS APK) |
 | Maintainer release keystore on this Linux host + GitHub `release-signing` | ✅ (2026-09-11; SHA-1 registered on Google Android OAuth 2026-09-13) |
 | OP13 (`8bf09993`) signed release 1.0.0 / vc26 | ✅ (2026-09-13; uninstalled 1.10.7 first) |
 ---

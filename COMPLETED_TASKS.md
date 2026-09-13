@@ -2,6 +2,12 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 3 — Release leftovers (2026-09-13)
+
+- ✅ [AGENT] Register Continuum release SHA-1 on the Google Android OAuth client
+- ✅ [AGENT] Off-box backup of Continuum release keystore files
+- ✅ [AUTO] Windows NSIS EXE via `.github/workflows/desktop-nsis.yml`; attach to GitHub Release `v1.1.1`
+
 ## Wrap-up — empty board + GitHub Release (2026-09-11)
 
 - ✅ [AUTO] Merge Dependabot [#24](https://github.com/edwardlthompson/continuum-calendar/pull/24), [#26](https://github.com/edwardlthompson/continuum-calendar/pull/26), [#28](https://github.com/edwardlthompson/continuum-calendar/pull/28), [#29](https://github.com/edwardlthompson/continuum-calendar/pull/29)
