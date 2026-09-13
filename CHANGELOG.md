@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.0.0...v1.1.0) (2026-09-13)
 
 
@@ -23,8 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * **release:** prepare v1.1.0 release ([bffa604](https://github.com/edwardlthompson/continuum-calendar/commit/bffa60456c9b4d877040435dfd16e0d47a84d11f))
-
-## [Unreleased]
 
 ## [1.0.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.26.0...v1.0.0) (2026-09-11)
 
