@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.1.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.1.0...v1.1.1) (2026-09-13)
 
 
@@ -18,8 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * mark v1.1.0 installers and OP13 signed sideload done ([7fbe6fb](https://github.com/edwardlthompson/continuum-calendar/commit/7fbe6fbfa71a871d3849fb5a2469e1e48d057d22))
 * record v1.1.0 /push milestone ([593b128](https://github.com/edwardlthompson/continuum-calendar/commit/593b128cf5d3518c13ba8a7a31a52cf1759bd461))
-
-## [Unreleased]
 
 ## [1.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.0.0...v1.1.0) (2026-09-13)
 
