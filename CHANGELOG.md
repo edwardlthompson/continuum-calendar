@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.1.2](https://github.com/edwardlthompson/continuum-calendar/compare/v1.1.1...v1.1.2) (2026-09-13)
 
 
@@ -17,8 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 * archive Sprint 3 leftovers after NSIS 1.0.0 EXE ([abe33ec](https://github.com/edwardlthompson/continuum-calendar/commit/abe33ecdb255fb1d531394915a63e4a752a871a8))
-
-## [Unreleased]
 
 ## [1.1.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.1.0...v1.1.1) (2026-09-13)
 
