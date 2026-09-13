@@ -27,9 +27,11 @@
 | F-002 Desktop + Android debug + **release** Android client (`org.continuumcalendar.app`, custom URI) | ✅ (2026-09-11) |
 | F-003 token vault + EncryptedSharedPreferences | ✅ (2026-09-11) |
 | Quarterly ROADMAP review | ✅ (2026-09-11) |
-| Linux `.deb` on GitHub Release | 🔲 (build `continuum-calendar_*_amd64.deb`; attach on next tag) |
+| Linux `.deb` on GitHub Release `v1.1.0` | ✅ (2026-09-13; `continuum-calendar_1.0.0_amd64.deb`) |
 | Windows EXE + FOSS APK on GitHub Release `v1.0.0` | ✅ (2026-09-11; copied 0.17.3 EXE + 1.10.7 APK) |
+| Windows EXE + FOSS APK on GitHub Release `v1.1.0` | ✅ (2026-09-13; 0.17.3 EXE + signed `continuum-calendar-1.0.0-foss.apk` vc26) |
 | Maintainer release keystore on this Linux host + GitHub `release-signing` | ✅ (2026-09-11; new SHA-1 — add it in Cloud Console) |
+| OP13 (`8bf09993`) signed release 1.0.0 / vc26 | ✅ (2026-09-13; uninstalled 1.10.7 first) |
 ---
 
 ## Priority for first public GitHub Release

@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: `v1.1.0` (SBOMs on the GitHub Release; attach Linux `.deb` + Windows EXE + signed FOSS APK)
+- Latest tag: `v1.1.0` (Linux `.deb` + Windows EXE + signed FOSS APK attached; add new Android SHA-1 on the OAuth client)
 
 ### Key Constraints
 
@@ -48,7 +48,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
-| 2026-09-13 | /push v1.1.0 | RP #35 merged; CI green after zizmor env pass + `LICENSES/Apache-2.0.txt`; js-yaml 4.3.2; Linux `.deb` | Attach `.deb`/EXE/signed APK to `v1.1.0`; add new Android SHA-1 on the OAuth client |
+| 2026-09-13 | /push v1.1.0 | RP #35 merged; CI green after zizmor env pass + `LICENSES/Apache-2.0.txt`; js-yaml 4.3.2; Linux `.deb`; installers on the tag; OP13 on signed 1.0.0 | Add new Android SHA-1 on the OAuth client; backup `~/keys/continuum-release.jks` off-box |
 | 2026-09-11 | Release keystore | New `$HOME/keys/continuum-release.jks`; GitHub env `release-signing`; local `assembleFossRelease` signed | Add new SHA-1 on Google Android OAuth client; uninstall old release APKs before sideload |
 | 2026-09-11 | 1.0.0 stable | Left 0.x beta; GitHub tag v1.0.0; desktop source version 1.0.0; Android stays 1.10.7 | Rebuild Windows EXE / signed APK on those hosts so About matches 1.0.0 |
 | 2026-09-11 | Wrap-up ship | BUILD_PLAN 0 open; Dependabot #24–#29 + release #33 merged; installers on v0.25.2; Tasks/widget/GP catch-up committed | Copy EXE/APK onto each future tag; leftover node hono 4.13.7 / vitest 4.1.11 if Dependabot reopens |
