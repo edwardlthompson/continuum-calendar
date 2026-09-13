@@ -41,6 +41,11 @@ text = re.sub(
     text,
 )
 text = re.sub(
+    r'(<img src="https://img\.shields\.io/badge/template-)[\d.]+',
+    rf"\g<1>{version}",
+    text,
+)
+text = re.sub(
     r"Current template version: \*\*[\d.]+\*\*",
     f"Current template version: **{version}**",
     text,
