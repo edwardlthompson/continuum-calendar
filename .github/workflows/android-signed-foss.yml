@@ -53,6 +53,7 @@ jobs:
         if: inputs.attach_to_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
+          ATTACH_TO_TAG: ${{ inputs.attach_to_tag }}
         run: |
-          gh release upload "${{ inputs.attach_to_tag }}" \
+          gh release upload "$ATTACH_TO_TAG" \
             apps/mobile/app/build/outputs/apk/foss/release/*.apk --clobber

@@ -7,7 +7,7 @@ SPDX-FileCopyrightText = "2026 agent-project-bootstrap contributors"
 SPDX-License-Identifier = "MIT"
 
 [[annotations]]
-path = ["templates/licenses/Apache-2.0.txt"]
+path = ["templates/licenses/Apache-2.0.txt", "LICENSES/Apache-2.0.txt"]
 precedence = "override"
 SPDX-FileCopyrightText = "Apache Software Foundation and contributors"
 SPDX-License-Identifier = "Apache-2.0"
