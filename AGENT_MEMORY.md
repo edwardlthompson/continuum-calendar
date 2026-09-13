@@ -7,7 +7,7 @@
 
 | Layer | Technology | Version | Notes |
 |-------|-----------|---------|-------|
-| Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 1.0.0 | `apps/desktop` |
+| Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 1.0.0 | `apps/desktop`; Linux install is `.deb` (`dpkg`) |
 | Mobile | FossifyOrg/Calendar fork (Kotlin) | 1.0.0 / 26 | `apps/mobile` (`org.continuumcalendar.app`); release key `$HOME/keys/continuum-release.jks` |
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: `v1.0.0` (first stable public release; next Linux asset is `.deb` + EXE + FOSS APK)
+- Latest tag: `v1.1.0` (SBOMs on the GitHub Release; attach Linux `.deb` + Windows EXE + signed FOSS APK)
 
 ### Key Constraints
 
@@ -48,6 +48,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-09-13 | /push v1.1.0 | RP #35 merged; CI green after zizmor env pass + `LICENSES/Apache-2.0.txt`; js-yaml 4.3.2; Linux `.deb` | Attach `.deb`/EXE/signed APK to `v1.1.0`; add new Android SHA-1 on the OAuth client |
 | 2026-09-11 | Release keystore | New `$HOME/keys/continuum-release.jks`; GitHub env `release-signing`; local `assembleFossRelease` signed | Add new SHA-1 on Google Android OAuth client; uninstall old release APKs before sideload |
 | 2026-09-11 | 1.0.0 stable | Left 0.x beta; GitHub tag v1.0.0; desktop source version 1.0.0; Android stays 1.10.7 | Rebuild Windows EXE / signed APK on those hosts so About matches 1.0.0 |
 | 2026-09-11 | Wrap-up ship | BUILD_PLAN 0 open; Dependabot #24–#29 + release #33 merged; installers on v0.25.2; Tasks/widget/GP catch-up committed | Copy EXE/APK onto each future tag; leftover node hono 4.13.7 / vitest 4.1.11 if Dependabot reopens |

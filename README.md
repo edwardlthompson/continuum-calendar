@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-2ea043?style=flat-square" alt="MIT" />
-  <img src="https://img.shields.io/badge/template-1.0.0-0969da?style=flat-square" alt="Template" />
+  <img src="https://img.shields.io/badge/template-1.1.0-0969da?style=flat-square" alt="Template" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
   <img src="https://img.shields.io/badge/desktop%20%7C%20Android-open-0969da?style=flat-square" alt="Platforms" />
   <a href="https://github.com/edwardlthompson/continuum-calendar/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/edwardlthompson/continuum-calendar/ci.yml?style=flat-square&label=CI" alt="CI" /></a>
