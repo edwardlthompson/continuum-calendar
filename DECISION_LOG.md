@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-13 — Automate post-1.1.1 leftovers
+- **Status:** Accepted
+- **Context:** Three leftovers after `/push`: Google Android OAuth SHA-1, off-box keystore copy, Windows EXE rebuilt to product 1.0.0.
+- **Decision:** Register SHA-1 on existing client **Continuum Calendar Android** (same client ID). Copy `continuum-release.jks` / `.env` / `.sha.txt` to a private Drive folder owned by the maintainer, and keep verifying GitHub `release-signing` secrets. Add informational `desktop-nsis.yml` (`workflow_dispatch`) to build/attach NSIS.
+- **Alternatives considered:** New Android OAuth client for the new SHA-1 (rejected — would force a new client ID bake). Encrypted Drive blob only (rejected — GitHub already stores the decoded keystore; a second private Drive copy is the restore path).
+- **Consequences:** Google may take minutes–hours to honor the SHA-1. Windows EXE lands when the NSIS workflow finishes. Do not share the Drive folder.
+
 ### 2026-09-13 — /push cut v1.1.0
 - **Status:** Accepted
 - **Context:** `/push` after Linux `.deb` + signing. Security Scan went green after js-yaml 4.3.2; required CI failed on zizmor (signed-APK tag in `run:`) and REUSE (Gradle wrappers Apache-2.0 with no `LICENSES/Apache-2.0.txt`).

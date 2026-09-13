@@ -2454,6 +2454,13 @@
       "owner": "maintainer"
     },
     {
+      "path": ".github/workflows/desktop-nsis.yml",
+      "purpose": "Optional Windows workflow_dispatch job that builds the Continuum desktop NSIS EXE",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
       "path": ".github/workflows/android-signed-foss.yml",
       "purpose": "Optional workflow_dispatch signed FOSS APK using GitHub Environment release-signing",
       "read_when": "release",

@@ -13,7 +13,7 @@ Maintainer keystore lives **outside git** at `$HOME/keys/continuum-release.jks` 
 | `SIGNING_KEY_ALIAS` | Key alias (`continuum`) |
 | `SIGNING_KEY_PASSWORD` | Key password |
 
-`.github/workflows/ci.yml` `android-release` must **not** receive these secrets (unsigned hash-compare only). Optional signed FOSS APKs: `.github/workflows/android-signed-foss.yml` (`workflow_dispatch`, environment `release-signing`).
+`.github/workflows/ci.yml` `android-release` must **not** receive these secrets (unsigned hash-compare only). Optional signed FOSS APKs: `.github/workflows/android-signed-foss.yml` (`workflow_dispatch`, environment `release-signing`). Windows NSIS EXE: `.github/workflows/desktop-nsis.yml` (`workflow_dispatch`, informational).
 
 **New key (2026-09-11, this Linux host):** package `org.continuumcalendar.app`, alias `continuum`.
 

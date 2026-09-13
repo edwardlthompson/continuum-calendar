@@ -13,6 +13,7 @@
     "OpenSSF Scorecard",
     "pages build and deployment",
     "Linux Deb",
+    "Windows NSIS",
     "Android signed FOSS release"
   ],
   "map_doc": "docs/CI_REQUIRED_CHECKS.md"

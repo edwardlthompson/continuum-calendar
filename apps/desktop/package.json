@@ -12,6 +12,8 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
+    "tauri:build:nsis": "tauri build --bundles nsis",
+    "rename:nsis": "python3 ./scripts/rename-nsis.py",
     "install:local": "node ./scripts/install-local.js",
     "rename:deb": "bash ./scripts/rename-deb.sh",
         "test": "node --experimental-strip-types --test src/auth/tokenStore.test.ts src/auth/oauthErrors.test.ts src/services/caldavParse.test.ts src/services/icsSubscribe.test.ts src/about/productUpdate.test.ts src/about/githubRelease.test.ts src/about/openExternal.test.ts src/services/locationSuggest.test.ts src/services/holidayPacks.test.ts src/services/windowBehavior.test.ts src/services/loginAutostart.test.ts src/services/dayBadge.test.ts src/hooks/desktopHotkeys.test.ts src/settings/settingsCatalog.test.ts src/utils/dateTimeLocal.test.ts src/services/googleSeriesEdit.test.ts src/crash-capture/pendingCrash.test.ts src/privacy-report/sanitize.test.ts src/github-feedback/issueFormUrl.test.ts src/services/googleCalendarSyncIds.test.ts src/services/googleTasks.test.ts"

@@ -1,0 +1,43 @@
+name: Desktop NSIS
+
+on:
+  workflow_dispatch:
+    inputs:
+      attach_to_tag:
+        description: Optional existing GitHub release tag to attach the NSIS EXE
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  nsis:
+    name: Windows NSIS
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Build NSIS installer
+        working-directory: apps/desktop
+        run: npm run tauri:build:nsis
+      - name: Rename NSIS installer
+        working-directory: apps/desktop
+        run: python scripts/rename-nsis.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: continuum-calendar-nsis
+          path: apps/desktop/src-tauri/target/release/bundle/nsis/Continuum-Calendar-*_x64-setup.exe
+          if-no-files-found: error
+      - name: Attach to GitHub Release
+        if: inputs.attach_to_tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATTACH_TO_TAG: ${{ inputs.attach_to_tag }}
+        run: python apps/desktop/scripts/rename-nsis.py --upload

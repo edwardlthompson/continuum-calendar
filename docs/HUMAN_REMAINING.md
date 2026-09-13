@@ -30,7 +30,7 @@
 | Linux `.deb` on GitHub Release `v1.1.0` | ✅ (2026-09-13; `continuum-calendar_1.0.0_amd64.deb`) |
 | Windows EXE + FOSS APK on GitHub Release `v1.0.0` | ✅ (2026-09-11; copied 0.17.3 EXE + 1.10.7 APK) |
 | Windows EXE + FOSS APK on GitHub Release `v1.1.0` | ✅ (2026-09-13; 0.17.3 EXE + signed `continuum-calendar-1.0.0-foss.apk` vc26) |
-| Maintainer release keystore on this Linux host + GitHub `release-signing` | ✅ (2026-09-11; new SHA-1 — add it in Cloud Console) |
+| Maintainer release keystore on this Linux host + GitHub `release-signing` | ✅ (2026-09-11; SHA-1 registered on Google Android OAuth 2026-09-13) |
 | OP13 (`8bf09993`) signed release 1.0.0 / vc26 | ✅ (2026-09-13; uninstalled 1.10.7 first) |
 ---
 
@@ -91,11 +91,11 @@ npm run tauri:dev -w @continuum/desktop
 
 Release `applicationId`: `org.continuumcalendar.app` + **release** keystore SHA-1. On that Android client, enable **Custom URI scheme** (Advanced settings). Bake the client id into release builds (CI secret — never commit).
 
-**Current maintainer key (2026-09-11, this Linux host):** `$HOME/keys/continuum-release.jks`, alias `continuum`. SHA-1 `4A:93:68:05:E1:8F:43:28:E0:31:33:B2:CD:8B:E4:AF:71:70:E2:82`. GitHub Environment `release-signing` holds the same material (not default CI). Add this SHA-1 on the Google Android OAuth client. Gitignored local wiring: `apps/mobile/keystore.properties`.
+**Current maintainer key (2026-09-11, this Linux host):** `$HOME/keys/continuum-release.jks`, alias `continuum`. SHA-1 `4A:93:68:05:E1:8F:43:28:E0:31:33:B2:CD:8B:E4:AF:71:70:E2:82`. GitHub Environment `release-signing` holds the same material (not default CI). SHA-1 registered on the Google Android OAuth client **Continuum Calendar Android** (2026-09-13). Off-box copies: GitHub `release-signing` secrets + private Google Drive folder `Continuum Calendar release-keystore backup`. Gitignored local wiring: `apps/mobile/keystore.properties`.
 
 **Lost v0.16.2 key** (still on some sideloaded `org.continuumcalendar.app` installs): SHA-1 `72:40:1C:C3:82:8B:26:80:6A:D2:C1:F3:B9:97:52:76:13:C0:7F:4F`. A new key **cannot** update those APKs — uninstall the release app first, or keep using `org.continuumcalendar.app.debug`.
 
-**Done 2026-09-11:** Android client **Continuum Calendar Android** exists for `org.continuumcalendar.app` + the **legacy** SHA-1, with **Enable custom URI scheme**. Re-add the **new** SHA-1 on that client (or a new Android client in the same GCP project). Bake with `python scripts/set-android-google-client-id.py --release <ID>` (gitignored `continuum.google.android.release.client.id`). Debug APKs keep using a debug Android client or the Desktop fallback.
+**Done 2026-09-13:** Android client **Continuum Calendar Android** (`org.continuumcalendar.app`) SHA-1 updated to the current maintainer key. Custom URI scheme stays on. Bake with `python scripts/set-android-google-client-id.py --release <ID>` (gitignored `continuum.google.android.release.client.id`). Debug APKs keep using a debug Android client or the Desktop fallback.
 
 ```text
 [HUMAN] F-002 done: Desktop + Android OAuth clients are public / PKCE; no client_secret in GitHub Release binaries. Consent screen scopes set.
