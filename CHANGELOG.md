@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.0.0...v1.1.0) (2026-09-13)
+
+
+### Added
+
+* **android:** wire maintainer release signing off required CI ([ced7864](https://github.com/edwardlthompson/continuum-calendar/commit/ced78641d3c9514996fdb9407c2e1d5471c745d5))
+
+
+### Fixed
+
+* **ci:** stop zizmor template-injection and add Apache-2.0 text ([f961f59](https://github.com/edwardlthompson/continuum-calendar/commit/f961f59d4e871694a55534d2de31a7b34178ce8c))
+* **security:** patch js-yaml 4.3.2 and document Fastlane rubyzip ([98bd9b1](https://github.com/edwardlthompson/continuum-calendar/commit/98bd9b1cea5e276d021b7d7a40e7295ceb2db0d2))
+
+
+### Changed
+
+* **release:** prepare v1.1.0 release ([bffa604](https://github.com/edwardlthompson/continuum-calendar/commit/bffa60456c9b4d877040435dfd16e0d47a84d11f))
+
 ## [Unreleased]
 
 ## [1.0.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.26.0...v1.0.0) (2026-09-11)
