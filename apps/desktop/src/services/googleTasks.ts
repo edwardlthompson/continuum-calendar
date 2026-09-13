@@ -1,6 +1,6 @@
 import type { CalendarEvent } from '@continuum/shared'
 import { ensureFreshTokens } from '../auth/googleAuth'
-import { hasTasksScope, mapGoogleTask, TASKS_CALENDAR_ID } from './googleTasksMap'
+import { hasTasksScope, mapGoogleTask } from './googleTasksMap'
 
 export { hasTasksScope, mapGoogleTask, queueGoogleTasksScope, TASKS_CALENDAR_ID } from './googleTasksMap'
 

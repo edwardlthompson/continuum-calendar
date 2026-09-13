@@ -1,4 +1,4 @@
-name: Desktop AppImage
+name: Desktop Deb
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  appimage:
-    name: Linux AppImage
+  deb:
+    name: Linux Deb
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -23,14 +23,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
-            librsvg2-dev patchelf build-essential curl wget file libssl-dev \
+            librsvg2-dev build-essential curl wget file libssl-dev \
             libgtk-3-dev libsoup-3.0-dev
       - run: npm ci
-      - name: Build AppImage
+      - name: Build Debian package
         working-directory: apps/desktop
-        run: npm run tauri:build && npm run rename:appimage
+        run: npm run tauri:build && npm run rename:deb
       - uses: actions/upload-artifact@v7
         with:
-          name: continuum-calendar-appimage
-          path: apps/desktop/src-tauri/target/release/bundle/appimage/Continuum-Calendar-*-x86_64.AppImage
+          name: continuum-calendar-deb
+          path: apps/desktop/src-tauri/target/release/bundle/deb/continuum-calendar_*_amd64.deb
           if-no-files-found: error

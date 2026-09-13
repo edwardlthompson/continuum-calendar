@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Categories={{categories}}
+{{#if comment}}
+Comment={{comment}}
+{{/if}}
+Exec={{exec}} %u
+Icon={{icon}}
+Name={{name}}
+Terminal=false
+StartupNotify=true
+StartupWMClass=org.continuumcalendar.app
+SingleMainWindow=true
+MimeType=text/calendar;application/ics;x-scheme-handler/webcal;x-scheme-handler/webcals;

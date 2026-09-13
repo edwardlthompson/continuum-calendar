@@ -22,15 +22,15 @@ test('asset versions come from product filenames, not template tags', () => {
   assert.equal(parseAssetVersion('Continuum-Calendar-0.17.4-x64-setup.exe', 'exe'), '0.17.4')
   assert.equal(parseAssetVersion('continuum-calendar-1.10.8-foss.apk', 'apk'), '1.10.8')
   assert.equal(
-    parseAssetVersion('Continuum-Calendar-0.17.4-x86_64.AppImage', 'appimage'),
-    '0.17.4',
+    parseAssetVersion('continuum-calendar_1.0.0_amd64.deb', 'deb'),
+    '1.0.0',
   )
   assert.equal(
-    parseAssetVersion('Continuum Calendar_0.18.0_amd64.AppImage', 'appimage'),
-    '0.18.0',
+    parseAssetVersion('Continuum Calendar_1.0.0_amd64.deb', 'deb'),
+    '1.0.0',
   )
   assert.equal(parseAssetVersion('v0.22.1', 'exe'), null)
-  assert.equal(parseAssetVersion('Continuum-Calendar-0.17.4-x64-setup.exe', 'appimage'), null)
+  assert.equal(parseAssetVersion('Continuum-Calendar-0.17.4-x64-setup.exe', 'deb'), null)
 })
 
 test('selects the matching installer URL', () => {
@@ -38,17 +38,17 @@ test('selects the matching installer URL', () => {
     { name: 'sbom.cyclonedx.json', url: 'https://example.com/sbom' },
     { name: 'Continuum-Calendar-0.18.0-x64-setup.exe', url: 'https://example.com/setup.exe' },
     {
-      name: 'Continuum-Calendar-0.18.0-x86_64.AppImage',
-      url: 'https://example.com/app.AppImage',
+      name: 'continuum-calendar_0.18.0_amd64.deb',
+      url: 'https://example.com/app.deb',
     },
   ]
   assert.deepEqual(selectProductAsset(assets, 'exe'), {
     version: '0.18.0',
     url: 'https://example.com/setup.exe',
   })
-  assert.deepEqual(selectProductAsset(assets, 'appimage'), {
+  assert.deepEqual(selectProductAsset(assets, 'deb'), {
     version: '0.18.0',
-    url: 'https://example.com/app.AppImage',
+    url: 'https://example.com/app.deb',
   })
 })
 
@@ -57,7 +57,7 @@ test('desktop OS maps to release asset kind', () => {
   assert.equal(detectDesktopOs('Mozilla/5.0 (X11; Linux x86_64)'), 'linux')
   assert.equal(detectDesktopOs('Mozilla/5.0 (Linux; Android 14)'), 'other')
   assert.equal(productKindForOs('windows'), 'exe')
-  assert.equal(productKindForOs('linux'), 'appimage')
+  assert.equal(productKindForOs('linux'), 'deb')
   assert.equal(productKindForOs('other'), null)
 })
 

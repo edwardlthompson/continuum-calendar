@@ -21,7 +21,7 @@ Merge-blocking contexts are listed in [`.github/required-checks.json`](../.githu
 | Dependency Review on Release Please | `release-please.yml` | Published as a check on the RP head |
 | Scorecard | `scorecard.yml` | Weekly / push; triage via `/triage` |
 | Pages deploy | `pages.yml` | Publish only; never a required check |
-| Linux AppImage | `desktop-appimage.yml` | `workflow_dispatch` only; not merge-blocking |
+| Linux Deb | `desktop-deb.yml` | `workflow_dispatch` only; not merge-blocking |
 | Android signed FOSS release | `android-signed-foss.yml` | `workflow_dispatch` + environment `release-signing`; not merge-blocking |
 | Cursor Approval / Security agents | external checks | Optional commercial; not in required-checks.json |
 When adding a new **required** check: update `required-checks.json`, `settings.yml`, and this table in the same PR.

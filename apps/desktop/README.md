@@ -14,10 +14,10 @@ npm run tauri:dev        # Tauri window + Vite
 npm run dev
 npm run tauri:dev
 npm run build
-npm run install:local    # release binary → ~/.local (Linux) or %LOCALAPPDATA% (Windows); Linux also writes XDG autostart + icons + claims default calendar (text/calendar, webcal)
+npm run install:local    # Linux: build+dpkg the .deb (sudo); Windows: %LOCALAPPDATA%
 bash scripts/claim-default-calendar.sh   # re-claim defaults without a full rebuild
-npm run tauri:build      # NSIS (Windows) or AppImage (Linux)
-npm run rename:appimage  # Linux: stable Continuum-Calendar-{ver}-x86_64.AppImage name
+npm run tauri:build      # NSIS (Windows) or .deb (Linux)
+npm run rename:deb       # Linux: stable continuum-calendar_{ver}_amd64.deb name
 
 ```
 
@@ -36,8 +36,8 @@ sudo apt install libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
 
 Runtime tray indicators need `libayatana-appindicator3-1` (usually pulled in with the -dev package).
 
-Release asset name for GitHub Releases: `Continuum-Calendar-{version}-x86_64.AppImage`
-(after `npm run tauri:build` and `npm run rename:appimage`).
+Release asset name for GitHub Releases: `continuum-calendar_{version}_amd64.deb`
+(after `npm run tauri:build` and `npm run rename:deb`).
 
 ## Features (prototype)
 

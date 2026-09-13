@@ -1,6 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Continuum Calendar",
+  "mainBinaryName": "continuum-calendar",
   "version": "1.0.0",
   "identifier": "org.continuumcalendar.app",
   "build": {
@@ -25,7 +26,9 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "appimage"],
+    "targets": ["nsis", "deb"],
+    "category": "Productivity",
+    "shortDescription": "FOSS calendar with rolling week views",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -43,8 +46,9 @@
       }
     ],
     "linux": {
-      "appimage": {
-        "bundleMediaFramework": false
+      "deb": {
+        "section": "office",
+        "desktopTemplate": "linux/continuum-calendar.desktop"
       }
     },
     "android": {

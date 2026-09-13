@@ -1,6 +1,6 @@
 # Continuum parity matrix (desktop ↔ Android)
 
-> Desktop shell notes: **Windows** ships EXE + taskbar overlay badge; **Linux** ships AppImage + tray tooltip count (no taskbar overlay). Shared calendar UI is OS-agnostic.
+> Desktop shell notes: **Windows** ships EXE + taskbar overlay badge; **Linux** ships a `.deb` + tray tooltip count (no taskbar overlay). Shared calendar UI is OS-agnostic.
 
 | Capability | Desktop | Android | Settings key / sync |
 |------------|---------|---------|---------------------|
@@ -56,6 +56,6 @@
 | Holiday pack | Settings country pack (US/CA/GB/DE) | Fossify holidays | desktop local |
 | Tray remaining-today | Windows: taskbar overlay + tray tooltip; Linux: tray tooltip only | N/A | — |
 | Start at login | Desktop Settings (release install only; XDG on Linux, Run key heal on Windows) | N/A | — |
-| In-app update asset | Windows `…-setup.exe`; Linux `Continuum-Calendar-{ver}-x86_64.AppImage` | APK `…-foss.apk` | — |
-| Local install helper | `npm run install:local` → Windows `%LOCALAPPDATA%` / Linux `~/.local/share/continuum-calendar` | sideload APK | — |
+| In-app update asset | Windows `…-setup.exe`; Linux `continuum-calendar_{ver}_amd64.deb` | APK `…-foss.apk` | — |
+| Local install helper | `npm run install:local` → Windows `%LOCALAPPDATA%` / Linux `dpkg -i` `.deb` | sideload APK | — |
 Logical calendar ids: `{source}:{calendarId}` e.g. `google:primary`.

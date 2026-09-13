@@ -75,7 +75,7 @@ Upload [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upl
 
 ## Public release — what else is needed
 
-**Channel:** GitHub Releases only (Windows EXE + Linux AppImage + FOSS APK). F-Droid / Winget / Flatpak / Play are deferred.
+**Channel:** GitHub Releases only (Windows EXE + Linux `.deb` + FOSS APK). F-Droid / Winget / Flatpak / Play are deferred.
 **Paste steps:** [`docs/HUMAN_REMAINING.md`](HUMAN_REMAINING.md).
 
 ### Done for identity
@@ -88,7 +88,7 @@ Upload [`docs/brand/github-social-neon-upload.jpg`](brand/github-social-neon-upl
 2. **Public Google OAuth clients** in release builds (no `client_secret` in artifacts)
 3. **Consent screen** External + scopes (+ privacy URL)
 4. **Privacy Policy** + **LICENSE** copyright (root MIT; mobile stays GPL-3)
-5. **GitHub Release** with signed Windows EXE + Linux AppImage + FOSS APK
+5. **GitHub Release** with signed Windows EXE + Linux `.deb` + FOSS APK
 
 ### Soft for v1 (do soon after)
 

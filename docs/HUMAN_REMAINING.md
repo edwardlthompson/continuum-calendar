@@ -1,6 +1,6 @@
 # Continuum Calendar — HUMAN checklist (GitHub public)
 
-> **Distribution target:** GitHub Releases only (Windows EXE + Linux AppImage + FOSS Android APK).
+> **Distribution target:** GitHub Releases only (Windows EXE + Linux `.deb` + FOSS Android APK).
 > F-Droid, Winget, Flatpak, and Play Store are **out of scope** for this ship.
 > Run commands from repo root: `cd "C:\Users\edwar\Continuum Calendar"` (Windows) or the Linux clone path.
 > On Windows: `.\scripts\...` or `pwsh -File .\scripts\...` — not bare `pwsh scripts\...`.
@@ -27,7 +27,7 @@
 | F-002 Desktop + Android debug + **release** Android client (`org.continuumcalendar.app`, custom URI) | ✅ (2026-09-11) |
 | F-003 token vault + EncryptedSharedPreferences | ✅ (2026-09-11) |
 | Quarterly ROADMAP review | ✅ (2026-09-11) |
-| Linux AppImage on GitHub Release `v1.0.0` | ✅ (2026-09-11; copied from v0.26.0) |
+| Linux `.deb` on GitHub Release | 🔲 (build `continuum-calendar_*_amd64.deb`; attach on next tag) |
 | Windows EXE + FOSS APK on GitHub Release `v1.0.0` | ✅ (2026-09-11; copied 0.17.3 EXE + 1.10.7 APK) |
 | Maintainer release keystore on this Linux host + GitHub `release-signing` | ✅ (2026-09-11; new SHA-1 — add it in Cloud Console) |
 ---
@@ -140,7 +140,7 @@ Publish a stable HTTPS URL (e.g. GitHub Pages `…/PRIVACY` or `docs/PRIVACY.md`
 **Channel:** GitHub Releases only — attach:
 
 - Windows desktop installer / bundle (Tauri NSIS EXE)
-- Linux AppImage (`Continuum-Calendar-{version}-x86_64.AppImage` via `npm run tauri:build` + `npm run rename:appimage`)
+- Linux `.deb` (`continuum-calendar_{version}_amd64.deb` via `npm run tauri:build` + `npm run rename:deb`)
 - FOSS Android APK (`org.continuumcalendar.app`, signed with your release keystore)
 - Optional: SBOM if CI already produces one
 

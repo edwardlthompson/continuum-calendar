@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-13 — Linux desktop is a .deb, one instance
+- **Status:** Accepted
+- **Context:** Linux was packaged as an AppImage plus a `~/.local` copy, so two launchers could run. The user asked for a single instance and a `.deb` install.
+- **Decision:** Tauri Linux target is `deb` only (`nsis` stays on Windows). `npm run install:local` runs `dpkg -i` and deletes leftover user-local binaries/desktop files. `SingleMainWindow=true` on the packaged `.desktop`; `tauri-plugin-single-instance` still focuses the running window.
+- **Alternatives considered:** Keep AppImage alongside .deb (rejected — two program files). User-local copy without sudo (rejected — not a .deb install).
+- **Consequences:** In-app updates look for `continuum-calendar_{ver}_amd64.deb`. Attach that asset on the next GitHub Release. `sudo` is required for local Linux install.
+
 ### 2026-09-11 — Continuum Android release keystore (new maintainer key)
 - **Status:** Accepted
 - **Context:** The original Continuum release JKS was not on this Linux host. Sideloaded `org.continuumcalendar.app` still used SHA-1 `72:40:1C:C3:82:8B:26:80:6A:D2:C1:F3:B9:97:52:76:13:C0:7F:4F`. Default CI must stay unsigned.

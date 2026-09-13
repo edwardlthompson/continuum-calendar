@@ -2447,8 +2447,8 @@
       "owner": "maintainer"
     },
     {
-      "path": ".github/workflows/desktop-appimage.yml",
-      "purpose": "Optional Ubuntu workflow_dispatch job that builds the Continuum desktop AppImage",
+      "path": ".github/workflows/desktop-deb.yml",
+      "purpose": "Optional Ubuntu workflow_dispatch job that builds the Continuum desktop .deb",
       "read_when": "release",
       "update_when": "milestone_boundary",
       "owner": "maintainer"

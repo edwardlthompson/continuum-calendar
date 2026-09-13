@@ -8,10 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-* **android:** maintainer release keystore on this Linux host; GitHub Environment `release-signing` + optional `Android signed FOSS release` dispatch (not required CI)
-
 ## [1.0.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.26.0...v1.0.0) (2026-09-11)
 
 First stable public release (out of 0.x beta). GitHub Releases remain the distribution channel.
