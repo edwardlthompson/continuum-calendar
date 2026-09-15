@@ -1,5 +1,5 @@
 {
-  "template_version": "1.1.2",
+  "template_version": "1.2.0",
   "project": {
     "name": "Continuum Calendar",
     "purpose": "FOSS cross-platform calendar with rolling week views, explicit empty days, Google Calendar/Contacts sync, and Android homescreen widgets",
