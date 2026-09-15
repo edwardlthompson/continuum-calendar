@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-15 — /ship v1.2.0
+- **Status:** Accepted
+- **Context:** `/ship` after Sprint 4–6. Required CodeQL and Android CI failed on `android-actions/setup-android@v4` because Google removed the legacy SDK `tools` package (`Failed to find package 'tools'`).
+- **Decision:** Install `platform-tools` only. Merge Release Please [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38) with admin fallback (same environment-check stall as #37). Keep Medium `glib` deferred (GTK4). Leave empty `## [Unreleased]` (already present).
+- **Alternatives considered:** Bump `glib` to 0.20 (rejected — GTK4). Skip CodeQL until a later ship (rejected — required check).
+- **Consequences:** Tag `v1.2.0` has notes + SBOMs when Release finishes. Copy current EXE/APK/`.deb` onto that release. See KB-037.
+
 ### 2026-09-14 — ADB rolling-week widget glance
 - **Status:** Accepted
 - **Context:** Last open BUILD_PLAN row was `[ADB]` glance today/empty on a phone (no reboot/wipe). Installed release 1.0.0 still showed `0` for empty days.

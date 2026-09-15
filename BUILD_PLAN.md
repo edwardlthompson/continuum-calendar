@@ -10,7 +10,7 @@ Finished: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md) · Ship: [`docs/HUMAN_REMAI
 
 ## Do now
 
-Board is empty. Next: commit/push Sprint 4–6 if you want it on GitHub (`v1.1.2` does not include that work).
+Board is empty. Latest tag is `v1.2.0`. Next: attach current installers to that GitHub Release.
 
 ## AUTO
 

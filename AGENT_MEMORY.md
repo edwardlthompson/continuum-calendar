@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: `v1.1.2` (Release Please bump). Sprint 4–6 desktop/Android work is local/uncommitted and not on that tag.
+- Latest tag: `v1.2.0` (Release Please [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38)). Includes Sprint 4–6 calendar feel, rolling-week widget, and command palette.
 
 ### Key Constraints
 
@@ -49,7 +49,8 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
-| 2026-09-14 | ADB widget glance | OP13 `install -r` FOSS release; today highlight + Open vs `1`; Settings rolling-week toggle on; no reboot/wipe; Launcher3 restored as HOME | `Open` wraps on 4×1; Hermes tried to become Home when using KEYCODE_HOME; Sprint 4–6 still uncommitted |
+| 2026-09-15 | /ship v1.2.0 | RP [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38); required CI/CodeQL/Security Scan green after skipping removed SDK `tools`; Unreleased already present | Copy EXE/APK/`.deb` onto `v1.2.0`; Medium `glib` stays deferred |
+| 2026-09-14 | ADB widget glance | OP13 `install -r` FOSS release; today highlight + Open vs `1`; Settings rolling-week toggle on; no reboot/wipe; Launcher3 restored as HOME | `Open` wraps on 4×1; Hermes tried to become Home when using KEYCODE_HOME |
 | 2026-09-14 | Sprint 6 audit leftovers | H1 without version; compact TZ; Ctrl+K palette; Open marks; FAQ locales; smoke-sprint PASS; RP #37 merged | `[ADB]` widget glance |
 | 2026-09-14 | Sprint 4 UX feel | Grid drag persists; settings overlay + editor side sheet; widget Open/today; FAQ English → Connect Google; smoke-sprint PASS | `[ADB]` glance widget on a phone (no reboot/wipe); other-locale FAQ still mentions DAVx5 |
 | 2026-09-13 | /push v1.1.0 | RP #35/#36 merged; installers on the tag; OP13 on signed 1.0.0; Android OAuth SHA-1 registered; keystore on Drive + GitHub | Rebuild Windows EXE via `desktop-nsis.yml` (AUTO row); Google SHA-1 can take hours to propagate |

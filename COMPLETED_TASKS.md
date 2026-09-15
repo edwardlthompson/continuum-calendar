@@ -2,6 +2,11 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## /ship v1.2.0 (2026-09-15)
+
+- ✅ [AGENT] Merge release [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38) (chore(main): release 1.2.0)
+- ✅ [AGENT] Skip removed Android SDK `tools` package in setup-android (KB-037)
+
 ## ADB widget glance (2026-09-14)
 
 - ✅ [ADB] Glance rolling-week widget today/empty (no reboot/wipe)

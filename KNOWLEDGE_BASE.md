@@ -244,3 +244,13 @@
 | **Cause** | Recreating the tray on every badge tick hid it. Custom GUID/`NIM_ADD` got Access Denied (`last_err=5`). Deep recovery 2026-08-23: installed, `target\debug\app.exe`, and a WinForms probe all stay `promote=no-key-yet`; clearing `PromotedIconCache` + Explorer restart with Continuum alive (and even an empty `NotifyIconSettings` catalog) still creates keys for Discord/Steam/etc. but never Continuum or the probe |
 | **Fix** | Tauri `TrayIconBuilder` once with bright cyan PNG; badge = tooltip + overlay only; never `NIM_DELETE` on each tick. Capture NotifyIconSettings baseline and claim a single orphan (`IconSnapshot`, empty path). One-shot `retry-add` after 5s if still no key. Keep process alive on `ExitRequested` for `TaskbarCreated`. If SoT key never appears, reset tray caches then escalate to clean-boot / tray injectors — in-app code cannot force Explorer to accept `NIM_ADD` |
 | **Prevention** | Do not swap in a second GUID `Shell_NotifyIcon` stack; do not treat Tauri `build()`/`retry-add=Ok` as proof; require Continuum row under `NotifyIconSettings` |
+### KB-037 — `setup-android@v4` still installs removed SDK `tools`
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | CI `Android - assembleDebug` / `assembleRelease` and CodeQL `java-kotlin` fail: `Failed to find package 'tools'`; `sdkmanager` exit 1 |
+| **Cause** | `android-actions/setup-android@v4` defaults to `packages: tools platform-tools`. Google removed the legacy `tools` package (cmdline-tools replaced it) |
+| **Fix** | Pass `packages: platform-tools` on every `setup-android@v4` step (`ci.yml`, `codeql.yml`, `android-signed-foss.yml`) |
+| **Prevention** | Do not restore the action default. Empty `packages: ''` also works if the runner already has cmdline-tools |
+| **Last seen** | v1.2.0 `/ship` (2026-09-15) — required checks on `4f694e8` |
+ |
