@@ -196,6 +196,10 @@
     <string name="day_end_before_start">The day cannot end earlier than it starts</string>
     <string name="caldav_sync">CalDAV sync</string>
     <string name="continuum_open_day">Open</string>
+    <string name="continuum_no_events">No events</string>
+    <string name="continuum_no_timed_events">No timed events</string>
+    <string name="continuum_rolling_week_widget">Rolling week widget starts today</string>
+    <string name="widget_rolling_week">Rolling week</string>
     <string name="continuum_conflict_title">Scheduling conflict</string>
     <string name="continuum_conflict_message">This overlaps %1$s.</string>
     <string name="continuum_conflict_suggestion">Suggested free time (within work hours):\n%1$s</string>
@@ -379,10 +383,9 @@
     <string name="faq_1_title">How can I remove the holidays imported via the \"Add holidays\" button?</string>
     <string name="faq_1_text">Holidays created that way are inserted in a new calendar called \"Holidays\". You can go in Settings -> Manage calendars,
         long press the given calendar and delete it by selecting the trashbin.</string>
-    <string name="faq_2_title">Can I sync my events via Google Calendar, or other service supporting CalDAV?</string>
-    <string name="faq_2_title_extra">Maybe even share calendars with other people?</string>
-    <string name="faq_2_text">Yes, just toggle \"CalDAV sync\" in the app settings and select the calendars you want to sync. However, you will need some third-party app handling the synchronization between the device and servers.
-        In case you want to synchronize a Google calendar, their official Calendar app will do the job. For other calendars you will need a third-party sync adapter, for example DAVx5.</string>
+    <string name="faq_2_title">Can I sync Google Calendar and other CalDAV accounts?</string>
+    <string name="faq_2_title_extra">Can I share calendars with other people?</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="faq_3_title">I see the visual reminders, but hear no audio. What can I do?</string>
     <string name="faq_3_text">Not just displaying the actual reminder, but playing the audio is hugely affected by the system too. If you can\'t hear any sound, try going in the app settings,
         pressing the \"Audio stream used by reminders\" option and changing it to a different value. If it still won\'t work, check your sound settings, if the particular stream isn\'t muted.</string>

@@ -217,7 +217,7 @@ export function EventEditor({
         </button>
         <button
           type="submit"
-          className="rounded bg-[var(--cc-accent)] px-3 py-1.5 text-sm font-medium text-white"
+          className="rounded bg-[var(--cc-accent)] px-3 py-1.5 text-sm font-medium text-[var(--cc-on-accent)]"
         >
           Save
         </button>

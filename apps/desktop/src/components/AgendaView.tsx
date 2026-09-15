@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   CONTINUUM_OPEN_DAY_COLOR,
   buildAgendaSections,
+  collapseEmptyAgendaSections,
   dayShouldShowOpen,
   formatAgendaSectionTitle,
   isEventPast,
@@ -13,6 +14,7 @@ import {
   type CalendarListEntry,
   type WorkingHours,
 } from '@continuum/shared'
+import { OpenMark } from '../illustrations/Marks'
 import { formatEventTimeRange } from '../utils/timeFormat'
 
 interface AgendaViewProps {
@@ -65,11 +67,23 @@ export function AgendaView({
 
   const start = localDateKey(nowMs)
   const end = useMemo(() => addDays(start, rangeDays), [start, rangeDays])
+  const workEnd = workingHours.end || '17:00'
 
   const sections = useMemo(
     () => buildAgendaSections(events, start, end, showEmptyDays),
     [events, start, end, showEmptyDays],
   )
+  const folded = useMemo(
+    () =>
+      collapseEmptyAgendaSections(sections, {
+        todayKey: start,
+        nowMs,
+        workingHoursEnd: workEnd,
+      }),
+    [sections, start, nowMs, workEnd],
+  )
+  const [showFolded, setShowFolded] = useState(false)
+  const visibleSections = showFolded ? sections : folded.visible
 
   const colorByCal = useMemo(() => {
     const m = new Map<string, string>()
@@ -78,7 +92,6 @@ export function AgendaView({
   }, [calendars])
 
   const pad = density === 'compact' ? 'py-1' : 'py-2'
-  const workEnd = workingHours.end || '17:00'
 
   useEffect(() => {
     if (!focusDate) return
@@ -88,7 +101,7 @@ export function AgendaView({
   return (
     <div className="h-full overflow-auto rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-3">
       <ul className="space-y-3">
-        {sections.map((section) => {
+        {visibleSections.map((section) => {
           const isToday = section.date === start
           const jumpTarget = focusDate === section.date
           const header = formatAgendaSectionTitle(section.date, start)
@@ -103,7 +116,7 @@ export function AgendaView({
 
           let body: ReactNode
           if (isToday && phase === 'empty') {
-            body = null
+            body = <OpenDayButton dateKey={section.date} pad={pad} onOpenDay={onOpenDay} />
           } else if (isToday && phase === 'open') {
             body = <OpenDayButton dateKey={section.date} pad={pad} onOpenDay={onOpenDay} />
           } else if (!isToday && section.isEmpty) {
@@ -188,6 +201,17 @@ export function AgendaView({
             </li>
           )
         })}
+        {!showFolded && folded.foldedCount > 0 ? (
+          <li>
+            <button
+              type="button"
+              className={`cc-open w-full rounded-md px-1 text-left text-sm font-medium hover:bg-[var(--cc-accent-soft)] ${pad}`}
+              onClick={() => setShowFolded(true)}
+            >
+              Show {folded.foldedCount} Open days
+            </button>
+          </li>
+        ) : null}
       </ul>
     </div>
   )
@@ -205,11 +229,11 @@ function OpenDayButton({
   return (
     <button
       type="button"
-      className={`w-full rounded-md px-1 text-left text-sm font-medium hover:bg-[var(--cc-accent-soft)] ${pad}`}
-      style={{ color: CONTINUUM_OPEN_DAY_COLOR }}
+      className={`cc-open w-full rounded-md px-1 text-left text-sm font-medium hover:bg-[var(--cc-accent-soft)] ${pad}`}
       aria-label={`Open ${dateKey}, schedule an event`}
       onClick={() => onOpenDay?.(dateKey)}
     >
+      <OpenMark />
       Open
     </button>
   )

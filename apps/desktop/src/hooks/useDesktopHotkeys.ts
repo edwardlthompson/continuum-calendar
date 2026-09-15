@@ -14,10 +14,16 @@ export function useDesktopHotkeys(opts: {
   onView: (view: MainView) => void
   onSearch: () => void
   onJump: () => void
+  onPalette?: () => void
 }) {
   useEffect(() => {
     if (opts.enabled === false) return
     function onKey(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        opts.onPalette?.()
+        return
+      }
       if (e.ctrlKey || e.metaKey || e.altKey) return
       if (typingInField(e.target)) return
       if (e.key === 'n' || e.key === 'N') {

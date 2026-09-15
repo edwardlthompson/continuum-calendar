@@ -22,11 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.1.0...v1.1.1) (2026-09-13)
 
-
 ### Fixed
 
 * **ci:** sync HTML README template badge on Release Please PRs ([32fe3a1](https://github.com/edwardlthompson/continuum-calendar/commit/32fe3a18638b95c1d77094379ddaaf4485fd49fc))
-
 
 ### Documentation
 
@@ -35,17 +33,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.0.0...v1.1.0) (2026-09-13)
 
-
 ### Added
 
 * **android:** wire maintainer release signing off required CI ([ced7864](https://github.com/edwardlthompson/continuum-calendar/commit/ced78641d3c9514996fdb9407c2e1d5471c745d5))
-
 
 ### Fixed
 
 * **ci:** stop zizmor template-injection and add Apache-2.0 text ([f961f59](https://github.com/edwardlthompson/continuum-calendar/commit/f961f59d4e871694a55534d2de31a7b34178ce8c))
 * **security:** patch js-yaml 4.3.2 and document Fastlane rubyzip ([98bd9b1](https://github.com/edwardlthompson/continuum-calendar/commit/98bd9b1cea5e276d021b7d7a40e7295ceb2db0d2))
-
 
 ### Changed
 
@@ -78,7 +73,6 @@ First stable public release (out of 0.x beta). GitHub Releases remain the distri
 * **shared:** conflict detection skips overlaps whose window has already ended
 
 ## [0.26.0](https://github.com/edwardlthompson/continuum-calendar/compare/v0.25.2...v0.26.0) (2026-09-11)
-
 
 ### Added
 

@@ -11,11 +11,40 @@ body,
 }
 
 body {
-  background:
-    radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--cc-accent) 18%, transparent), transparent),
-    radial-gradient(900px 400px at 100% 0%, color-mix(in srgb, var(--cc-accent) 10%, transparent), transparent),
-    var(--cc-bg);
+  background: var(--cc-bg);
   color: var(--cc-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--cc-accent);
+  outline-offset: 2px;
+}
+
+.cc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.cc-btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  background: var(--cc-accent);
+  color: var(--cc-on-accent);
+}
+
+.cc-open {
+  color: var(--cc-today);
 }
 
 /* FullCalendar theme bridge */
@@ -25,6 +54,7 @@ body {
   --fc-border-color: var(--cc-border);
   --fc-button-bg-color: var(--cc-accent);
   --fc-button-border-color: var(--cc-accent);
+  --fc-button-text-color: var(--cc-on-accent);
   --fc-button-hover-bg-color: color-mix(in srgb, var(--cc-accent) 85%, black);
   --fc-button-hover-border-color: color-mix(in srgb, var(--cc-accent) 85%, black);
   --fc-today-bg-color: color-mix(in srgb, var(--cc-today) 12%, transparent);
@@ -50,12 +80,31 @@ body {
   font-weight: 700;
 }
 
+/* Rolling week: same today language as month (brand-now ring + teal fill). */
+.fc-timegrid .fc-timegrid-col.fc-day-today {
+  box-shadow: inset 0 0 0 2px var(--cc-brand-now);
+}
+
 .fc .fc-timegrid-slot {
   height: 2.25rem;
 }
 
 .cc-fab {
+  background: var(--cc-accent);
+  color: var(--cc-on-accent);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-splash {
+    transition: none;
+  }
+
+  .cc-fab,
+  .cc-fab:hover {
+    transition: none;
+    transform: none;
+  }
 }
 
 .cc-fab:hover {
@@ -65,7 +114,7 @@ body {
 
 /* Scheduling conflicts on the rolling week grid */
 .fc-event.cc-conflict-event {
-  box-shadow: inset 0 0 0 2px #facc15;
+  box-shadow: inset 0 0 0 2px var(--cc-warn);
 }
 /* Native date/time/select popups follow color-scheme; transparent fields
    inherit light chrome + dark text tokens (or the reverse) = unreadable. */
@@ -99,7 +148,7 @@ html[data-theme='dark'] .cc-native-field {
   height: 1rem;
   margin-top: 1px;
   border-radius: 2px;
-  background: #facc15;
-  color: #1c1917;
+  background: var(--cc-warn);
+  color: var(--cc-on-warn);
   font-weight: 700;
 }

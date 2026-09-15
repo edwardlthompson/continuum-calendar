@@ -15,7 +15,7 @@
 | Local calendars | SQLite/store | Fossify local | peer via `continuum-local-events.json` |
 | Local events peer sync | Drive App Data LWW + tombstones | Room `SOURCE_SIMPLE_CALENDAR` / ICS ↔ same file | `continuum-local-events.json` |
 | Privacy (no Google Calendar) | Toggle hides Google cals; keeps Drive App Data peer sync | Same Continuum toggle; hides Google CalDAV display | `useGoogleCalendar` |
-| 24-hour time | Settings toggle for Agenda; **rolling week grid always 24h** for denser columns | Fossify hour format + Continuum push/apply | `use24HourFormat` |
+| 24-hour time | Settings toggle for Agenda **and** rolling week / month grid | Fossify hour format + Continuum push/apply | `use24HourFormat` |
 | Sync / status messages | Fixed bottom status bar (no layout jump) | Toasts / Continuum log | — |
 | First day of week | Settings + FullCalendar `firstDay` | Fossify start week on + Continuum push/apply | `firstDayOfWeek` (0=Sun) |
 | ICS file open | OS `.ics` association (Tauri) + drag-and-drop + Settings import | `ACTION_VIEW` file/content + MIME | import calendar `ics-import` |

@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: `v1.1.1` (Linux `.deb` + Windows EXE + signed FOSS APK attached; Android OAuth SHA-1 registered; keystore backed up to Drive + GitHub `release-signing`)
+- Latest tag: `v1.1.2` (Release Please bump). Sprint 4–6 desktop/Android work is local/uncommitted and not on that tag.
 
 ### Key Constraints
 
@@ -43,11 +43,15 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 - Mobile git submodule requires `[HUMAN]` approval
 - Max 300 lines per static data file, 150 lines per pure logic file (bootstrap rule)
 - Trunk-based development with Conventional Commits
+- No Google Calendar–style Day view; rolling week + agenda stay primary
 
 ## Session Retrospectives
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-09-14 | ADB widget glance | OP13 `install -r` FOSS release; today highlight + Open vs `1`; Settings rolling-week toggle on; no reboot/wipe; Launcher3 restored as HOME | `Open` wraps on 4×1; Hermes tried to become Home when using KEYCODE_HOME; Sprint 4–6 still uncommitted |
+| 2026-09-14 | Sprint 6 audit leftovers | H1 without version; compact TZ; Ctrl+K palette; Open marks; FAQ locales; smoke-sprint PASS; RP #37 merged | `[ADB]` widget glance |
+| 2026-09-14 | Sprint 4 UX feel | Grid drag persists; settings overlay + editor side sheet; widget Open/today; FAQ English → Connect Google; smoke-sprint PASS | `[ADB]` glance widget on a phone (no reboot/wipe); other-locale FAQ still mentions DAVx5 |
 | 2026-09-13 | /push v1.1.0 | RP #35/#36 merged; installers on the tag; OP13 on signed 1.0.0; Android OAuth SHA-1 registered; keystore on Drive + GitHub | Rebuild Windows EXE via `desktop-nsis.yml` (AUTO row); Google SHA-1 can take hours to propagate |
 | 2026-09-11 | Release keystore | New `$HOME/keys/continuum-release.jks`; GitHub env `release-signing`; local `assembleFossRelease` signed | Add new SHA-1 on Google Android OAuth client; uninstall old release APKs before sideload |
 | 2026-09-11 | 1.0.0 stable | Left 0.x beta; GitHub tag v1.0.0; desktop source version 1.0.0; Android stays 1.10.7 | Rebuild Windows EXE / signed APK on those hosts so About matches 1.0.0 |

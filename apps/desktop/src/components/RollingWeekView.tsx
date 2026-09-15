@@ -8,6 +8,11 @@ import interactionPlugin from '@fullcalendar/interaction'
 import type { DateSelectArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core'
 import { eventOccurrenceKey, type CalendarEvent, type CalendarListEntry } from '@continuum/shared'
 import { fullCalendarTimeFormats } from '../utils/timeFormat'
+import {
+  isGridEventEditable,
+  slotWindowFromWorkingHours,
+  type GridMoveArg,
+} from '../grid/gridMove'
 
 function startOfDay(d: Date): Date {
   const x = new Date(d)
@@ -35,8 +40,11 @@ interface RollingWeekViewProps {
   firstDayOfWeek?: number
   weeklyViewDays?: number
   conflictIds?: Set<string>
+  workingHours?: { start?: string; end?: string }
+  moveBusy?: boolean
   onSelectEvent?: (event: CalendarEvent) => void
   onSelectSlot?: (start: Date, end: Date) => void
+  onMoveEvent?: (event: CalendarEvent, arg: GridMoveArg, revert: () => void) => void
   calendarView?: 'rollingWeek' | 'dayGridMonth' | 'multiMonthYear'
   focusDate?: string
   focusSeq?: number
@@ -48,13 +56,15 @@ export function RollingWeekView({
   calendars = [],
   rollingWeekFromToday = true,
   redactTitles = false,
-  // Weekly grid always uses 24h labels for denser horizontal slot columns.
-  use24HourFormat = true,
+  use24HourFormat = false,
   firstDayOfWeek = 0,
   weeklyViewDays = 7,
   conflictIds,
+  workingHours,
+  moveBusy = false,
   onSelectEvent,
   onSelectSlot,
+  onMoveEvent,
   calendarView = 'rollingWeek',
   focusDate,
   focusSeq = 0,
@@ -76,6 +86,7 @@ export function RollingWeekView({
       events.map((e) => {
         const calColor = colorByCal.get(e.calendarId)
         const conflict = conflictIds?.has(eventOccurrenceKey(e))
+        const editable = !moveBusy && isGridEventEditable(e, calendars)
         return {
           id: e.id,
           title: redactTitles ? '••••••••' : e.title,
@@ -85,11 +96,15 @@ export function RollingWeekView({
           backgroundColor: conflict ? '#ca8a04' : calColor,
           borderColor: conflict ? '#eab308' : calColor,
           classNames: conflict ? ['cc-conflict-event'] : undefined,
+          editable,
+          startEditable: editable,
+          durationEditable: editable,
           extendedProps: { conflict: Boolean(conflict) },
         }
       }),
-    [events, redactTitles, conflictIds, colorByCal],
+    [events, redactTitles, conflictIds, colorByCal, calendars, moveBusy],
   )
+  const slotWindow = useMemo(() => slotWindowFromWorkingHours(workingHours), [workingHours])
 
   function handleEventClick(arg: EventClickArg) {
     const ev = byId.get(arg.event.id)
@@ -98,6 +113,40 @@ export function RollingWeekView({
 
   function handleSelect(arg: DateSelectArg) {
     onSelectSlot?.(arg.start, arg.end)
+  }
+
+  function handleMove(info: {
+    event: {
+      id: string
+      start: Date | null
+      end: Date | null
+      allDay: boolean
+      startStr: string
+      endStr: string
+    }
+    revert: () => void
+  }) {
+    try {
+      const ev = byId.get(info.event.id)
+      if (!ev) {
+        info.revert()
+        return
+      }
+      onMoveEvent?.(
+        ev,
+        {
+          eventId: info.event.id,
+          start: info.event.start,
+          end: info.event.end,
+          allDay: info.event.allDay,
+          startStr: info.event.startStr,
+          endStr: info.event.endStr,
+        },
+        info.revert,
+      )
+    } catch {
+      info.revert()
+    }
   }
 
   function renderEventContent(arg: EventContentArg) {
@@ -138,12 +187,12 @@ export function RollingWeekView({
   return (
     <div className="h-full min-h-[28rem] rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-2 shadow-sm">
       <FullCalendar
-        key={`${today.toISOString()}-${use24HourFormat}-${firstDayOfWeek}-${weeklyViewDays}`}
+        key={`${today.toISOString()}-${use24HourFormat}-${firstDayOfWeek}-${weeklyViewDays}-${slotWindow.slotMinTime}-${slotWindow.slotMaxTime}`}
         ref={calendarRef}
         plugins={[timeGridPlugin, dayGridPlugin, multiMonthPlugin, interactionPlugin]}
         initialView={calendarView}
         headerToolbar={{
-          left: 'prev,next today',
+          left: '',
           center: 'title',
           right: '',
         }}
@@ -171,12 +220,12 @@ export function RollingWeekView({
         nowIndicator
         weekends
         allDaySlot
-        slotMinTime="06:00:00"
-        slotMaxTime="22:00:00"
+        slotMinTime={slotWindow.slotMinTime}
+        slotMaxTime={slotWindow.slotMaxTime}
         expandRows
         height="100%"
         events={fcEvents}
-        editable
+        editable={!moveBusy}
         selectable
         selectMirror
         dayMaxEvents={false}
@@ -185,6 +234,8 @@ export function RollingWeekView({
         slotLabelFormat={timeFormats.slotLabelFormat}
         eventClick={handleEventClick}
         select={handleSelect}
+        eventDrop={handleMove}
+        eventResize={handleMove}
         eventContent={renderEventContent}
       />
     </div>

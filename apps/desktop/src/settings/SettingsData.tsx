@@ -15,6 +15,7 @@ import type { SettingsSectionProps } from './settingsTypes'
 
 export function SettingsData({ form, query }: SettingsSectionProps) {
   const [isDefault, setIsDefault] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
   useEffect(() => {
     void isDefaultCalendar().then(setIsDefault).catch(() => setIsDefault(false))
   }, [])
@@ -138,13 +139,44 @@ export function SettingsData({ form, query }: SettingsSectionProps) {
           }}
         />
       </label>
-      <button
-        type="button"
-        className="rounded border border-[var(--cc-border)] px-2 py-1"
-        onClick={() => form.persistSettings(defaultContinuumSettings(), 'Reset to Continuum defaults')}
-      >
-        Reset Continuum defaults
-      </button>
+      {confirmReset ? (
+        <div
+          className="space-y-2 rounded-lg border border-[var(--cc-border)] p-2"
+          role="alertdialog"
+          aria-labelledby="cc-reset-title"
+        >
+          <p id="cc-reset-title" className="text-sm font-medium">
+            Reset all Continuum settings to defaults?
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="rounded px-2 py-1 text-sm"
+              onClick={() => setConfirmReset(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="rounded bg-[var(--cc-accent)] px-2 py-1 text-sm text-white"
+              onClick={() => {
+                setConfirmReset(false)
+                form.persistSettings(defaultContinuumSettings(), 'Reset to Continuum defaults')
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="rounded border border-[var(--cc-border)] px-2 py-1"
+          onClick={() => setConfirmReset(true)}
+        >
+          Reset Continuum defaults
+        </button>
+      )}
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"

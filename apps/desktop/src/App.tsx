@@ -27,6 +27,25 @@ import {
 import { RollingWeekView } from './components/RollingWeekView'
 import { AgendaView } from './components/AgendaView'
 import { EventEditor } from './components/EventEditor'
+import { RecurrenceScopeDialog } from './grid/RecurrenceScopeDialog'
+import { PromptDialog } from './chrome/PromptDialog'
+import {
+  parseJumpDate,
+  promptFields,
+  promptTitle,
+  type ChromePromptId,
+} from './chrome/promptParse'
+import { calendarCaption } from './chrome/calendarLabel'
+import { CommandPalette } from './chrome/CommandPalette'
+import { useDismiss } from './chrome/useDismiss'
+import {
+  applyGridMove,
+  isGridEventEditable,
+  isSeriesEvent,
+  type EventSaveResult,
+  type GridMoveArg,
+} from './grid/gridMove'
+import { toLocalDateTimeValue } from './utils/dateTimeLocal'
 import { CalendarSidebar } from './components/CalendarSidebar'
 import { ContinuumSplash } from './components/ContinuumSplash'
 import { AppTitle } from './components/AppTitle'
@@ -177,9 +196,26 @@ export default function App() {
     suggestion: FreeSlot | null
   } | null>(null)
   const [deletePrompt, setDeletePrompt] = useState<Partial<CalendarEvent> | null>(null)
+  const [gridMoveBusy, setGridMoveBusy] = useState(false)
+  const [gridScopePrompt, setGridScopePrompt] = useState<{
+    draft: CalendarEvent
+    occurrenceStart: string
+  } | null>(null)
+  const gridRevertRef = useRef<(() => void) | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [settingsQuery, setSettingsQuery] = useState('')
+  const settingsBtnRef = useRef<HTMLButtonElement>(null)
+  const closeSettings = useCallback(() => {
+    setShowSettings(false)
+    setSettingsQuery('')
+    queueMicrotask(() => settingsBtnRef.current?.focus())
+  }, [])
   const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
+  useDismiss(menuOpen, closeMenu, menuRef)
+  const [chromePrompt, setChromePrompt] = useState<ChromePromptId | null>(null)
+  const [paletteOpen, setPaletteOpen] = useState(false)
   const [hideConflictBanner, setHideConflictBanner] = useState(false)
   const [launchPrompt, setLaunchPrompt] = useState<LaunchPrompt | null>(null)
   const installedVersionRef = useRef('1.0.0')
@@ -196,6 +232,10 @@ export default function App() {
     if (settings.useGoogleCalendar) return calendars
     return calendars.filter((c) => c.source !== 'google')
   }, [calendars, settings.useGoogleCalendar])
+  const labeledCalendars = useMemo(
+    () => displayCalendars.map((c) => ({ ...c, displayName: calendarCaption(c, authStatus) })),
+    [displayCalendars, authStatus],
+  )
 
   const visibleEvents = useMemo(() => {
     const primaryIds = new Set(
@@ -259,12 +299,20 @@ export default function App() {
   }, [conflictDates.join('|')])
 
   const flash = useCallback((msg: string) => {
-    setStatusMsg(msg)
+    const shown = msg.startsWith('Event saved') ? 'Saved' : msg
+    const ms = shown === 'Saved' ? 1500 : 4000
+    setStatusMsg(shown)
     if (statusTimerRef.current != null) window.clearTimeout(statusTimerRef.current)
     statusTimerRef.current = window.setTimeout(() => {
       setStatusMsg(null)
       statusTimerRef.current = null
-    }, 4000)
+    }, ms)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (statusTimerRef.current != null) window.clearTimeout(statusTimerRef.current)
+    }
   }, [])
 
   useEffect(() => {
@@ -719,18 +767,7 @@ export default function App() {
   async function onSignIn() {
     if (signInPending) return
     if (!isGoogleConfigured()) {
-      window.alert(
-        [
-          'This Continuum build is missing OAuth packaging.',
-          '',
-          'Sign in with Google uses your system browser (Google blocks in-app WebViews).',
-          'Maintainers must bake Continuum’s Desktop Client ID, then rebuild:',
-          '  python scripts/set-desktop-google-client-id.py <CLIENT_ID> <CLIENT_SECRET>',
-          '  npm run install:local   # from apps/desktop',
-          '',
-          'See docs/GOOGLE_API_SETUP.md. End users never paste a Client ID.',
-        ].join('\n'),
-      )
+      flash('Sign-in is not available in this build.')
       return
     }
     setSignInPending(true)
@@ -810,11 +847,6 @@ export default function App() {
     })
   }
 
-  function toLocalDateTimeValue(d: Date): string {
-    const pad = (n: number) => String(n).padStart(2, '0')
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-  }
-
   function formatConflictSlot(slot: FreeSlot): string {
     const timeOpts: Intl.DateTimeFormatOptions = {
       hour: settings.use24HourFormat ? '2-digit' : 'numeric',
@@ -833,7 +865,7 @@ export default function App() {
     draft: Omit<CalendarEvent, 'id'> & { id?: string },
     scope?: RecurrenceEditScope,
     occurrenceStart?: string,
-  ) {
+  ): Promise<EventSaveResult> {
     const googleSeriesId = draft.recurringEventId
     if (googleSeriesId && scope && occurrenceStart && draft.id) {
       try {
@@ -873,11 +905,12 @@ export default function App() {
         setEvents(next)
         setEditing(null)
         flash('Event saved')
+        return 'saved'
       } catch (e) {
         continuumLogger.error('Google series save failed', e)
         flash(e instanceof Error ? e.message : 'Google save failed')
+        return 'failed'
       }
-      return
     }
     const master = draft.id ? events.find((e) => e.id === seriesEventId(draft.id ?? '')) : undefined
     if (
@@ -904,10 +937,10 @@ export default function App() {
             continuumLogger.error('Local events push failed', e)
             flash(humanizeOAuthFailure(e))
           })
-        return
+        return 'saved'
       }
       flash('Event saved')
-      return
+      return 'saved'
     }
     const blockers = conflictsForEvent(draft, visibleEvents)
     if (blockers.length) {
@@ -917,9 +950,64 @@ export default function App() {
         days: 14,
       })
       setConflictPrompt({ draft, blockers, suggestion })
+      return 'conflict'
+    }
+    try {
+      await commitSaveEvent(draft)
+      return 'saved'
+    } catch (e) {
+      continuumLogger.error('Event save failed', e)
+      flash(e instanceof Error ? e.message : 'Save failed')
+      return 'failed'
+    }
+  }
+
+  function clearGridRevert(run: boolean) {
+    if (run) gridRevertRef.current?.()
+    gridRevertRef.current = null
+  }
+
+  async function persistGridDraft(
+    draft: CalendarEvent,
+    scope?: RecurrenceEditScope,
+    occurrenceStart?: string,
+  ) {
+    setGridMoveBusy(true)
+    try {
+      const result = await onSaveEvent(draft, scope, occurrenceStart)
+      if (result === 'failed') clearGridRevert(true)
+      else if (result === 'saved') clearGridRevert(false)
+    } catch (e) {
+      continuumLogger.error('Grid move save failed', e)
+      clearGridRevert(true)
+    } finally {
+      setGridMoveBusy(false)
+    }
+  }
+
+  function onGridMove(event: CalendarEvent, arg: GridMoveArg, revert: () => void) {
+    if (gridMoveBusy) {
+      revert()
       return
     }
-    await commitSaveEvent(draft)
+    if (!isGridEventEditable(event, calendars)) {
+      revert()
+      return
+    }
+    const draft = applyGridMove(event, arg)
+    if (!draft) {
+      revert()
+      return
+    }
+    gridRevertRef.current = revert
+    if (isSeriesEvent(event)) {
+      setGridScopePrompt({
+        draft,
+        occurrenceStart: event.occurrenceStart ?? event.start,
+      })
+      return
+    }
+    void persistGridDraft(draft)
   }
 
   async function commitSaveEvent(draft: Omit<CalendarEvent, 'id'> & { id?: string }) {
@@ -1138,8 +1226,18 @@ export default function App() {
   }
 
   async function onOpenCalendarLink() {
-    const raw = window.prompt('Paste a webcal:// or https://…ics calendar link')
-    if (!raw?.trim()) return
+    setChromePrompt('ics-open')
+  }
+
+  async function onSubscribeIcs() {
+    setChromePrompt('ics-subscribe')
+  }
+
+  async function onAddCalDav() {
+    setChromePrompt('caldav')
+  }
+
+  async function importFromLink(raw: string) {
     try {
       const { events: next, count } = await importIcsFromUrl(raw.trim())
       setEvents(next)
@@ -1151,9 +1249,7 @@ export default function App() {
     }
   }
 
-  async function onSubscribeIcs() {
-    const raw = window.prompt('Subscribe to a webcal:// or https://…ics URL (refreshes on each sync)')
-    if (!raw?.trim()) return
+  async function subscribeFromUrl(raw: string) {
     try {
       const { events: next, count } = await subscribeIcsUrl(raw.trim())
       setEvents(next)
@@ -1165,11 +1261,7 @@ export default function App() {
     }
   }
 
-  async function onAddCalDav() {
-    const serverUrl = window.prompt('CalDAV server URL', 'https://example.com/remote.php/dav/')
-    if (!serverUrl) return
-    const username = window.prompt('Username') ?? ''
-    const password = window.prompt('App password') ?? ''
+  async function addCalDavAccount(serverUrl: string, username: string, password: string) {
     const account: CalDavAccount = {
       id: `acc-${Date.now()}`,
       displayName: 'CalDAV',
@@ -1204,22 +1296,29 @@ export default function App() {
       return
     }
     openNewEvent({
-      start: slots[0].start.toISOString().slice(0, 16),
-      end: slots[0].end.toISOString().slice(0, 16),
+      start: toLocalDateTimeValue(slots[0].start),
+      end: toLocalDateTimeValue(slots[0].end),
     })
   }
 
   useDesktopHotkeys({
-    enabled: !editing,
+    enabled: !editing && !chromePrompt && !showSettings && !paletteOpen,
     onNew: () => openNewEvent(),
     onToday: goToday,
     onView: setView,
     onSearch: () => searchRef.current?.focus(),
-    onJump: () => {
-      const raw = window.prompt('Jump to date (YYYY-MM-DD)', jumpDate)
-      if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) jumpCalendarTo(raw)
-    },
+    onJump: () => setChromePrompt('jump'),
+    onPalette: () => setPaletteOpen(true),
   })
+
+  useEffect(() => {
+    if (!showSettings) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') closeSettings()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [showSettings, closeSettings])
 
   useEffect(() => {
     const native = toNativeArgs(windowBehavior)
@@ -1291,20 +1390,32 @@ export default function App() {
       className={`relative flex h-full flex-col gap-2 p-4 pb-10 ${dropActive ? 'ring-2 ring-[var(--cc-accent)] ring-inset' : ''}`}
     >
       <ContinuumSplash />
+      {paletteOpen ? (
+        <CommandPalette
+          onClose={() => setPaletteOpen(false)}
+          onRun={(id) => {
+            setPaletteOpen(false)
+            if (id === 'agenda') setView('agenda')
+            else if (id === 'week') setView('rolling')
+            else if (id === 'month') setView('month')
+            else if (id === 'year') setView('year')
+            else if (id === 'today') goToday()
+            else if (id === 'settings') setShowSettings(true)
+            else openNewEvent()
+          }}
+        />
+      ) : null}
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <AppTitle />
           <p className="text-sm text-[var(--cc-muted)]">
-            Agenda · Multi-calendar ·{' '}
-            {syncInfo.lastSyncedAt
-              ? `Synced ${new Date(syncInfo.lastSyncedAt).toLocaleTimeString()}`
-              : 'Not synced'}
+            {signedIn ? 'Signed in' : 'On this computer'}
             {conflicts.length ? (
               <>
                 {' · '}
                 <button
                   type="button"
-                  className="underline decoration-amber-500 underline-offset-2 hover:text-amber-800 dark:hover:text-amber-200"
+                  className="underline decoration-[var(--cc-brand-now)] underline-offset-2 hover:text-[var(--cc-brand-now)]"
                   aria-label={`Jump to overlapping events on ${nextConflictJump ?? conflictDates[0] ?? 'that day'}`}
                   onClick={() => jumpToOverlap(conflicts)}
                 >
@@ -1317,7 +1428,7 @@ export default function App() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm disabled:opacity-50"
+            className="cc-btn rounded border border-[var(--cc-border)] text-sm disabled:opacity-50"
             disabled={syncing}
             title="Refresh calendars and settings"
             aria-label="Refresh calendars and settings"
@@ -1325,10 +1436,10 @@ export default function App() {
           >
             {syncing ? 'Refreshing…' : 'Refresh'}
           </button>
-          <div className="relative">
+          <div className="relative" ref={menuRef}>
             <button
               type="button"
-              className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+              className="cc-btn rounded border border-[var(--cc-border)] text-sm"
               aria-label="Menu"
               aria-haspopup="true"
               aria-expanded={menuOpen}
@@ -1373,30 +1484,11 @@ export default function App() {
                   className="block w-full px-3 py-1.5 text-left text-sm hover:bg-[var(--cc-accent-soft)]"
                   onClick={() => {
                     setMenuOpen(false)
-                    void onOpenCalendarLink()
+                    setSettingsQuery('import')
+                    setShowSettings(true)
                   }}
                 >
-                    Open calendar link…
-                </button>
-                <button
-                  type="button"
-                  className="block w-full px-3 py-1.5 text-left text-sm hover:bg-[var(--cc-accent-soft)]"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    void onSubscribeIcs()
-                  }}
-                >
-                  Subscribe to ICS URL…
-                </button>
-                <button
-                  type="button"
-                  className="block w-full px-3 py-1.5 text-left text-sm hover:bg-[var(--cc-accent-soft)]"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    void openExternal(VENMO_DONATE_URL)
-                  }}
-                >
-                  Donate via Venmo
+                  Import calendar…
                 </button>
               </div>
             ) : null}
@@ -1404,7 +1496,7 @@ export default function App() {
           {authStatus === 'signed-in' ? (
             <button
               type="button"
-              className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+              className="cc-btn rounded border border-[var(--cc-border)] text-sm"
               aria-label="Sign out of Google"
               onClick={() => void onSignOut()}
             >
@@ -1413,29 +1505,33 @@ export default function App() {
           ) : (
             <button
               type="button"
-              className="rounded bg-[var(--cc-accent)] px-2 py-1 text-sm text-white disabled:opacity-60"
+              className="cc-btn-accent disabled:opacity-60"
               aria-label={authStatus === 'needs-reauth' ? 'Sign in again' : 'Sign in with Google'}
               disabled={signInPending}
               title={
                 isGoogleConfigured()
                   ? 'Connect your Google Calendar, Contacts, and Tasks'
-                  : 'This build needs Continuum OAuth packaging (docs/GOOGLE_API_SETUP.md)'
+                  : 'Sign-in is not available in this build'
               }
               onClick={() => void onSignIn()}
             >
               {signInPending
-                ? 'Waiting for browser…'
+                ? 'Opening Google…'
                 : authStatus === 'needs-reauth'
                   ? 'Sign in again'
                   : 'Sign in with Google'}
             </button>
           )}
           <button
+            ref={settingsBtnRef}
             type="button"
-            className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+            className="cc-btn rounded border border-[var(--cc-border)] text-sm"
             aria-label="Settings"
             aria-pressed={showSettings}
-            onClick={() => setShowSettings((s) => !s)}
+            onClick={() => {
+              if (showSettings) closeSettings()
+              else setShowSettings(true)
+            }}
           >
             Settings
           </button>
@@ -1463,7 +1559,7 @@ export default function App() {
 
       <div className="flex min-h-0 flex-1 gap-5">
         <CalendarSidebar
-          calendars={displayCalendars}
+          calendars={labeledCalendars}
           defaultWriteCalendarId={settings.defaultWriteCalendarId}
           onToggle={onToggleCalendar}
           onSetDefaultWrite={(logicalId) => void persistSettings({ defaultWriteCalendarId: logicalId })}
@@ -1482,12 +1578,12 @@ export default function App() {
           <main className="flex min-h-0 min-w-0 flex-1 flex-col">
             {conflicts.length > 0 && !hideConflictBanner ? (
               <div
-                className="mb-2 flex items-start justify-between gap-2 rounded-lg border border-amber-400 bg-amber-50 px-3 py-2 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100"
+                className="mb-2 flex items-start justify-between gap-2 rounded-lg border-2 border-[var(--cc-brand-now)] bg-[var(--cc-surface)] px-3 py-2 text-sm"
                 role="status"
               >
                 <button
                   type="button"
-                  className="min-w-0 flex-1 text-left underline decoration-amber-600 underline-offset-2 hover:decoration-2"
+                  className="min-w-0 flex-1 text-left underline decoration-[var(--cc-brand-now)] underline-offset-2 hover:decoration-2"
                   aria-label={
                     nextConflictJump
                       ? `Jump to overlapping events on ${nextConflictJump}`
@@ -1524,21 +1620,9 @@ export default function App() {
                 </button>
               </div>
             ) : null}
-            {editing ? (
-              <EventEditor
-                initial={editing}
-                calendars={displayCalendars}
-                defaultCalendarId={
-                  newEventDefaults(displayCalendars, settings.defaultWriteCalendarId).calendarId
-                }
-                defaultReminderMinutes={settings.defaultReminderMinutes}
-                googleSignedIn={signedIn && settings.useGoogleCalendar}
-                firstDayOfWeek={settings.firstDayOfWeek}
-                onCancel={() => setEditing(null)}
-                onSave={(e, scope, occ) => void onSaveEvent(e, scope, occ)}
-                onDelete={editing.id ? () => requestDeleteEvent(editing) : undefined}
-              />
-            ) : view === 'agenda' ? (
+            <div className="flex min-h-0 min-w-0 flex-1">
+              <div className="min-h-0 min-w-0 flex-1">
+                {view === 'agenda' ? (
               <AgendaView
                 events={displayEvents}
                 calendars={displayCalendars}
@@ -1578,27 +1662,58 @@ export default function App() {
                 calendars={displayCalendars}
                 rollingWeekFromToday={settings.rollingWeekFromToday}
                 redactTitles={settings.redactTitlesInScreenshots}
-                use24HourFormat
+                use24HourFormat={settings.use24HourFormat}
                 firstDayOfWeek={settings.firstDayOfWeek}
                 weeklyViewDays={settings.weeklyViewDays}
+                workingHours={settings.workingHours}
+                moveBusy={gridMoveBusy || Boolean(gridScopePrompt)}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
                 onSelectEvent={(ev) => {
                   void openEditEvent(ev)
                 }}
                 onSelectSlot={(start, end) =>
                   openNewEvent({
-                    start: start.toISOString().slice(0, 16),
-                    end: end.toISOString().slice(0, 16),
+                    start: toLocalDateTimeValue(start),
+                    end: toLocalDateTimeValue(end),
                   })
                 }
+                onMoveEvent={onGridMove}
               />
             )}
+              </div>
+              {editing ? (
+                <aside className="flex min-h-0 w-full max-w-lg shrink-0 flex-col border-l border-[var(--cc-border)] pl-3">
+                  <EventEditor
+                    initial={editing}
+                    calendars={displayCalendars}
+                    defaultCalendarId={
+                      newEventDefaults(displayCalendars, settings.defaultWriteCalendarId).calendarId
+                    }
+                    defaultReminderMinutes={settings.defaultReminderMinutes}
+                    googleSignedIn={signedIn && settings.useGoogleCalendar}
+                    firstDayOfWeek={settings.firstDayOfWeek}
+                    onCancel={() => setEditing(null)}
+                    onSave={(e, scope, occ) => void onSaveEvent(e, scope, occ)}
+                    onDelete={editing.id ? () => requestDeleteEvent(editing) : undefined}
+                  />
+                </aside>
+              ) : null}
+            </div>
           </main>
         </div>
 
         {showSettings ? (
-          <SettingsPanel
-            form={{
+          <div
+            className="absolute inset-0 z-40 flex justify-end bg-black/40 p-4"
+            role="presentation"
+            onClick={() => closeSettings()}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') closeSettings()
+            }}
+          >
+            <SettingsPanel
+              onClose={closeSettings}
+              form={{
               query: settingsQuery,
               onQuery: setSettingsQuery,
               settings,
@@ -1632,14 +1747,15 @@ export default function App() {
               onSubscribeIcs: () => void onSubscribeIcs(),
               onAddCalDav: () => void onAddCalDav(),
             }}
-          />
+            />
+          </div>
         ) : null}
       </div>
 
       {!editing ? (
         <button
           type="button"
-          className="cc-fab absolute bottom-12 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--cc-accent)] text-2xl font-light text-white shadow-lg"
+          className="cc-fab absolute bottom-12 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full text-2xl font-light shadow-lg"
           aria-label="New event"
           title={hotkeyTitle('New event', 'N')}
           onClick={() => openNewEvent()}
@@ -1715,6 +1831,51 @@ export default function App() {
         </div>
       ) : null}
 
+      {chromePrompt ? (
+        <PromptDialog
+          title={promptTitle(chromePrompt)}
+          fields={promptFields(chromePrompt, jumpDate)}
+          onCancel={() => setChromePrompt(null)}
+          onSubmit={(values) => {
+            const id = chromePrompt
+            setChromePrompt(null)
+            if (id === 'jump') {
+              const d = parseJumpDate(values.date ?? '')
+              if (d) jumpCalendarTo(d)
+              else flash('Use YYYY-MM-DD')
+              return
+            }
+            if (id === 'ics-open') {
+              const url = (values.url ?? '').trim()
+              if (url) void importFromLink(url)
+              return
+            }
+            if (id === 'ics-subscribe') {
+              const url = (values.url ?? '').trim()
+              if (url) void subscribeFromUrl(url)
+              return
+            }
+            const serverUrl = (values.serverUrl ?? '').trim()
+            if (!serverUrl) return
+            void addCalDavAccount(serverUrl, values.username ?? '', values.password ?? '')
+          }}
+        />
+      ) : null}
+
+      {gridScopePrompt ? (
+        <RecurrenceScopeDialog
+          onPick={(scope) => {
+            const pending = gridScopePrompt
+            setGridScopePrompt(null)
+            void persistGridDraft(pending.draft, scope, pending.occurrenceStart)
+          }}
+          onCancel={() => {
+            setGridScopePrompt(null)
+            clearGridRevert(true)
+          }}
+        />
+      ) : null}
+
       {conflictPrompt ? (
         <div
           className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -1722,8 +1883,8 @@ export default function App() {
           aria-modal="true"
           aria-labelledby="cc-conflict-title"
         >
-          <div className="w-full max-w-md space-y-3 rounded-xl border border-amber-400 bg-[var(--cc-surface)] p-4 shadow-xl">
-            <h2 id="cc-conflict-title" className="flex items-center gap-2 text-base font-semibold text-amber-700">
+          <div className="w-full max-w-md space-y-3 rounded-xl border-2 border-[var(--cc-brand-now)] bg-[var(--cc-surface)] p-4 shadow-xl">
+            <h2 id="cc-conflict-title" className="flex items-center gap-2 text-base font-semibold text-[var(--cc-brand-now)]">
               <span aria-hidden className="text-xl">
                 ⚠️
               </span>
@@ -1743,7 +1904,7 @@ export default function App() {
               .
             </p>
             {conflictPrompt.suggestion ? (
-              <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
+              <p className="rounded-md bg-[color-mix(in_srgb,var(--cc-brand-now)_12%,transparent)] px-3 py-2 text-sm">
                 Suggested free time (within work hours):{' '}
                 <strong>{formatConflictSlot(conflictPrompt.suggestion)}</strong>
               </p>
@@ -1765,16 +1926,20 @@ export default function App() {
               <button
                 type="button"
                 className="rounded px-3 py-1.5 text-sm"
-                onClick={() => setConflictPrompt(null)}
+                onClick={() => {
+                  clearGridRevert(true)
+                  setConflictPrompt(null)
+                }}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="rounded border border-amber-500 px-3 py-1.5 text-sm text-amber-800"
+                className="rounded border border-[var(--cc-brand-now)] px-3 py-1.5 text-sm text-[var(--cc-brand-now)]"
                 onClick={() => {
                   const draft = conflictPrompt.draft
                   setConflictPrompt(null)
+                  clearGridRevert(false)
                   void commitSaveEvent(draft)
                 }}
               >
@@ -1783,11 +1948,12 @@ export default function App() {
               {conflictPrompt.suggestion ? (
                 <button
                   type="button"
-                  className="rounded bg-amber-500 px-3 py-1.5 text-sm font-medium text-white"
+                  className="rounded bg-[var(--cc-brand-now)] px-3 py-1.5 text-sm font-medium text-white"
                   onClick={() => {
                     const { draft, suggestion } = conflictPrompt
                     if (!suggestion) return
                     setConflictPrompt(null)
+                    clearGridRevert(false)
                     void commitSaveEvent({
                       ...draft,
                       start: toLocalDateTimeValue(suggestion.start),
@@ -1804,20 +1970,17 @@ export default function App() {
         </div>
       ) : null}
 
+      {statusMsg || syncing ? (
       <footer
         className="pointer-events-none absolute inset-x-0 bottom-0 z-20 border-t border-[var(--cc-border)] bg-[var(--cc-surface)]/95 px-4 py-1.5 backdrop-blur-sm"
         role="status"
         aria-live="polite"
       >
-        <p
-          className={`truncate text-xs ${statusMsg ? 'text-[var(--cc-accent)]' : 'text-[var(--cc-muted)]'}`}
-        >
-          {statusMsg ??
-            (syncInfo.lastSyncedAt
-              ? `Last sync ${new Date(syncInfo.lastSyncedAt).toLocaleTimeString()}`
-              : 'Ready')}
+        <p className="truncate text-xs text-[var(--cc-accent)]">
+          {statusMsg ?? 'Refreshing…'}
         </p>
       </footer>
+      ) : null}
     </div>
   )
 }

@@ -1,22 +1,6 @@
-import { useEffect, useState } from 'react'
+import { APP_TITLE } from './appTitle'
 
-/** Header title plus the installed binary version (Tauri `getVersion`). */
+/** Header product name only. Installed version lives in Settings / About. */
 export function AppTitle() {
-  const [version, setVersion] = useState('1.0.0')
-
-  useEffect(() => {
-    void import('@tauri-apps/api/app')
-      .then((m) => m.getVersion())
-      .then(setVersion)
-      .catch(() => {
-        /* Vite / tests: keep fallback */
-      })
-  }, [])
-
-  return (
-    <h1 className="flex items-baseline gap-2 text-2xl font-semibold tracking-tight">
-      <span>Continuum Calendar</span>
-      <span className="text-xs font-normal tabular-nums text-[var(--cc-muted)]">{version}</span>
-    </h1>
-  )
+  return <h1 className="text-2xl font-semibold tracking-tight">{APP_TITLE}</h1>
 }

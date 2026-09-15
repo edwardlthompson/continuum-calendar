@@ -5,6 +5,7 @@
     android:minHeight="40dp"
     android:minResizeWidth="180dp"
     android:minResizeHeight="40dp"
+    android:previewLayout="@layout/widget_rolling_week"
     android:previewImage="@drawable/img_widget_list_preview"
     android:resizeMode="horizontal|vertical"
     android:targetCellWidth="4"

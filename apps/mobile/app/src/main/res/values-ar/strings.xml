@@ -252,7 +252,7 @@
     <string name="faq_1_text">تُدرج العطلات التي يتم إنشاؤها بهذه الطريقة في تقويم جديد يسمى \"العطلات\". يمكنك الذهاب إلى الإعدادات -&gt; أدر التقاويم، ثم الضغط مطولاً على التقويم المعني وحذفه باختيار أيقونة سلة المهملات.</string>
     <string name="faq_2_title">هل يمكنني مزامنة أحداثي عن طريق تقويم جوجل، أو أى خدمة أخرى تدعم CalDAV؟</string>
     <string name="faq_2_title_extra">ربما حتى مشاركة التقاويم مع أشخاص آخرين؟</string>
-    <string name="faq_2_text">نعم، ما عليك سوى تبديل \"مزامنة CalDAV\" من إعدادات التطبيق واختيار التقاويم التي تريد مزامنتها. ومع ذلك، ستحتاج إلى تطبيق خارجي لإدارة المزامنة بين الجهاز والخوادم. في حال كنت ترغب في مزامنة تقويم جوجل، فإن تطبيق التقويم الرسمي الخاص بهم سيقوم بالمهمة. أما بالنسبة للتقاويم الأخرى، فستحتاج إلى محول مزامنة خارجي، مثل DAVx5 على سبيل المثال.</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="faq_3_title">أرى التنبيه البصرى، ولكن لا أسمع صوتا. ماذا يمكنني أن أفعل؟</string>
     <string name="faq_3_text">ليس فقط عرض التنبيه الفعلي ما يتأثر بشدة بالنظام، ولكن تشغيل الصوت يتأثر بشدة أيضا. إن كنت لا تستطيع سماع أى صوت، جرب الذهاب لإعدادات الهاتف، واضغط على خيار \"الصوت المستخدم في التنبيهات\" وبدّلة لأى اختيار آخر. إن ظل الصوت لا يعمل، تأكد في إعدادات الصوت الخاصة بك، إن لم يكن هذا الصوت تحديدا قد تم كتمه.</string>
     <string name="faq_4_title">هل يدعم التطبيق المناطق الزمنية؟</string>

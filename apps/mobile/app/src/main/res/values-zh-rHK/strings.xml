@@ -243,7 +243,7 @@
     <string name="faq_1_text">以這方式建立的節日，會被新增到一個名為「節日」的新活動類型裡。你可以在「設定」-&gt;「管理活動類型」中，長按該活動類型，然後選擇垃圾桶圖示進行刪除。</string>
     <string name="faq_2_title">我可以透過Google日曆或其它支援CalDAV的服務來同步我的活動嗎\?</string>
     <string name="faq_2_title_extra">甚至可以和其他人共享日曆嗎？</string>
-    <string name="faq_2_text">可以，只要在程式設定中開啟「CalDAV 同步」，並選擇你希望同步的日曆即可。但請注意，你將需要第三方的應用程式來處理裝置與伺服器之間的同步。如果你希望同步 Google 日曆，使用官方的日曆應用程式便可。至於其他日曆，你可能需要第三方同步應用程式，例如DAVx5。</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="faq_3_title">我可以看到視覺提醒，但沒有音效，應該怎麽做？</string>
     <string name="faq_3_text">不僅僅是要顯示實際的提醒，播放音效也會受到系統的影響。如果你聽不到任何聲音，嘗試到應用程式的設定中，點選「提醒用的音訊串流」選項，並更換至其他項目。如果還是無效，請檢查你的聲音設定，確保特定的串流沒有啟用靜音。</string>
     <string name="faq_4_title">此應用程式是否支援時區設定？</string>

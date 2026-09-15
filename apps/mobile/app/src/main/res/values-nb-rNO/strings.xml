@@ -233,7 +233,7 @@
     <string name="faq_1_title">Hvordan kan jeg fjerne off. fridager/merkedager importert via knappen «Legg til off. fridager/merkedager»?</string>
     <string name="faq_1_text">Off. fridager/merkedager opprettet på denne måten settes inn i en ny kalender kalt \"Off. fridager/merkedager\". Gå til Innstillinger -&gt; Behandle kalendere, lang-trykk kalenderen og slett den ved å velge søppelbøtten.</string>
     <string name="faq_2_title">Kan jeg synkronisere hendelsene mine via Google Kalender eller annen tjeneste som støtter CalDAV\?</string>
-    <string name="faq_2_text">Ja, bare slå på «CalDAV-synkronisering» i appinnstillingene og velg kalenderne du vil synkronisere. Du må imidlertid ha en tredjepartsapp som håndterer synkroniseringen mellom enheten og tjenerne. Om du vil synkronisere en Google-kalender, vil Googles offisielle kalenderapp gjøre jobben. For andre kalendere trenger du et tredjeparts synkroniseringsadapter, for eksempel DAVx5.</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="accessibility_next_day">Gå til neste dag</string>
     <string name="system_stream">System</string>
     <string name="alarm_stream">Alarm</string>

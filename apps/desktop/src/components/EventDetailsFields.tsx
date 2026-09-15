@@ -7,16 +7,11 @@ import {
   type MonthlyMode,
   type RepeatFreq,
 } from '@continuum/shared'
+import { useState } from 'react'
 import { DateOnlyField } from './DateTimeLocalField'
+import { listTimeZones } from '../chrome/timeZones'
 
 const COLORS = ['', '#0f6e8c', '#d32f2f', '#f9a825', '#43a047', '#8e24aa', '#039be5']
-
-function timeZones(): string[] {
-  const local = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const supported =
-    typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : [local, 'UTC']
-  return [local, ...supported.filter((z) => z !== local)].slice(0, 80)
-}
 
 export interface EventDetailsValue {
   recurrence?: string[]
@@ -108,20 +103,10 @@ export function EventDetailsFields(props: {
           />
         </label>
       ) : null}
-      <label className="flex flex-col gap-1 text-sm">
-        Time zone
-        <select
-          className="cc-native-field w-full min-w-0 rounded border border-[var(--cc-border)] px-2 py-1.5"
-          value={props.value.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone}
-          onChange={(e) => props.onChange({ ...props.value, timeZone: e.target.value })}
-        >
-          {timeZones().map((z) => (
-            <option key={z} value={z}>
-              {z}
-            </option>
-          ))}
-        </select>
-      </label>
+      <TimeZoneField
+        value={props.value.timeZone}
+        onChange={(timeZone) => props.onChange({ ...props.value, timeZone })}
+      />
       {reminders.map((r, i) => (
         <label key={i} className="flex flex-col gap-1 text-sm">
           Reminder {i + 1} (minutes before, blank to skip)
@@ -179,5 +164,37 @@ export function EventDetailsFields(props: {
         </div>
       </fieldset>
     </>
+  )
+}
+
+function TimeZoneField(props: { value?: string; onChange: (id: string) => void }) {
+  const device = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const current = props.value ?? device
+  const [query, setQuery] = useState('')
+  const zones = listTimeZones({ deviceZone: device, current, query })
+  return (
+    <label className="flex flex-col gap-1 text-sm">
+      Time zone
+      <input
+        type="search"
+        className="cc-native-field w-full min-w-0 rounded border border-[var(--cc-border)] px-2 py-1.5"
+        aria-label="Filter time zones"
+        placeholder="Filter zones"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <select
+        className="cc-native-field w-full min-w-0 rounded border border-[var(--cc-border)] px-2 py-1.5"
+        aria-label="Time zone"
+        value={current}
+        onChange={(e) => props.onChange(e.target.value)}
+      >
+        {zones.map((z) => (
+          <option key={z} value={z}>
+            {z}
+          </option>
+        ))}
+      </select>
+    </label>
   )
 }

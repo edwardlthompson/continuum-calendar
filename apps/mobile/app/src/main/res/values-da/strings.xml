@@ -248,7 +248,7 @@
     <string name="faq_1_text">Helligdage oprettet på den måde indsættes i en ny kalender kaldet \"Helligdage\". Gå til Indstillinger -&gt; Administrer kalendere, hold den pågældende kalender nede, og slet den ved at vælge papirkurven.</string>
     <string name="faq_2_title">Kan jeg synkronisere mine begivenheder via Google Kalender eller en anden tjeneste med CalDAV-understøttelse?</string>
     <string name="faq_2_title_extra">Måske endda dele kalendere med andre?</string>
-    <string name="faq_2_text">Ja, du skal blot slå \"CalDAV-synkronisering\" til og fra i appens indstillinger, og vælge de kalendere, du vil synkronisere. Du skal dog bruge en tredjepartsapp, der håndterer synkroniseringen mellem enheden og serverne. Hvis du vil synkronisere en Google-kalender, vil deres officielle Kalender-app klare opgaven. Til andre kalendere skal du bruge en tredjeparts synkroniseringsadapter, f.eks. DAVx5.</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="faq_3_title">Jeg kan se mine påmindelser, men der er ingen lyd på. Hvad kan jeg gøre ved det\?</string>
     <string name="faq_3_text">Afspilning af påmindelser styres også af systemet. Hvis du ikke hører lyd, så gå til appens indstillinger, tryk på \"Lydstrøm til påmindelser\" og vælg en anden værdi. Tjek også, om lydstrømmen er slået fra i systemets lydindstillinger.</string>
     <string name="faq_4_title">Understøtter appen tidszoner\?</string>

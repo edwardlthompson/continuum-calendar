@@ -311,6 +311,7 @@ class SettingsActivity : SimpleActivity() {
         setupFontSize()
         setupCustomizeWidgetColors()
         setupViewToOpenFromListWidget()
+        setupRollingWeekWidget()
         setupDimEvents()
         setupDimCompletedTasks()
         setupAllowChangingTimeZones()
@@ -1499,6 +1500,15 @@ class SettingsActivity : SimpleActivity() {
                 settingsListWidgetViewToOpen.text = getDefaultViewText()
                 updateWidgets()
             }
+        }
+    }
+
+    private fun setupRollingWeekWidget() = binding.apply {
+        settingsRollingWeekWidget.isChecked = config.rollingWeekWidget
+        settingsRollingWeekWidgetHolder.setOnClickListener {
+            settingsRollingWeekWidget.toggle()
+            config.rollingWeekWidget = settingsRollingWeekWidget.isChecked
+            updateWidgets()
         }
     }
 

@@ -56,6 +56,9 @@ export {
 } from './settingsSync.js'
 export type { PeerReconcileAction } from './settingsSync.js'
 export {
+  collapseEmptyAgendaSections,
+} from './agendaFold.js'
+export {
   buildAgendaSections,
   dayHasTimedEvents,
   dayShouldShowOpen,
