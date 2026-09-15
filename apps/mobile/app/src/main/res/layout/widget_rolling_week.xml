@@ -14,31 +14,31 @@
         android:layout_weight="1"
         android:gravity="center_horizontal"
         android:orientation="vertical">
-        <TextView android:id="@+id/week_label_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="12sp" tools:text="Fri" />
-        <TextView android:id="@+id/week_count_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="16sp" tools:text="2" />
+        <TextView android:id="@+id/week_label_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:textSize="12sp" tools:text="Fri" />
+        <TextView android:id="@+id/week_count_0" style="@style/ContinuumWidgetWeekCount" tools:text="2" />
     </LinearLayout>
     <LinearLayout android:id="@+id/week_col_1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-        <TextView android:id="@+id/week_label_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="12sp" />
-        <TextView android:id="@+id/week_count_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="16sp" />
+        <TextView android:id="@+id/week_label_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:textSize="12sp" />
+        <TextView android:id="@+id/week_count_1" style="@style/ContinuumWidgetWeekCount" />
     </LinearLayout>
     <LinearLayout android:id="@+id/week_col_2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-        <TextView android:id="@+id/week_label_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="12sp" />
-        <TextView android:id="@+id/week_count_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="16sp" />
+        <TextView android:id="@+id/week_label_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:textSize="12sp" />
+        <TextView android:id="@+id/week_count_2" style="@style/ContinuumWidgetWeekCount" />
     </LinearLayout>
     <LinearLayout android:id="@+id/week_col_3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-        <TextView android:id="@+id/week_label_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="12sp" />
-        <TextView android:id="@+id/week_count_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="16sp" />
+        <TextView android:id="@+id/week_label_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:textSize="12sp" />
+        <TextView android:id="@+id/week_count_3" style="@style/ContinuumWidgetWeekCount" />
     </LinearLayout>
     <LinearLayout android:id="@+id/week_col_4" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-        <TextView android:id="@+id/week_label_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="12sp" />
-        <TextView android:id="@+id/week_count_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="16sp" />
+        <TextView android:id="@+id/week_label_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:textSize="12sp" />
+        <TextView android:id="@+id/week_count_4" style="@style/ContinuumWidgetWeekCount" />
     </LinearLayout>
     <LinearLayout android:id="@+id/week_col_5" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-        <TextView android:id="@+id/week_label_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="12sp" />
-        <TextView android:id="@+id/week_count_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="16sp" />
+        <TextView android:id="@+id/week_label_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:textSize="12sp" />
+        <TextView android:id="@+id/week_count_5" style="@style/ContinuumWidgetWeekCount" />
     </LinearLayout>
     <LinearLayout android:id="@+id/week_col_6" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical">
-        <TextView android:id="@+id/week_label_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="12sp" />
-        <TextView android:id="@+id/week_count_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="16sp" />
+        <TextView android:id="@+id/week_label_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:maxLines="1" android:textSize="12sp" />
+        <TextView android:id="@+id/week_count_6" style="@style/ContinuumWidgetWeekCount" />
     </LinearLayout>
 </LinearLayout>

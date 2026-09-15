@@ -33,6 +33,7 @@ object AgendaEmptyDays {
     ): ArrayList<ListItem> {
         if (!showEmptyDays) {
             val withToday = applyTodayPhase(
+                context = context,
                 items = if (redactTitles) redact(items) else items,
                 todayCode = todayCode,
                 nowTs = nowTs,
@@ -86,6 +87,7 @@ object AgendaEmptyDays {
             val dayItems = eventsByDay[code].orEmpty()
             if (isToday) {
                 appendTodayBody(
+                    context = context,
                     out = out,
                     dayItems = dayItems,
                     dayCode = code,
@@ -98,6 +100,7 @@ object AgendaEmptyDays {
                 )
             } else {
                 appendFutureDayBody(
+                    context = context,
                     out = out,
                     dayItems = dayItems,
                     dayCode = code,
@@ -113,6 +116,7 @@ object AgendaEmptyDays {
     }
 
     private fun applyTodayPhase(
+        context: Context,
         items: ArrayList<ListItem>,
         todayCode: String,
         nowTs: Long,
@@ -133,6 +137,7 @@ object AgendaEmptyDays {
                     i++
                 }
                 appendTodayBody(
+                    context = context,
                     out = out,
                     dayItems = dayItems,
                     dayCode = todayCode,
@@ -152,6 +157,7 @@ object AgendaEmptyDays {
     }
 
     private fun appendFutureDayBody(
+        context: Context,
         out: ArrayList<ListItem>,
         dayItems: List<ListItem>,
         dayCode: String,
@@ -162,7 +168,7 @@ object AgendaEmptyDays {
     ) {
         val events = dayItems.filterIsInstance<ListEvent>().filter { it.id > 0L }
         if (events.isEmpty()) {
-            out.add(openEvent(dayStartTs, dayCode, openTitle, openColor, withAllDay = false))
+            out.add(openEvent(context, dayStartTs, dayCode, openTitle, openColor, withAllDay = false))
             return
         }
         dayItems.forEach { item ->
@@ -174,11 +180,12 @@ object AgendaEmptyDays {
         }
         // All-day / special days do not fill the schedule — still show Open.
         if (events.none { !it.isAllDay }) {
-            out.add(openEvent(dayStartTs, dayCode, openTitle, openColor, withAllDay = true))
+            out.add(openEvent(context, dayStartTs, dayCode, openTitle, openColor, withAllDay = true))
         }
     }
 
     private fun appendTodayBody(
+        context: Context,
         out: ArrayList<ListItem>,
         dayItems: List<ListItem>,
         dayCode: String,
@@ -191,8 +198,8 @@ object AgendaEmptyDays {
     ) {
         val events = dayItems.filterIsInstance<ListEvent>().filter { it.id > 0 }
         when (TodayAgendaLogic.phase(events, nowTs, dayCode, workingHoursEnd)) {
-            TodayAgendaPhase.EMPTY -> Unit
-            TodayAgendaPhase.OPEN -> out.add(openEvent(dayStartTs, dayCode, openTitle, openColor, withAllDay = false))
+            TodayAgendaPhase.EMPTY -> out.add(openEvent(context, dayStartTs, dayCode, openTitle, openColor, withAllDay = false))
+            TodayAgendaPhase.OPEN -> out.add(openEvent(context, dayStartTs, dayCode, openTitle, openColor, withAllDay = false))
             TodayAgendaPhase.ACTIVE -> {
                 val past = events.filter { TodayAgendaLogic.eventEnded(it, nowTs) }
                 val future = events.filter { !TodayAgendaLogic.eventEnded(it, nowTs) }
@@ -204,13 +211,14 @@ object AgendaEmptyDays {
                     out.add(if (redactTitles) ev.copy(title = "••••••••") else ev)
                 }
                 if (events.none { !it.isAllDay }) {
-                    out.add(openEvent(dayStartTs, dayCode, openTitle, openColor, withAllDay = true))
+                    out.add(openEvent(context, dayStartTs, dayCode, openTitle, openColor, withAllDay = true))
                 }
             }
         }
     }
 
     private fun openEvent(
+        context: Context,
         dayStartTs: Long,
         code: String,
         openTitle: String,
@@ -222,7 +230,11 @@ object AgendaEmptyDays {
             startTS = dayStartTs,
             endTS = Formatter.getDayEndTS(code),
             title = openTitle,
-            description = if (withAllDay) "No timed events" else "No events",
+            description = if (withAllDay) {
+                context.getString(org.fossify.calendar.R.string.continuum_no_timed_events)
+            } else {
+                context.getString(org.fossify.calendar.R.string.continuum_no_events)
+            },
             isAllDay = true,
             color = openColor,
         )

@@ -92,7 +92,7 @@ function OptionMenu({
         ref={btnRef}
         type="button"
         className={`${fieldClass} min-w-[3.25rem]`}
-        aria-labelledby={labelledBy}
+        aria-labelledby={ariaLabel ? undefined : labelledBy}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -110,7 +110,7 @@ function OptionMenu({
                 role="option"
                 aria-selected={opt === value}
                 className={`block w-full rounded px-2 py-1 text-left text-sm hover:bg-[var(--cc-accent-soft)] ${
-                  opt === value ? 'bg-[var(--cc-accent)] text-white' : ''
+                  opt === value ? 'bg-[var(--cc-accent)] text-[var(--cc-on-accent)]' : ''
                 }`}
                 onClick={() => {
                   onChange(opt)
@@ -131,21 +131,25 @@ export function TimeSelects({
   time,
   onChange,
   labelledBy,
+  name = '',
 }: {
   time: string
   onChange: (next: string) => void
   labelledBy: string
+  name?: string
 }) {
   const [h = '09', m = '00'] = (time || '09:00').split(':')
   const hour = HOUR_OPTIONS.includes(h) ? h : '09'
   const minute = MINUTE_OPTIONS.includes(m) ? m : '00'
+  const hourLabel = name ? `${name} hour` : 'Hour'
+  const minuteLabel = name ? `${name} minute` : 'Minute'
   return (
     <span className="flex min-w-0 items-center gap-1">
       <OptionMenu
         value={hour}
         options={HOUR_OPTIONS}
         labelledBy={labelledBy}
-        ariaLabel="Hour"
+        ariaLabel={hourLabel}
         onChange={(next) => onChange(`${next}:${minute}`)}
       />
       <span aria-hidden>:</span>
@@ -153,7 +157,7 @@ export function TimeSelects({
         value={minute}
         options={MINUTE_OPTIONS}
         labelledBy={labelledBy}
-        ariaLabel="Minute"
+        ariaLabel={minuteLabel}
         onChange={(next) => onChange(`${hour}:${next}`)}
       />
     </span>

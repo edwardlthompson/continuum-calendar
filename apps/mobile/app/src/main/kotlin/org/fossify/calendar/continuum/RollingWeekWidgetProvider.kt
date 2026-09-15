@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.util.TypedValue
 import android.widget.RemoteViews
 import org.fossify.calendar.R
 import org.fossify.calendar.activities.SplashActivity
@@ -38,6 +39,7 @@ class RollingWeekWidgetProvider : AppWidgetProvider() {
             rolling = context.config.rollingWeekWidget,
             isoWeekStart = context.config.firstDayOfWeek,
         )
+        if (codes.isEmpty()) return
         val fromTs = Formatter.getDayStartTS(codes.first())
         val toTs = Formatter.getDayEndTS(codes.last())
         context.eventsHelper.getEvents(fromTs, toTs) { events ->
@@ -49,14 +51,27 @@ class RollingWeekWidgetProvider : AppWidgetProvider() {
             }
             val mgr = AppWidgetManager.getInstance(context) ?: return@getEvents
             val color = context.config.widgetTextColor
+            val todayCode = Formatter.getDayCodeFromDateTime(DateTime.now())
+            val openLabel = context.getString(R.string.continuum_open_day)
             mgr.getAppWidgetIds(ComponentName(context, RollingWeekWidgetProvider::class.java)).forEach { id ->
                 val views = RemoteViews(context.packageName, R.layout.widget_rolling_week)
                 codes.forEachIndexed { i, code ->
                     val dt = Formatter.getLocalDateTimeFromCode(code)
                     views.setTextViewText(LABEL_IDS[i], dt.dayOfWeek().asShortText)
                     views.setTextColor(LABEL_IDS[i], color)
-                    views.setTextViewText(COUNT_IDS[i], counts[i].toString())
+                    val countLabel = RollingWeek.cellLabel(counts[i], openLabel)
+                    views.setTextViewText(COUNT_IDS[i], countLabel)
+                    views.setTextViewTextSize(
+                        COUNT_IDS[i],
+                        TypedValue.COMPLEX_UNIT_SP,
+                        RollingWeek.cellCountSizeSp(countLabel),
+                    )
                     views.setTextColor(COUNT_IDS[i], color)
+                    views.setInt(
+                        COL_IDS[i],
+                        "setBackgroundResource",
+                        if (code == todayCode) R.drawable.widget_week_today else 0,
+                    )
                     val open = (context.getLaunchIntent() ?: Intent(context, SplashActivity::class.java)).apply {
                         putExtra(DAY_CODE, code)
                         putExtra(VIEW_TO_OPEN, DAILY_VIEW)

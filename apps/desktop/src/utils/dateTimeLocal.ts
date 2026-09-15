@@ -4,13 +4,18 @@ export function pad2(n: number): string {
   return String(n).padStart(2, '0')
 }
 
+/** Local `YYYY-MM-DDTHH:mm` from a Date (wall clock, not UTC). */
+export function toLocalDateTimeValue(d: Date): string {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`
+}
+
 /** Local `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm` from an ISO instant or date-only string. */
 export function toLocalInput(iso?: string, allDay?: boolean): string {
   if (!iso) return ''
   if (allDay) return iso.slice(0, 10)
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso.slice(0, 16)
-  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`
+  return toLocalDateTimeValue(d)
 }
 
 export function splitDateTime(value: string): { date: string; time: string } {

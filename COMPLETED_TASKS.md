@@ -2,6 +2,35 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## ADB widget glance (2026-09-14)
+
+- ✅ [ADB] Glance rolling-week widget today/empty (no reboot/wipe)
+
+## Release Please 1.1.2 (2026-09-14)
+
+- ✅ [AGENT] Merge release [#37](https://github.com/edwardlthompson/continuum-calendar/pull/37) (chore(main): release 1.1.2)
+
+## Sprint 6 — Audit leftovers (2026-09-14)
+
+- ✅ [AGENT] `desktop-h1-version` ([spec](docs/features/desktop-h1-version.md))
+- ✅ [AGENT] `desktop-tz-compact` ([spec](docs/features/desktop-tz-compact.md))
+- ✅ [AGENT] `desktop-command-palette` ([spec](docs/features/desktop-command-palette.md))
+- ✅ [AGENT] `desktop-open-illustrations` ([spec](docs/features/desktop-open-illustrations.md))
+- ✅ [AGENT] `android-fossify-debrand` ([spec](docs/features/android-fossify-debrand.md))
+- ✅ [AGENT] `android-faq-locales` ([spec](docs/features/android-faq-locales.md))
+
+## Sprint 5 — Calendar feel (scan and contrast) (2026-09-14)
+
+- ✅ [AGENT] `desktop-a11y-contrast`: on-accent CTAs, h-9 chrome, focus-visible, reduced-motion splash ([docs/features/desktop-a11y-contrast.md](docs/features/desktop-a11y-contrast.md))
+- ✅ [AGENT] `desktop-scan-density`: fold Open days, FC title-only, compact search, quiet sidebar ([docs/features/desktop-scan-density.md](docs/features/desktop-scan-density.md))
+- ✅ [AGENT] `desktop-voice-first-run`: signed-out relabel, copy, menu prune, Saved status ([docs/features/desktop-voice-first-run.md](docs/features/desktop-voice-first-run.md))
+
+## Sprint 4 — Calendar UX feel (2026-09-14)
+
+- ✅ [AGENT] `desktop-grid-fidelity`: persist drag/resize, local slot times, honor 24h, working-hours slot window ([docs/features/desktop-grid-fidelity.md](docs/features/desktop-grid-fidelity.md))
+- ✅ [AGENT] `desktop-chrome-feel`: settings overlay, menu dismiss, replace prompts, editor side sheet, empty-today Open ([docs/features/desktop-chrome-feel.md](docs/features/desktop-chrome-feel.md))
+- ✅ [AGENT] `android-rolling-widget-faq`: widget today/empty, settings toggle, FAQ/privacy/Open strings ([docs/features/android-rolling-widget-faq.md](docs/features/android-rolling-widget-faq.md))
+
 ## Sprint 3 — Release leftovers (2026-09-13)
 
 - ✅ [AGENT] Register Continuum release SHA-1 on the Google Android OAuth client

@@ -1139,6 +1139,21 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/settings_rolling_week_widget_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_rolling_week_widget"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/continuum_rolling_week_widget" />
+
+            </RelativeLayout>
+
             <include
                 android:id="@+id/settings_widgets_divider"
                 layout="@layout/divider" />

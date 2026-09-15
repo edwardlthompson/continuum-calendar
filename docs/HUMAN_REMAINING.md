@@ -45,7 +45,7 @@
 | 5 | Approve F-003 secure token storage (or accept risk for v1) | Soft — approve in chat | 2 min |
 | 6 | Repo harden (Dependabot + branch protection) | Soft for v1 | ~10 min |
 | 7 | Triage Dependabot mediums (F-009) | Soft for v1 | ~15–30 min |
-Agent polish (not HUMAN, not required for GitHub-only v1): Commons About / Fossify suite CTAs still show upstream strings — ask the agent after Release if you want a clean About screen.
+Agent polish (not HUMAN, not required for GitHub-only v1): Commons About / Fossify suite CTAs — Sprint 6 `android-fossify-debrand`. Other-locale FAQ DAVx5 — Sprint 6 `android-faq-locales`.
 
 ---
 

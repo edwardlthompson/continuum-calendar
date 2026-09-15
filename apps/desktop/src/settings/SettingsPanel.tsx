@@ -33,14 +33,20 @@ function SectionBody(props: { id: SettingsCategoryId; form: SettingsFormModel; q
   }
 }
 
-export function SettingsPanel(props: { form: SettingsFormModel }) {
-  const { form } = props
+export function SettingsPanel(props: { form: SettingsFormModel; onClose?: () => void }) {
+  const { form, onClose } = props
   const [openId, setOpenId] = useState<SettingsCategoryId | null>(null)
   const searching = Boolean(normalizeSettingsQuery(form.query))
   const visibleCats = SETTINGS_CATEGORIES.filter((c) => categoryVisible(c, form.query))
 
   return (
-    <aside className="w-80 shrink-0 space-y-3 overflow-auto rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-3 text-sm">
+    <aside
+      className="flex h-full w-full max-w-md shrink-0 flex-col space-y-3 overflow-auto rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-3 text-sm shadow-xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cc-settings-title"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="flex items-center gap-2">
         {openId && !searching ? (
           <button
@@ -52,11 +58,21 @@ export function SettingsPanel(props: { form: SettingsFormModel }) {
             ←
           </button>
         ) : null}
-        <h2 className="font-semibold">
+        <h2 id="cc-settings-title" className="font-semibold">
           {openId && !searching
             ? (SETTINGS_CATEGORIES.find((c) => c.id === openId)?.title ?? 'Settings')
             : 'Settings'}
         </h2>
+        {onClose ? (
+          <button
+            type="button"
+            className="ml-auto rounded px-2 py-0.5 text-sm text-[var(--cc-muted)]"
+            aria-label="Close settings"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        ) : null}
       </div>
       <input
         type="search"

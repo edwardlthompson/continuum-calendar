@@ -54,7 +54,7 @@
     <string name="reminder_stream">अनुस्मारक द्वारा उपयोग की जाने वाली ऑडियो स्ट्रीम</string>
     <string name="next_full_hour">अगला पूरा घंटा</string>
     <string name="refresh_caldav_calendars">CalDAV कैलेंडर ताज़ा करें</string>
-    <string name="faq_2_text">हां, बस ऐप सेटिंग में \"CalDAV सिंक\" टॉगल करें और उन कैलेंडर का चयन करें जिन्हें आप सिंक करना चाहते हैं। हालाँकि, आपको डिवाइस और सर्वर के बीच सिंक्रोनाइज़ेशन को संभालने वाले किसी तीसरे पक्ष के ऐप की आवश्यकता होगी। यदि आप Google कैलेंडर को सिंक्रनाइज़ करना चाहते हैं, तो उनका आधिकारिक कैलेंडर ऐप यह काम करेगा। अन्य कैलेंडर के लिए आपको तृतीय पक्ष सिंक एडाप्टर की आवश्यकता होगी, उदाहरण के लिए DAVx5।</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="editing_calendar_failed">कैलेंडर का संपादन विफल रहा</string>
     <string name="syncing">सिंक हो रहा है…</string>
     <string name="sample_description_1">बुरा दिन</string>

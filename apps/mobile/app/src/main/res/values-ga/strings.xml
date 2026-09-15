@@ -256,7 +256,7 @@
     <string name="accessibility_previous_day">Téigh go dtí an lá roimhe sin</string>
     <string name="accessibility_next_day">Téigh go dtí an chéad lá eile</string>
     <string name="faq_1_title">Conas is féidir liom na laethanta saoire a allmhairítear tríd an gcnaipe \"Cuir laethanta saoire leis\" a bhaint?</string>
-    <string name="faq_2_text">Sea, níl le déanamh ach \"Sioncrónú CalDAV\" a athrú sna socruithe aip agus na féilirí is mian leat a shioncrónú a roghnú. Mar sin féin, beidh aip tríú páirtí ag teastáil uait a láimhseálann an sioncrónú idir an gléas agus na freastalaithe. Más mian leat féilire Google a shioncrónú, déanfaidh a n-aip oifigiúil Féilire an jab. I gcás féilirí eile, beidh oiriúntóir sioncrónaithe tríú páirtí ag teastáil uait, mar shampla DAVx5.</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="faq_4_text">Is ea, a dhéanann sé. De réir réamhshocraithe cruthaítear gach imeacht i do chrios ama reatha. Más mian leat crios ama imeachta a athrú, beidh ort an roghnóir crios ama a chumasú ag socruithe na haipe ar dtús, ansin é a athrú ag an scáileán Sonraí Imeachta. Tá sé díchumasaithe de réir réamhshocraithe mar ní bheidh sé de dhíth ar fhormhór na ndaoine.</string>
     <string name="faq_5_title">Ní thaispeánann an aip aon fhógraí, cén fáth?</string>
     <string name="faq_6_title">Conas is féidir liom féilire atá ann cheana a mhodhnú nó a scriosadh?</string>

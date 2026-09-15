@@ -1,9 +1,11 @@
 import { isBirthdayCalendarEntry } from '@continuum/shared'
-import { isGoogleClientIdFromEnv, isGoogleConfigured } from '../auth/googleAuth'
+import { isGoogleConfigured } from '../auth/googleAuth'
 import { queueGoogleTasksScope } from '../services/googleTasksMap'
 import { humanizeOAuthFailure, isInsufficientDriveScope } from '../auth/oauthErrors'
 import { getSettingsSyncError } from '../services/settingsSync'
 import { saveCalendars } from '../data/localStore'
+import { VENMO_DONATE_URL } from '../about/donate'
+import { openExternal } from '../about/openExternal'
 import { textMatches } from './settingsCatalog'
 import { SettingsRow } from './settingsUi'
 import type { SettingsSectionProps } from './settingsTypes'
@@ -11,7 +13,6 @@ import type { SettingsSectionProps } from './settingsTypes'
 export function SettingsAccount({ form, query }: SettingsSectionProps) {
   const show = (...labels: string[]) => textMatches(query, ...labels)
   const googleReady = isGoogleConfigured()
-  const envLocked = isGoogleClientIdFromEnv()
   const syncError = getSettingsSyncError()
   const showSyncError = Boolean(syncError && !isInsufficientDriveScope(syncError))
 
@@ -27,32 +28,21 @@ export function SettingsAccount({ form, query }: SettingsSectionProps) {
       </p>
       {form.needsDriveReconnect ? (
         <p className="text-xs text-[var(--cc-muted)]">
-          Phone settings sync needs Google Drive App Data. Sign in again and approve Drive (app data
-          only) — Calendar stays connected.
+          Sign in again so settings can sync to your phone.
         </p>
       ) : showSyncError ? (
         <p className="text-xs text-red-500">
           Settings sync: {humanizeOAuthFailure(syncError ?? '')}
         </p>
       ) : form.signedIn ? (
-        <p className="text-xs text-[var(--cc-muted)]">
-          Peer remote: Continuum settings sync both ways with Android (Drive App Data)
-        </p>
+        <p className="text-xs text-[var(--cc-muted)]">Settings also sync to your phone</p>
       ) : (
         <p className="text-xs text-[var(--cc-muted)]">
-          Sign in to publish/pull Continuum settings with Android
+          Sign in to use Google Calendar and sync with your phone
         </p>
       )}
       {!googleReady ? (
-        <p className="text-xs text-[var(--cc-muted)]">
-          This Continuum build is missing OAuth packaging. Maintainers bake Continuum’s Desktop Client
-          ID with <code className="text-[0.7rem]">scripts/set-desktop-google-client-id.py</code> then
-          rebuild — see docs/GOOGLE_API_SETUP.md. End users never paste a Client ID.
-        </p>
-      ) : envLocked ? (
-        <p className="text-xs text-[var(--cc-muted)]">
-          Google Sign-in uses Continuum’s embedded Desktop OAuth client (system browser + loopback).
-        </p>
+        <p className="text-xs text-[var(--cc-muted)]">Sign-in is not available in this build.</p>
       ) : null}
       {form.authStatus !== 'signed-in' || form.needsDriveReconnect ? (
         <>
@@ -60,15 +50,10 @@ export function SettingsAccount({ form, query }: SettingsSectionProps) {
             <p className="text-sm font-medium text-[var(--cc-brand-now)]">
               Sign in again. Edits you already made are still on this computer.
             </p>
-          ) : form.needsDriveReconnect ? null : (
-            <p className="text-xs text-[var(--cc-muted)]">
-              Google OAuth is in Testing: if sign-in shows “unknown error” or access denied, add this
-              Gmail as a Test user (Google Cloud → Audience), then try again.
-            </p>
-          )}
+          ) : null}
           <button
             type="button"
-            className="w-full rounded bg-[var(--cc-accent)] px-2 py-1 text-white disabled:opacity-60"
+            className="cc-btn-accent w-full disabled:opacity-60"
             aria-label={
               form.authStatus === 'needs-reauth' || form.needsDriveReconnect
                 ? 'Sign in again'
@@ -78,7 +63,7 @@ export function SettingsAccount({ form, query }: SettingsSectionProps) {
             onClick={() => form.onSignIn()}
           >
             {form.signInPending
-              ? 'Waiting for browser…'
+              ? 'Opening Google…'
               : form.needsDriveReconnect
                 ? 'Enable phone settings sync'
                 : form.authStatus === 'needs-reauth'
@@ -90,7 +75,7 @@ export function SettingsAccount({ form, query }: SettingsSectionProps) {
       {show('Use Google Calendar', 'Google', 'privacy') ? (
         <SettingsRow
           label="Use Google Calendar"
-          title="When off, Continuum uses local calendars only (still peer-syncs via Drive App Data)."
+          title="When off, Continuum uses local calendars only."
         >
           <input
             type="checkbox"
@@ -100,16 +85,13 @@ export function SettingsAccount({ form, query }: SettingsSectionProps) {
         </SettingsRow>
       ) : null}
       {form.signedIn && show('tasks', 'Google') ? (
-        <SettingsRow
-          label="Google Tasks"
-          title="Optional. Default Sign in stays Calendar + Drive (KB-028). Connect Tasks separately."
-        >
+        <SettingsRow label="Google Tasks" title="Optional. Connect Tasks separately from Calendar.">
           {form.tasksConnected ? (
             <span className="text-xs text-[var(--cc-muted)]">Connected</span>
           ) : (
             <button
               type="button"
-              className="rounded bg-[var(--cc-accent)] px-2 py-1 text-white disabled:opacity-60"
+              className="cc-btn-accent disabled:opacity-60"
               disabled={Boolean(form.signInPending)}
               onClick={() => {
                 queueGoogleTasksScope()
@@ -141,6 +123,15 @@ export function SettingsAccount({ form, query }: SettingsSectionProps) {
           />
         </SettingsRow>
       ) : null}
+      <p>
+        <button
+          type="button"
+          className="text-sm text-[var(--cc-accent)] underline-offset-2 hover:underline"
+          onClick={() => void openExternal(VENMO_DONATE_URL)}
+        >
+          Donate via Venmo
+        </button>
+      </p>
     </div>
   )
 }

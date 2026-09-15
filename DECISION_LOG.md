@@ -17,6 +17,20 @@
 
 ## Entries
 
+### 2026-09-14 — ADB rolling-week widget glance
+- **Status:** Accepted
+- **Context:** Last open BUILD_PLAN row was `[ADB]` glance today/empty on a phone (no reboot/wipe). Installed release 1.0.0 still showed `0` for empty days.
+- **Decision:** Sideload current FOSS release APK with `adb install -r` (no uninstall/wipe). Place the rolling-week widget on OP13 Launcher3. Confirm today highlight, **Open** vs count, and Settings → Widgets `Rolling week widget starts today`. Keep Launcher3 as HOME; do not set Hermes as default.
+- **Alternatives considered:** Glance the Sept 13 APK as-is (rejected — still printed `0`). Emulator (skipped — no `/dev/kvm`).
+- **Consequences:** Widget remains on OP13 home. Local Tuesday event `GlanceTue` was created for the busy-day check. `Open` wraps to two lines on a 4×1 strip. Sprint 4–6 source is still uncommitted.
+
+### 2026-09-14 — Calendar UX feel (Sprint 4)
+- **Status:** Accepted
+- **Context:** Industry calendars persist grid drag, keep the calendar visible under chrome, and distinguish empty vs busy days. Continuum had `window.prompt`, a full-page editor, and a widget that looked like a count strip.
+- **Decision:** Persist FullCalendar drop/resize via `EventSaveResult` + This/Following/All for series. Settings as overlay, editor as side sheet, in-app dialogs only. Rolling-week widget: today highlight, Open vs count, Settings toggle, English FAQ via Connect Google, About privacy → `docs/PRIVACY.md`. No GCal-style Day view.
+- **Alternatives considered:** Day view (rejected — product is rolling week). Keep `window.prompt` (rejected — blocks chrome). Official Google Calendar / DAVx5 FAQ (rejected — Connect Google is the path).
+- **Consequences:** `[ADB]` must glance the widget on a device. Other-locale FAQ strings still mention DAVx5 until translated. Recurring drag uses the scope dialog.
+
 ### 2026-09-13 — Automate post-1.1.1 leftovers
 - **Status:** Accepted
 - **Context:** Three leftovers after `/push`: Google Android OAuth SHA-1, off-box keystore copy, Windows EXE rebuilt to product 1.0.0.

@@ -16,7 +16,7 @@
     "rename:nsis": "python3 ./scripts/rename-nsis.py",
     "install:local": "node ./scripts/install-local.js",
     "rename:deb": "bash ./scripts/rename-deb.sh",
-        "test": "node --experimental-strip-types --test src/auth/tokenStore.test.ts src/auth/oauthErrors.test.ts src/services/caldavParse.test.ts src/services/icsSubscribe.test.ts src/about/productUpdate.test.ts src/about/githubRelease.test.ts src/about/openExternal.test.ts src/services/locationSuggest.test.ts src/services/holidayPacks.test.ts src/services/windowBehavior.test.ts src/services/loginAutostart.test.ts src/services/dayBadge.test.ts src/hooks/desktopHotkeys.test.ts src/settings/settingsCatalog.test.ts src/utils/dateTimeLocal.test.ts src/services/googleSeriesEdit.test.ts src/crash-capture/pendingCrash.test.ts src/privacy-report/sanitize.test.ts src/github-feedback/issueFormUrl.test.ts src/services/googleCalendarSyncIds.test.ts src/services/googleTasks.test.ts"
+        "test": "node --experimental-strip-types --test src/auth/tokenStore.test.ts src/auth/oauthErrors.test.ts src/services/caldavParse.test.ts src/services/icsSubscribe.test.ts src/about/productUpdate.test.ts src/about/githubRelease.test.ts src/about/openExternal.test.ts src/services/locationSuggest.test.ts src/services/holidayPacks.test.ts src/services/windowBehavior.test.ts src/services/loginAutostart.test.ts src/services/dayBadge.test.ts src/hooks/desktopHotkeys.test.ts src/settings/settingsCatalog.test.ts src/utils/dateTimeLocal.test.ts src/grid/gridMove.test.ts src/chrome/promptParse.test.ts src/chrome/contrast.test.ts src/chrome/calendarLabel.test.ts src/chrome/timeZones.test.ts src/chrome/commandPalette.test.ts src/components/AppTitle.test.ts src/illustrations/marks.test.ts src/services/googleSeriesEdit.test.ts src/crash-capture/pendingCrash.test.ts src/privacy-report/sanitize.test.ts src/github-feedback/issueFormUrl.test.ts src/services/googleCalendarSyncIds.test.ts src/services/googleTasks.test.ts"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.21",
@@ -27,13 +27,13 @@
     "@fullcalendar/timegrid": "^6.1.21",
     "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-autostart": "^2.5.1",
-    "@tauri-apps/plugin-opener": "^2.5.4",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "@tauri-apps/plugin-opener": "^2.5.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "optionalDependencies": {
-    "@oxlint/binding-linux-x64-gnu": "^1.78.0",
-    "@rolldown/binding-linux-x64-gnu": "^1.2.3",
+    "@oxlint/binding-linux-x64-gnu": "^1.83.0",
+    "@rolldown/binding-linux-x64-gnu": "^1.2.8",
     "@tailwindcss/oxide-linux-x64-gnu": "^4.3.3",
     "@tauri-apps/cli-linux-x64-gnu": "^2.11.4",
     "lightningcss-linux-x64-gnu": "^1.33.0"
@@ -41,13 +41,13 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2.11.4",
-    "@types/node": "^24.13.3",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.4",
-    "oxlint": "^1.75.0",
+    "@types/node": "^24.13.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.83.0",
     "tailwindcss": "^4.3.3",
-    "typescript": "~6.0.2",
-    "vite": "^8.2.0"
+    "typescript": "~6.0.3",
+    "vite": "^8.3.0"
   }
 }

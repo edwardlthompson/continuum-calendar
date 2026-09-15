@@ -251,7 +251,7 @@
     <string name="faq_6_text">Fareblas ambaŭ en Aplikaĵaj agordoj -&gt; Administri kalendaron. Nur alklaku la deziratan kalendaron por ŝanĝi la etikedon kaj koloron, aŭ longe premu ĝin kaj uzu la rubujon en la supra menuo por forigi ĝin.</string>
     <string name="accessibility_previous_day">Iri al la antaŭa tago</string>
     <string name="accessibility_next_day">Iri al la sekva tago</string>
-    <string name="faq_2_text">Jes, simple aktivigu \"Sinkronigado de CalDAV\" en la aplikaĵaj agordoj kaj elektu la kalendarojn kiujn vi volas sinkronigi. Tamen, vi bezonos eksteran aplikaĵon kiu traktos la sinkronigadon inter la aparato kaj la serviloj. Se vi volas sinkronigi kalendaron de Google, la oficiala aplikaĵo Google Calendar sufiĉos. Por aliaj, necesos ekstera sinkroniga adaptilo kiel DAVx5.</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <plurals name="within_the_next_weeks">
         <item quantity="one">Ene de la sekva %d semajno</item>
         <item quantity="other">Ene de la sekvaj %d semajnoj</item>

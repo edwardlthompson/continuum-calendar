@@ -4,45 +4,21 @@
 **Remaining:** AGENT 0 · AUTO 0 · HUMAN 0 · ADB 0 · **0 open**
 <!-- /remaining-tally -->
 
-> Active board. Finished work: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md) · Roadmap: [`ROADMAP.md`](ROADMAP.md) · Ship checklist: [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md)
+Finished: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md) · Ship: [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md) · Backlog: [`HUMAN_BACKLOG.md`](HUMAN_BACKLOG.md)
 
-| Label | Owner |
-|-------|--------|
-| `[AGENT]` | Cursor Agent (code / docs / CI) |
-| `[HUMAN]` | You (OAuth, legal, releases, product calls) |
-| `[ADB]` | You + Android device/emulator |
-| `[AUTO]` | GitHub Actions / Dependabot (Monday crons cover most of this) |
-Status: 🔲 open · ✅ done (archive) · ❌ blocked
+`[AGENT]` code · `[HUMAN]` you · `[ADB]` device · `[AUTO]` CI · 🔲 open · ✅ archive · ❌ blocked
 
----
+## Do now
 
-## HUMAN / ADB (do these)
+Board is empty. Next: commit/push Sprint 4–6 if you want it on GitHub (`v1.1.2` does not include that work).
 
-Paste-ready steps: [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md)
+## AUTO
 
-Ship leftovers from v1.1.1 are archived. Active board is empty.
-
-## AUTO (GitHub — do not duplicate on this board)
-
-Monday crons already cover health, security, Scorecard, CodeQL, stale, and template-upgrade simulation:
-
-- `.github/workflows/weekly-health-check.yml` (`0 7 * * 1`)
-- `.github/workflows/security.yml` / `codeql.yml` / `scorecard.yml` / `stale.yml`
-
-Dependabot + auto-merge: `.github/dependabot.yml`, `dependabot-automerge.yml`.
-Known deferred: medium `glib` in desktop `Cargo.lock` (do not bump to GTK4).
-
----
-
-## Ongoing Maintenance
-
-Not a checklist. GitHub Monday cron already runs CI wait, security triage, template-gap sync, radar, `update-deps` dry-run, Dependabot leftover list, open-PR BUILD_PLAN sync, and latest-release SBOM.
-
----
+Monday crons + Dependabot. Deferred: `glib` in desktop `Cargo.lock` (stay off GTK4).
 
 ## Archive
 
-Finished work: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md).
+[`COMPLETED_TASKS.md`](COMPLETED_TASKS.md)
 
 ### Open PRs (synced)
 

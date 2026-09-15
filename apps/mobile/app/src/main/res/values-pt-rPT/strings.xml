@@ -231,7 +231,7 @@
     <string name="status_free">Livre</string>
     <string name="status_busy">Ocupado</string>
     <string name="fetching_event_failed">Falha ao obter o evento %s</string>
-    <string name="faq_2_text">Sim, basta ativar \"Sincronização CalDAV \" nas definições da aplicação e selecionar os calendários que quer sincronizar. No entanto, será necessária outra aplicação para sincronizar o dispositivo com os servidores. Para sincronizar um calendário Google, pode usar a sua aplicação oficial. Para outros calendários, precisará de um adaptador de sincronização de terceiros como, por exemplo, DAVx5.</string>
+    <string name="faq_2_text">Yes. Use Settings → Connect Google calendars to sign in with the Google account on this phone. Continuum syncs those calendars without the official Google Calendar app. For other CalDAV servers, add the account in Continuum settings. Sharing a calendar is done in Google Calendar on the web, then Connect Google again so Continuum can see it.</string>
     <string name="widget_list">Lista de eventos</string>
     <string name="change_view">Mudar vista</string>
     <string name="daily_view">Vista diária</string>

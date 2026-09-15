@@ -20,6 +20,9 @@
   --cc-brand-open: #0f6e8c; /* empty-day “Open” — keep in lockstep with CONTINUUM_OPEN_DAY_COLOR */
   --cc-brand-now: #d32f2f; /* agenda “now” bar */
   --cc-brand-on-accent: #ffffff;
+  --cc-warn: #facc15;
+  --cc-on-warn: #1c1917;
+  --cc-on-accent: var(--cc-brand-on-accent);
 
   /* Light theme surfaces */
   --cc-bg: #f4f7fb;
@@ -51,6 +54,7 @@
   --cc-text: #e8eef8;
   --cc-muted: #9aabbf;
   --cc-accent: var(--cc-brand-teal-bright);
+  --cc-on-accent: #0b1220;
   --cc-accent-soft: #163447;
   --cc-border: #243044;
   --cc-grid: #1a2436;

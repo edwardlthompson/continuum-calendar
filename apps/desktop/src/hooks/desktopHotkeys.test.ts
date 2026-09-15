@@ -5,6 +5,7 @@ import { DESKTOP_HOTKEY_CATALOG, hotkeyTitle } from './desktopHotkeys.ts'
 test('hotkey catalog lists core navigation shortcuts', () => {
   assert.ok(DESKTOP_HOTKEY_CATALOG.length >= 8)
   assert.ok(DESKTOP_HOTKEY_CATALOG.some((e) => e.label === 'Today' && e.hint === 'T'))
+  assert.ok(DESKTOP_HOTKEY_CATALOG.some((e) => e.label === 'Command palette'))
 })
 
 test('hotkeyTitle formats tooltip copy', () => {

@@ -74,7 +74,7 @@ function DateCalendar({
               key={cell.iso}
               type="button"
               className={`rounded py-1 text-sm hover:bg-[var(--cc-accent-soft)] ${
-                cell.iso === parsed ? 'bg-[var(--cc-accent)] text-white' : ''
+                cell.iso === parsed ? 'bg-[var(--cc-accent)] text-[var(--cc-on-accent)]' : ''
               }`}
               onClick={() => onPick(cell.iso)}
             >
@@ -129,7 +129,7 @@ export function DateOnlyField({
         autoComplete="off"
         spellCheck={false}
         placeholder="YYYY-MM-DD"
-        className={`${fieldClass} w-full`}
+        className={`${fieldClass} w-full min-w-[11ch] tabular-nums`}
         aria-labelledby={labelledBy}
         aria-label={ariaLabel}
         required={required}
@@ -200,6 +200,7 @@ export function DateTimeLocalField({
             time={time}
             onChange={(nextTime) => onChange(joinDateTime(date, nextTime, false))}
             labelledBy={labelId}
+            name={label}
           />
         )}
       </span>
@@ -222,7 +223,7 @@ export function TimeOnlyField({
       <span id={labelId} className="sr-only">
         {ariaLabel}
       </span>
-      <TimeSelects time={value.slice(0, 5) || '09:00'} onChange={onChange} labelledBy={labelId} />
+      <TimeSelects time={value.slice(0, 5) || '09:00'} onChange={onChange} labelledBy={labelId} name={ariaLabel} />
     </span>
   )
 }

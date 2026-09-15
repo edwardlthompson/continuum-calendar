@@ -48,7 +48,7 @@ class ContinuumAboutActivity : SimpleActivity() {
             launchViewIntent(ContinuumAboutLinks.DONATION_URL)
         }
         binding.aboutPrivacyHolder.setOnClickListener {
-            launchViewIntent("https://github.com/edwardlthompson/continuum-calendar")
+            launchViewIntent(ContinuumAboutLinks.PRIVACY_URL)
         }
         binding.aboutLicensesHolder.setOnClickListener { launchLicenses() }
     }

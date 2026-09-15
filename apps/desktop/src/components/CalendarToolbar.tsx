@@ -4,6 +4,13 @@ import { DateOnlyField } from './DateTimeLocalField'
 
 export type MainView = 'agenda' | 'rolling' | 'month' | 'year'
 
+const VIEW_SUBTITLE: Record<MainView, string> = {
+  agenda: 'Agenda',
+  rolling: 'Week from today',
+  month: 'Month',
+  year: 'Year',
+}
+
 export function CalendarToolbar(props: {
   view: MainView
   onView: (view: MainView) => void
@@ -18,7 +25,7 @@ export function CalendarToolbar(props: {
   const btn = (id: MainView, label: string, hint: string) => (
     <button
       type="button"
-      className={`rounded px-2 py-1 text-sm ${props.view === id ? 'bg-[var(--cc-accent)] text-white' : 'border border-[var(--cc-border)]'}`}
+      className={`cc-btn rounded text-sm ${props.view === id ? 'bg-[var(--cc-accent)] text-[var(--cc-on-accent)]' : 'border border-[var(--cc-border)]'}`}
       aria-pressed={props.view === id}
       title={hotkeyTitle(label, hint)}
       onClick={() => props.onView(id)}
@@ -28,13 +35,14 @@ export function CalendarToolbar(props: {
   )
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-2">
+      <span className="text-sm text-[var(--cc-muted)]">{VIEW_SUBTITLE[props.view]}</span>
       {btn('agenda', 'Agenda', '1')}
       {btn('rolling', 'Week', '2')}
       {btn('month', 'Month', '3')}
       {btn('year', 'Year', '4')}
       <button
         type="button"
-        className="rounded border border-[var(--cc-border)] px-2 py-1 text-sm hover:bg-[var(--cc-accent-soft)]"
+        className="cc-btn rounded border border-[var(--cc-border)] text-sm hover:bg-[var(--cc-accent-soft)]"
         aria-label="Go to today"
         title={hotkeyTitle('Today', 'T')}
         onClick={props.onToday}
@@ -44,20 +52,20 @@ export function CalendarToolbar(props: {
       <input
         ref={props.searchRef}
         type="search"
-        className="cc-native-field min-w-0 flex-1 rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
-        placeholder="Search events (/)"
+        className="cc-native-field min-w-0 max-w-xs rounded border border-[var(--cc-border)] px-2 py-1 text-sm"
+        placeholder="Search"
         value={props.query}
         onChange={(e) => props.onQuery(e.target.value)}
         aria-label="Search events"
         title={hotkeyTitle('Search events', '/ or F')}
       />
-      <div className="flex items-center gap-1 text-sm text-[var(--cc-muted)]" title={hotkeyTitle('Jump to date', 'G')}>
-        Jump
+      <div className="flex items-center gap-1 text-sm text-[var(--cc-muted)]" title={hotkeyTitle('Go to date', 'G')}>
+        Go to
         <DateOnlyField
           value={props.jumpDate}
           onChange={props.onJumpDate}
           firstDayOfWeek={props.firstDayOfWeek}
-          ariaLabel="Jump to date"
+          ariaLabel="Go to date"
         />
       </div>
     </div>

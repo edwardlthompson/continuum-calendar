@@ -12,7 +12,8 @@ export const DESKTOP_HOTKEY_CATALOG: DesktopHotkeyEntry[] = [
   { label: 'Month view', hint: '3' },
   { label: 'Year view', hint: '4' },
   { label: 'Search events', hint: '/ or F' },
-  { label: 'Jump to date', hint: 'G' },
+  { label: 'Go to date', hint: 'G' },
+  { label: 'Command palette', hint: 'Ctrl+K' },
 ]
 
 export function hotkeyTitle(label: string, hint: string): string {

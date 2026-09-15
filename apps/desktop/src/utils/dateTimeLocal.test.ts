@@ -7,6 +7,7 @@ import {
   monthCells,
   shiftMonth,
   splitDateTime,
+  toLocalDateTimeValue,
   toLocalInput,
   weekdayLabels,
 } from './dateTimeLocal.ts'
@@ -62,4 +63,14 @@ test('toLocalInput formats a known instant in local zone without throwing', () =
   const v = toLocalInput('2026-09-10T18:30:00.000Z', false)
   assert.match(v, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)
   assert.equal(toLocalInput('2026-09-10', true), '2026-09-10')
+})
+
+test('toLocalDateTimeValue uses wall time not UTC slice', () => {
+  const d = new Date(2026, 8, 14, 9, 0, 0)
+  const local = toLocalDateTimeValue(d)
+  const utcSlice = d.toISOString().slice(0, 16)
+  assert.equal(local, '2026-09-14T09:00')
+  if (d.getTimezoneOffset() !== 0) {
+    assert.notEqual(local, utcSlice)
+  }
 })

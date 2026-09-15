@@ -326,7 +326,7 @@ function parseTokenJson(text: string): GoogleTokenJson {
  */
 export async function signInWithGoogle(): Promise<'pending-redirect' | GoogleOAuthTokens> {
   if (!isGoogleConfigured()) {
-    throw new Error('Missing VITE_GOOGLE_CLIENT_ID — see docs/GOOGLE_API_SETUP.md')
+    throw new Error('Missing VITE_GOOGLE_CLIENT_ID')
   }
 
   if (await isTauri()) {
