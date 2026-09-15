@@ -24,6 +24,9 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: android-actions/setup-android@v4
+        with:
+          # Default "tools platform-tools" fails: Google removed the legacy tools package.
+          packages: platform-tools
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses
       - name: Decode release keystore
