@@ -15,6 +15,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **desktop:** location map preview (OSM) and OpenStreetMap / Google Maps / Apple Maps chooser
 * **android:** show-on-map uses the system maps/navigation chooser (`Intent.createChooser`)
 
+## [1.3.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.2.0...v1.3.0) (2026-10-06)
+
+
+### Added
+
+* **desktop:** event view card, map chooser, settings calendars ([8f76ab4](https://github.com/edwardlthompson/continuum-calendar/commit/8f76ab4dd2dfa305008c20d3804dd4bc2759e6e0))
+
+
+### Changed
+
+* **deps-dev:** Bump compression from 1.8.1 to 1.8.2 in /examples/web ([#51](https://github.com/edwardlthompson/continuum-calendar/issues/51)) ([c7c90a7](https://github.com/edwardlthompson/continuum-calendar/commit/c7c90a7aa2e444198e6e83e398601945b4de9b74))
+* **deps-dev:** Bump proxy-addr from 2.0.7 to 2.0.8 in /examples/web ([#53](https://github.com/edwardlthompson/continuum-calendar/issues/53)) ([1d9efba](https://github.com/edwardlthompson/continuum-calendar/commit/1d9efbaaf6f5e649b24b3017447ccff3b48fe135))
+* **deps-dev:** Bump source-map-js from 1.2.1 to 1.2.2 ([#50](https://github.com/edwardlthompson/continuum-calendar/issues/50)) ([c4e0a8c](https://github.com/edwardlthompson/continuum-calendar/commit/c4e0a8c5570feb24b7cf0da9ea047ef8055f0327))
+* **deps-dev:** Bump source-map-js from 1.2.1 to 1.2.2 in /examples/web ([#55](https://github.com/edwardlthompson/continuum-calendar/issues/55)) ([ce8b9be](https://github.com/edwardlthompson/continuum-calendar/commit/ce8b9be742c39f7cdb9395b5d29e82aa0d7894fb))
+* **deps-dev:** Bump undici from 7.29.0 to 7.30.0 in /examples/web ([#54](https://github.com/edwardlthompson/continuum-calendar/issues/54)) ([b108c96](https://github.com/edwardlthompson/continuum-calendar/commit/b108c96c2dbb0fbb9b39076d820229afbd33eea7))
+* **deps:** Bump rubyzip from 2.4.1 to 3.4.0 in /apps/mobile ([#45](https://github.com/edwardlthompson/continuum-calendar/issues/45)) ([6b4bd0e](https://github.com/edwardlthompson/continuum-calendar/commit/6b4bd0e9065ef3feb780e02d2b58a47c230d224d))
+
+
+### Documentation
+
+* record /ship event view and maps chooser milestone ([ce75f1f](https://github.com/edwardlthompson/continuum-calendar/commit/ce75f1f31c79b657e910476b2136207d0201952d))
+* record v1.2.0 ship and Android SDK tools failure ([3f5c641](https://github.com/edwardlthompson/continuum-calendar/commit/3f5c6410c286878b44b71293ad083bd90a20fa38))
+
 ## [1.2.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.1.2...v1.2.0) (2026-09-15)
 
 

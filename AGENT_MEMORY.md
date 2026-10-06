@@ -74,5 +74,5 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ## Template Provenance
 
 - **Source template:** `edwardlthompson/agent-project-bootstrap`
-- **Template version:** `1.2.0` (see `.template-version`; parent template catch-up is v1.4.0)
+- **Template version:** `1.3.0` (see `.template-version`; parent template catch-up is v1.4.0)
 - **Last update check:** See `.template-update.json`
