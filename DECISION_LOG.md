@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-10-06 — /ship event view + maps chooser
+- **Status:** Accepted
+- **Context:** Desktop needed view-vs-edit for events, clickable description links (including Google HTML anchors), and a maps app chooser; Android needed the system maps picker.
+- **Decision:** EventDetailCard + pencil → EventEditor; calendars list in Settings → Calendar & views; OSM/Google/Apple chooser on desktop; `Intent.createChooser` for Android `geo:` intents. Merged Dependabot rubyzip 3.4.0 (#45) to clear High Trivy/Dependabot before push.
+- **Alternatives considered:** Always-open Google Maps from Map button (rejected — user asked for OSM/Google/Apple choice). Embed Google Maps SDK (rejected — FOSS path).
+- **Consequences:** Release Please will cut the next tag from `feat(desktop)` Conventional Commit. Local tray WIP remains unstaged.
+
 ### 2026-09-15 — /ship v1.2.0
 - **Status:** Accepted
 - **Context:** `/ship` after Sprint 4–6. Required CodeQL and Android CI failed on `android-actions/setup-android@v4` because Google removed the legacy SDK `tools` package (`Failed to find package 'tools'`).
