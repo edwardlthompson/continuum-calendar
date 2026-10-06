@@ -29,6 +29,7 @@
     <string name="event_updated">Event updated successfully</string>
     <string name="filter_events_by_type">Filter events by calendar</string>
     <string name="please_fill_location">Please fill in a location to be shown on a map</string>
+    <string name="open_location_with">Open location with</string>
     <string name="public_event_notification_text">An event is upcoming</string>
     <string name="everything_filtered_out">You have filtered out all calendars</string>
     <string name="event_color">Event color</string>

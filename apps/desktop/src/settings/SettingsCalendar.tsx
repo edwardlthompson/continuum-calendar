@@ -1,3 +1,4 @@
+import { CalendarVisibilityList } from '../components/CalendarVisibilityList'
 import { HOLIDAY_PACKS } from '../services/holidayPacks'
 import { textMatches } from './settingsCatalog'
 import { SettingsFieldSelect, SettingsNumber, SettingsRow } from './settingsUi'
@@ -9,6 +10,20 @@ export function SettingsCalendar({ form, query }: SettingsSectionProps) {
   const show = (...labels: string[]) => textMatches(query, ...labels)
   return (
     <div className="space-y-3">
+      {show('Calendars', 'visible', 'visibility', 'New', 'Reminder', 'calendar') ? (
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">Calendars</h3>
+          <CalendarVisibilityList
+            calendars={form.displayCalendars}
+            defaultWriteCalendarId={form.settings.defaultWriteCalendarId}
+            onToggle={form.onToggleCalendar}
+            onSetDefaultWrite={form.onSetDefaultWrite}
+            calendarNotifyPrefs={form.settings.calendarNotifyPrefs ?? {}}
+            onNotifyPrefsChange={form.onNotifyPrefsChange}
+            idPrefix="settings-cal"
+          />
+        </div>
+      ) : null}
       {show('First day of week', 'week') ? (
         <SettingsRow label="First day of week">
           <SettingsFieldSelect

@@ -1,4 +1,9 @@
-import type { CalendarEvent, CalendarListEntry, ContinuumSettings } from '@continuum/shared'
+import type {
+  CalendarEvent,
+  CalendarListEntry,
+  CalendarNotifyPrefs,
+  ContinuumSettings,
+} from '@continuum/shared'
 import type { GoogleAuthStatus } from '../auth/authSession'
 import type { HolidayPackId } from '../services/holidayPacks'
 import type { CloseTarget, MinimizeTarget, WindowBehavior } from '../services/windowBehavior'
@@ -30,6 +35,9 @@ export type SettingsFormModel = {
   calendars: CalendarListEntry[]
   displayCalendars: CalendarListEntry[]
   setCalendars: (next: CalendarListEntry[]) => void
+  onToggleCalendar: (id: string, visible: boolean) => void
+  onSetDefaultWrite: (logicalId: string) => void
+  onNotifyPrefsChange: (logicalId: string, prefs: CalendarNotifyPrefs) => void
   visibleEvents: CalendarEvent[]
   setEvents: (next: CalendarEvent[]) => void
   flash: (msg: string) => void

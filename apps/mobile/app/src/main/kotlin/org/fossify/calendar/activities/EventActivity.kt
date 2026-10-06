@@ -1930,7 +1930,8 @@ class EventActivity : SimpleActivity() {
         }
 
         val intent = Intent(Intent.ACTION_VIEW, uri)
-        launchActivityIntent(intent)
+        val chooser = Intent.createChooser(intent, getString(R.string.open_location_with))
+        launchActivityIntent(chooser)
     }
 
     private fun setupStartDate() {

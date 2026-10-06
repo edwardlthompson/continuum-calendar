@@ -46,7 +46,7 @@ import {
   type GridMoveArg,
 } from './grid/gridMove'
 import { toLocalDateTimeValue } from './utils/dateTimeLocal'
-import { CalendarSidebar } from './components/CalendarSidebar'
+import { EventDetailCard } from './components/EventDetailCard'
 import { ContinuumSplash } from './components/ContinuumSplash'
 import { AppTitle } from './components/AppTitle'
 import { useTheme } from './theme/ThemeContext'
@@ -190,6 +190,7 @@ export default function App() {
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const statusTimerRef = useRef<number | null>(null)
   const [editing, setEditing] = useState<Partial<CalendarEvent> | null>(null)
+  const [eventPanelMode, setEventPanelMode] = useState<'view' | 'edit'>('edit')
   const [conflictPrompt, setConflictPrompt] = useState<{
     draft: Omit<CalendarEvent, 'id'> & { id?: string }
     blockers: CalendarEvent[]
@@ -562,7 +563,7 @@ export default function App() {
 
     const onPopState = () => {
       closedByPop = true
-      setEditing(null)
+      closeEventPanel()
     }
     // WebView mouse Back (XButton1) — route through history so cleanup stays consistent.
     const onAuxClick = (e: MouseEvent) => {
@@ -903,7 +904,7 @@ export default function App() {
           )
         }
         setEvents(next)
-        setEditing(null)
+        closeEventPanel()
         flash('Event saved')
         return 'saved'
       } catch (e) {
@@ -927,7 +928,7 @@ export default function App() {
       })
       const saved = upsertEvents(next)
       setEvents(saved)
-      setEditing(null)
+      closeEventPanel()
       const wroteLocal = next.some((e) => e.source === 'local' || e.source === 'ics_import' || !e.source)
       if (wroteLocal) noteLocalEventsChanged()
       if (signedIn && wroteLocal) {
@@ -1070,7 +1071,7 @@ export default function App() {
     }
     const next = upsertEvents([saved])
     setEvents(next)
-    setEditing(null)
+    closeEventPanel()
     if (saved.source === 'local' || saved.source === 'ics_import' || !saved.source) {
       noteLocalEventsChanged()
       if (signedIn) {
@@ -1131,7 +1132,7 @@ export default function App() {
     // Optimistic: remove locally and return to agenda immediately (Tauri has no reliable window.confirm).
     const next = deleteLocalEvent(calendarId, id, source)
     setEvents(next)
-    setEditing(null)
+    closeEventPanel()
     setDeletePrompt(null)
     if (wasLocal) {
       recordLocalEventTombstone(calendarId, id)
@@ -1157,7 +1158,7 @@ export default function App() {
 
   function jumpCalendarTo(dateKey: string) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return
-    setEditing(null)
+    closeEventPanel()
     setShowSettings(false)
     setConflictPrompt(null)
     const today = localDateKey()
@@ -1189,6 +1190,7 @@ export default function App() {
     const defaults = newEventDefaults(displayCalendars, settings.defaultWriteCalendarId)
     const now = new Date()
     const inHour = new Date(now.getTime() + 60 * 60 * 1000)
+    setEventPanelMode('edit')
     setEditing({
       title: '',
       start: toLocalDateTimeValue(now),
@@ -1200,7 +1202,7 @@ export default function App() {
     })
   }
 
-  async function openEditEvent(ev: CalendarEvent) {
+  async function openEventView(ev: CalendarEvent) {
     const inferred = inferGoogleSeriesId(ev.id, ev.recurringEventId)
     if (ev.source === 'google' && inferred) {
       let next: CalendarEvent = { ...ev, recurringEventId: inferred, occurrenceStart: ev.start }
@@ -1214,11 +1216,18 @@ export default function App() {
           continuumLogger.error('Google series master fetch failed', e)
         }
       }
+      setEventPanelMode('view')
       setEditing(next)
       return
     }
     const seriesMaster = events.find((e) => e.id === seriesEventId(ev.id)) ?? ev
+    setEventPanelMode('view')
     setEditing({ ...seriesMaster, occurrenceStart: ev.start })
+  }
+
+  function closeEventPanel() {
+    setEditing(null)
+    setEventPanelMode('edit')
   }
 
   function onImportIcs(file: File) {
@@ -1558,23 +1567,7 @@ export default function App() {
       />
 
       <div className="flex min-h-0 flex-1 gap-5">
-        <CalendarSidebar
-          calendars={labeledCalendars}
-          defaultWriteCalendarId={settings.defaultWriteCalendarId}
-          onToggle={onToggleCalendar}
-          onSetDefaultWrite={(logicalId) => void persistSettings({ defaultWriteCalendarId: logicalId })}
-          calendarNotifyPrefs={settings.calendarNotifyPrefs ?? {}}
-          onNotifyPrefsChange={(logicalId, prefs: CalendarNotifyPrefs) => {
-            void persistSettings({
-              calendarNotifyPrefs: {
-                ...(settings.calendarNotifyPrefs ?? {}),
-                [logicalId]: prefs,
-              },
-            })
-          }}
-        />
-
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col border-l border-[var(--cc-border)] pl-5">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <main className="flex min-h-0 min-w-0 flex-1 flex-col">
             {conflicts.length > 0 && !hideConflictBanner ? (
               <div
@@ -1636,7 +1629,7 @@ export default function App() {
                 workingHours={settings.workingHours}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
                 onSelectEvent={(ev) => {
-                  void openEditEvent(ev)
+                  void openEventView(ev)
                 }}
                 onOpenDay={(dateKey) => {
                   const startHm = (settings.workingHours.start || '09:00').slice(0, 5)
@@ -1669,7 +1662,7 @@ export default function App() {
                 moveBusy={gridMoveBusy || Boolean(gridScopePrompt)}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
                 onSelectEvent={(ev) => {
-                  void openEditEvent(ev)
+                  void openEventView(ev)
                 }}
                 onSelectSlot={(start, end) =>
                   openNewEvent({
@@ -1683,19 +1676,29 @@ export default function App() {
               </div>
               {editing ? (
                 <aside className="flex min-h-0 w-full max-w-lg shrink-0 flex-col border-l border-[var(--cc-border)] pl-3">
-                  <EventEditor
-                    initial={editing}
-                    calendars={displayCalendars}
-                    defaultCalendarId={
-                      newEventDefaults(displayCalendars, settings.defaultWriteCalendarId).calendarId
-                    }
-                    defaultReminderMinutes={settings.defaultReminderMinutes}
-                    googleSignedIn={signedIn && settings.useGoogleCalendar}
-                    firstDayOfWeek={settings.firstDayOfWeek}
-                    onCancel={() => setEditing(null)}
-                    onSave={(e, scope, occ) => void onSaveEvent(e, scope, occ)}
-                    onDelete={editing.id ? () => requestDeleteEvent(editing) : undefined}
-                  />
+                  {eventPanelMode === 'view' ? (
+                    <EventDetailCard
+                      event={editing}
+                      calendars={displayCalendars}
+                      use24HourFormat={settings.use24HourFormat}
+                      onEdit={() => setEventPanelMode('edit')}
+                      onClose={closeEventPanel}
+                    />
+                  ) : (
+                    <EventEditor
+                      initial={editing}
+                      calendars={displayCalendars}
+                      defaultCalendarId={
+                        newEventDefaults(displayCalendars, settings.defaultWriteCalendarId).calendarId
+                      }
+                      defaultReminderMinutes={settings.defaultReminderMinutes}
+                      googleSignedIn={signedIn && settings.useGoogleCalendar}
+                      firstDayOfWeek={settings.firstDayOfWeek}
+                      onCancel={closeEventPanel}
+                      onSave={(e, scope, occ) => void onSaveEvent(e, scope, occ)}
+                      onDelete={editing.id ? () => requestDeleteEvent(editing) : undefined}
+                    />
+                  )}
                 </aside>
               ) : null}
             </div>
@@ -1738,6 +1741,16 @@ export default function App() {
               calendars,
               displayCalendars,
               setCalendars,
+              onToggleCalendar,
+              onSetDefaultWrite: (logicalId) => void persistSettings({ defaultWriteCalendarId: logicalId }),
+              onNotifyPrefsChange: (logicalId, prefs: CalendarNotifyPrefs) => {
+                void persistSettings({
+                  calendarNotifyPrefs: {
+                    ...(settings.calendarNotifyPrefs ?? {}),
+                    [logicalId]: prefs,
+                  },
+                })
+              },
               visibleEvents,
               setEvents,
               flash,

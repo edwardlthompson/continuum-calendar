@@ -30,8 +30,21 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
   {
     id: 'calendar',
     title: 'Calendar & views',
-    blurb: 'Week, agenda, holidays, default calendar',
-    keywords: ['week', 'agenda', 'holiday', 'calendar', 'rolling', 'empty', 'density'],
+    blurb: 'Calendars list, week, agenda, holidays, default calendar',
+    keywords: [
+      'week',
+      'agenda',
+      'holiday',
+      'calendar',
+      'calendars',
+      'visible',
+      'visibility',
+      'new',
+      'reminder',
+      'rolling',
+      'empty',
+      'density',
+    ],
   },
   {
     id: 'reminders',

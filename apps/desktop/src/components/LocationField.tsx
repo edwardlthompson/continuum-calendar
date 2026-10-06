@@ -2,17 +2,16 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { loadEvents } from '../data/localStore'
 import {
   mergeLocationSuggestions,
-  mapsSearchUrl,
   recentEventLocations,
   suggestLocations,
 } from '../services/locationSuggest'
-import { openExternal } from '../about/openExternal'
+import { useMapOpenChooser } from './useMapOpenChooser'
 
 export function LocationField(props: { value: string; onChange: (next: string) => void }) {
   const [hits, setHits] = useState<string[]>([])
   const pickedRef = useRef(false)
   const locId = useId()
-  const mapUrl = mapsSearchUrl(props.value)
+  const { openMap, mapChooser } = useMapOpenChooser()
 
   useEffect(() => {
     if (pickedRef.current) {
@@ -32,16 +31,14 @@ export function LocationField(props: { value: string; onChange: (next: string) =
   }, [props.value])
 
   return (
-    <div className="flex flex-col gap-1 text-sm">
+    <div className="relative flex flex-col gap-1 text-sm">
       <div className="flex items-center justify-between gap-2">
         <span id={locId}>Location</span>
         <button
           type="button"
           className="text-xs text-[var(--cc-accent)] underline"
-          disabled={!mapUrl}
-          onClick={() => {
-            if (mapUrl) void openExternal(mapUrl)
-          }}
+          disabled={!props.value.trim()}
+          onClick={() => openMap({ query: props.value.trim() })}
         >
           Map
         </button>
@@ -80,6 +77,7 @@ export function LocationField(props: { value: string; onChange: (next: string) =
           ))}
         </ul>
       ) : null}
+      {mapChooser}
     </div>
   )
 }

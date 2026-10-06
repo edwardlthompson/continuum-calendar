@@ -10,6 +10,12 @@ export interface PhotonProperties {
   country?: string
 }
 
+export interface GeocodedPlace {
+  label: string
+  lat: number
+  lon: number
+}
+
 export function formatPhotonProperties(p: PhotonProperties): string {
   const street = [p.housenumber, p.street].filter(Boolean).join(' ')
   return [p.name || street, p.city || p.locality, p.state, p.country]
@@ -33,7 +39,31 @@ export function parsePhotonFeatures(raw: unknown): string[] {
   return out
 }
 
-/** Google Maps search URL for the Map button only — never for picking a suggestion. */
+/** Parse Photon GeoJSON features into labeled coordinates (lon, lat order in geometry). */
+export function parsePhotonPlaces(raw: unknown): GeocodedPlace[] {
+  if (!raw || typeof raw !== 'object') return []
+  const features = (raw as { features?: unknown }).features
+  if (!Array.isArray(features)) return []
+  const out: GeocodedPlace[] = []
+  const seen = new Set<string>()
+  for (const f of features) {
+    if (!f || typeof f !== 'object') continue
+    const p = (f as { properties?: PhotonProperties }).properties ?? {}
+    const line = formatPhotonProperties(p)
+    if (!line || seen.has(line)) continue
+    const coords = (f as { geometry?: { coordinates?: unknown } }).geometry?.coordinates
+    if (!Array.isArray(coords) || coords.length < 2) continue
+    const lon = Number(coords[0])
+    const lat = Number(coords[1])
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) continue
+    seen.add(line)
+    out.push({ label: line, lat, lon })
+  }
+  return out
+}
+
+/** @deprecated Prefer mapProviders + MapOpenChooser. Kept for callers expecting a single Google URL. */
 export function mapsSearchUrl(query: string): string | null {
   const q = query.trim()
   if (!q) return null
@@ -70,36 +100,62 @@ export function recentEventLocations(
   return out
 }
 
-async function fetchPhotonBrowser(query: string, limit: number): Promise<string[]> {
+async function fetchPhotonBrowser(query: string, limit: number): Promise<unknown> {
   const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=${limit}`
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), 4_000)
   try {
     const res = await fetch(url, { signal: ctrl.signal })
-    if (!res.ok) return []
-    return parsePhotonFeatures(await res.json())
+    if (!res.ok) return null
+    return await res.json()
   } catch {
-    return []
+    return null
   } finally {
     clearTimeout(timer)
   }
 }
 
-export async function suggestLocations(query: string, limit = 8): Promise<string[]> {
+async function fetchPhotonRaw(query: string, limit: number): Promise<unknown> {
   const q = query.trim()
-  if (q.length < 2) return []
+  if (q.length < 2) return null
   try {
     if (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window) {
       const { invoke } = await import('@tauri-apps/api/core')
       const raw = await invoke<string>('suggest_locations', { query: q })
       try {
-        return parsePhotonFeatures(JSON.parse(raw) as unknown)
+        return JSON.parse(raw) as unknown
       } catch {
-        return []
+        return null
       }
     }
   } catch {
     /* Vite / denied command: browser fetch */
   }
   return fetchPhotonBrowser(q, limit)
+}
+
+export async function suggestLocations(query: string, limit = 8): Promise<string[]> {
+  const raw = await fetchPhotonRaw(query, limit)
+  return parsePhotonFeatures(raw)
+}
+
+/** Geocode a place query; returns the first Photon hit with coordinates. */
+export async function geocodeLocation(query: string): Promise<GeocodedPlace | null> {
+  const raw = await fetchPhotonRaw(query, 1)
+  return parsePhotonPlaces(raw)[0] ?? null
+}
+
+export function osmSearchUrl(query: string): string {
+  return `https://www.openstreetmap.org/search?query=${encodeURIComponent(query.trim())}`
+}
+
+export function osmMapUrl(lat: number, lon: number, zoom = 15): string {
+  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=${zoom}/${lat}/${lon}`
+}
+
+/** FOSS static map preview (OpenStreetMap.de staticmap). */
+export function osmStaticMapUrl(lat: number, lon: number, width = 400, height = 180, zoom = 14): string {
+  const w = Math.min(800, Math.max(100, Math.round(width)))
+  const h = Math.min(600, Math.max(80, Math.round(height)))
+  return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=${zoom}&size=${w}x${h}&markers=${lat},${lon},red-pushpin`
 }

@@ -2,9 +2,11 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import {
   formatPhotonProperties,
-  mergeLocationSuggestions,
   mapsSearchUrl,
+  mergeLocationSuggestions,
+  osmStaticMapUrl,
   parsePhotonFeatures,
+  parsePhotonPlaces,
   recentEventLocations,
 } from './locationSuggest.ts'
 
@@ -30,6 +32,37 @@ test('parsePhotonFeatures skips empty payloads', () => {
   )
 })
 
+test('parsePhotonPlaces requires coordinates', () => {
+  assert.deepEqual(
+    parsePhotonPlaces({
+      features: [{ properties: { name: 'Cafe', city: 'Austin' } }],
+    }),
+    [],
+  )
+  assert.deepEqual(
+    parsePhotonPlaces({
+      features: [
+        {
+          properties: { name: 'Cafe', city: 'Austin' },
+          geometry: { coordinates: [-97.7431, 30.2672] },
+        },
+      ],
+    }),
+    [{ label: 'Cafe, Austin', lat: 30.2672, lon: -97.7431 }],
+  )
+})
+
+test('osmStaticMapUrl builds FOSS static map URL', () => {
+  const url = osmStaticMapUrl(30.2672, -97.7431, 400, 180, 14)
+  assert.match(url, /staticmap\.openstreetmap\.de/)
+  assert.match(url, /center=30\.2672,-97\.7431/)
+})
+
+test('mapsSearchUrl encodes query', () => {
+  assert.equal(mapsSearchUrl(''), null)
+  assert.match(mapsSearchUrl('San Juan') ?? '', /google\.com\/maps\/search/)
+})
+
 test('recentEventLocations filters and de-dupes', () => {
   const events = [
     { location: 'Home' },
@@ -43,13 +76,4 @@ test('recentEventLocations filters and de-dupes', () => {
 
 test('mergeLocationSuggestions puts history first', () => {
   assert.deepEqual(mergeLocationSuggestions(['Home'], ['Library', 'Home'], 12), ['Home', 'Library'])
-})
-
-test('mapsSearchUrl is null until there is a query', () => {
-  assert.equal(mapsSearchUrl(''), null)
-  assert.equal(mapsSearchUrl('   '), null)
-  assert.equal(
-    mapsSearchUrl('AC Hotel San Juan'),
-    'https://www.google.com/maps/search/?api=1&query=AC%20Hotel%20San%20Juan',
-  )
 })

@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* **desktop:** calendars visibility list moved into Settings → Calendar & views
+* **desktop:** read-only event info card with pencil-to-edit; clickable description links (including Google HTML `<a href>`)
+* **desktop:** location map preview (OSM) and OpenStreetMap / Google Maps / Apple Maps chooser
+* **android:** show-on-map uses the system maps/navigation chooser (`Intent.createChooser`)
+
 ## [1.2.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.1.2...v1.2.0) (2026-09-15)
 
 
