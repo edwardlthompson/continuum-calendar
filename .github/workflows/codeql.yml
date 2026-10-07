@@ -50,7 +50,7 @@ jobs:
         run: yes | sdkmanager --licenses
       - name: Initialize CodeQL (repo-wide)
         if: matrix.language != 'java-kotlin'
-        uses: github/codeql-action/init@vcodeql-bundle-v2.27.1
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
       # Default java-kotlin queries cover Android; Compose Navigation deep-link /
@@ -58,7 +58,7 @@ jobs:
       # see docs/SECURITY_TRIAGE.md § CodeQL Compose navigation.
       - name: Initialize CodeQL (Android)
         if: matrix.language == 'java-kotlin'
-        uses: github/codeql-action/init@vcodeql-bundle-v2.27.1
+        uses: github/codeql-action/init@v4
         with:
           languages: java-kotlin
           paths: examples/android
@@ -66,4 +66,4 @@ jobs:
         if: matrix.language == 'java-kotlin'
         working-directory: examples/android
         run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
-      - uses: github/codeql-action/analyze@vcodeql-bundle-v2.27.1
+      - uses: github/codeql-action/analyze@v4
