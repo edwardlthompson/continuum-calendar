@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.3.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.3.0...v1.3.1) (2026-10-07)
 
 
@@ -22,8 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **deps:** apply patch/minor updates and clear web HIGH audits ([1eef5ab](https://github.com/edwardlthompson/continuum-calendar/commit/1eef5ab3072c03b35bb2721e83af305d60e7cfd0))
 * **deps:** Bump moment ([#56](https://github.com/edwardlthompson/continuum-calendar/issues/56)) ([fff1261](https://github.com/edwardlthompson/continuum-calendar/commit/fff1261a78f5be3475c26857ad91f7dcc18323f7))
 * **deps:** Bump source-map-js from 1.2.1 to 1.2.2 in /apps/desktop ([#58](https://github.com/edwardlthompson/continuum-calendar/issues/58)) ([89a2cd8](https://github.com/edwardlthompson/continuum-calendar/commit/89a2cd8ec8d0e259255bc15cff11d21fa9f4b275))
-
-## [Unreleased]
 
 ## [1.3.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.2.0...v1.3.0) (2026-10-06)
 
