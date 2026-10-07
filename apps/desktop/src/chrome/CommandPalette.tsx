@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { filterPaletteCommands, type PaletteCommandId } from './commandPalette'
+import { filterPaletteCommands, type PaletteCommandId } from './paletteCommands'
 import { useDismiss } from './useDismiss'
 
 export function CommandPalette(props: {

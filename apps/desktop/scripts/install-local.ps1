@@ -14,13 +14,24 @@ if ($cwdLeaf -eq "debug" -and ((Get-Location).Path -match "[\\/]target[\\/]debug
 }
 
 $InstallDir = Join-Path $env:LOCALAPPDATA "Continuum Calendar"
+# Installed name stays app.exe for Start-at-login / tray paths; cargo binary is mainBinaryName.
 $InstallExe = Join-Path $InstallDir "app.exe"
-$ReleaseExe = Join-Path $DesktopRoot "src-tauri\target\release\app.exe"
+$ReleaseCandidates = @(
+  (Join-Path $DesktopRoot "src-tauri\target\release\continuum-calendar.exe"),
+  (Join-Path $DesktopRoot "src-tauri\target\release\app.exe")
+)
+$ReleaseExe = $ReleaseCandidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
 $DistIndex = Join-Path $DesktopRoot "dist\index.html"
 
 Write-Host "Stopping installed Continuum (if running)..."
-Get-CimInstance Win32_Process -Filter "Name='app.exe'" -ErrorAction SilentlyContinue |
-  Where-Object { $_.ExecutablePath -and ($_.ExecutablePath -ieq $InstallExe) } |
+Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+  Where-Object {
+    $_.Name -in @('app.exe', 'continuum-calendar.exe') -and
+    $_.ExecutablePath -and (
+      ($_.ExecutablePath -ieq $InstallExe) -or
+      ($_.ExecutablePath -like (Join-Path $InstallDir '*'))
+    )
+  } |
   ForEach-Object {
     Write-Host ("  stop PID " + $_.ProcessId)
     Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
@@ -41,8 +52,8 @@ try {
 if (-not (Test-Path -LiteralPath $DistIndex)) {
   Write-Error ("Missing " + $DistIndex + " after build - frontend was not embedded.")
 }
-if (-not (Test-Path -LiteralPath $ReleaseExe)) {
-  Write-Error ("Missing " + $ReleaseExe + " after build.")
+if (-not $ReleaseExe -or -not (Test-Path -LiteralPath $ReleaseExe)) {
+  Write-Error ("Missing release binary after build (tried continuum-calendar.exe, app.exe).")
 }
 $norm = (Resolve-Path $ReleaseExe).Path
 if ($norm -match "[\\/]target[\\/]debug[\\/]") {

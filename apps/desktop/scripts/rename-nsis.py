@@ -27,13 +27,16 @@ def version(argv: list[str] | None = None) -> str:
 def stable_exe(ver: str) -> Path:
     if not BUNDLE.is_dir():
         raise FileNotFoundError(f"No NSIS bundle dir at {BUNDLE}")
-    exes = sorted(BUNDLE.glob("*.exe"))
-    if not exes:
-        raise FileNotFoundError(f"No .exe in {BUNDLE}")
     dest = BUNDLE / f"Continuum-Calendar-{ver}_x64-setup.exe"
-    src = next((p for p in exes if p.name == dest.name), exes[0])
-    if src.resolve() != dest.resolve():
-        shutil.copy2(src, dest)
+    # Prefer the fresh Tauri output (space in product name), not a stale stable rename.
+    tauri = sorted(
+        (p for p in BUNDLE.glob("*.exe") if p.name != dest.name and ver in p.name),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if not tauri:
+        raise FileNotFoundError(f"No Tauri NSIS exe for version {ver} in {BUNDLE}")
+    shutil.copy2(tauri[0], dest)
     return dest
 
 

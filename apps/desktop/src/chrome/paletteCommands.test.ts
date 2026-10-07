@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { filterPaletteCommands, PALETTE_COMMANDS } from './commandPalette.ts'
+import { filterPaletteCommands, PALETTE_COMMANDS } from './paletteCommands.ts'
 
 test('empty query returns all commands', () => {
   assert.equal(filterPaletteCommands('').length, PALETTE_COMMANDS.length)

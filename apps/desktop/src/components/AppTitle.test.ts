@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync } from 'node:fs'
-import { APP_TITLE } from './appTitle.ts'
+import { APP_TITLE } from './productTitle.ts'
 
 test('H1 is Continuum Calendar without a version', () => {
   assert.equal(APP_TITLE, 'Continuum Calendar')

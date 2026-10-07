@@ -1,4 +1,4 @@
-import { APP_TITLE } from './appTitle'
+import { APP_TITLE } from './productTitle'
 
 /** Header product name only. Installed version lives in Settings / About. */
 export function AppTitle() {

@@ -35,7 +35,6 @@ import {
   promptTitle,
   type ChromePromptId,
 } from './chrome/promptParse'
-import { calendarCaption } from './chrome/calendarLabel'
 import { CommandPalette } from './chrome/CommandPalette'
 import { useDismiss } from './chrome/useDismiss'
 import {
@@ -233,11 +232,6 @@ export default function App() {
     if (settings.useGoogleCalendar) return calendars
     return calendars.filter((c) => c.source !== 'google')
   }, [calendars, settings.useGoogleCalendar])
-  const labeledCalendars = useMemo(
-    () => displayCalendars.map((c) => ({ ...c, displayName: calendarCaption(c, authStatus) })),
-    [displayCalendars, authStatus],
-  )
-
   const visibleEvents = useMemo(() => {
     const primaryIds = new Set(
       calendars
