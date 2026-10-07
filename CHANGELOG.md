@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.3.0...v1.3.1) (2026-10-07)
+
+
+### Fixed
+
+* **ci:** refresh examples/node lockfile after dep bumps ([8407869](https://github.com/edwardlthompson/continuum-calendar/commit/840786986785f6287fe4b81b4bf7562dbaebe117))
+* **ci:** restore codeql-action@v4 pins ([6cbecc4](https://github.com/edwardlthompson/continuum-calendar/commit/6cbecc40ee82da824088e1251d3e2f8e49b184da))
+* **desktop:** resolve Windows casing collisions for NSIS builds ([9fa2513](https://github.com/edwardlthompson/continuum-calendar/commit/9fa25132ebbd4719cd9175828064c63515b7c9ff))
+
+
+### Changed
+
+* **deps-dev:** Bump source-map-js in /examples/node ([#57](https://github.com/edwardlthompson/continuum-calendar/issues/57)) ([b763506](https://github.com/edwardlthompson/continuum-calendar/commit/b7635061753559a4fd1ec57b799429101da99d04))
+* **deps:** apply patch/minor updates and clear web HIGH audits ([1eef5ab](https://github.com/edwardlthompson/continuum-calendar/commit/1eef5ab3072c03b35bb2721e83af305d60e7cfd0))
+* **deps:** Bump moment ([#56](https://github.com/edwardlthompson/continuum-calendar/issues/56)) ([fff1261](https://github.com/edwardlthompson/continuum-calendar/commit/fff1261a78f5be3475c26857ad91f7dcc18323f7))
+* **deps:** Bump source-map-js from 1.2.1 to 1.2.2 in /apps/desktop ([#58](https://github.com/edwardlthompson/continuum-calendar/issues/58)) ([89a2cd8](https://github.com/edwardlthompson/continuum-calendar/commit/89a2cd8ec8d0e259255bc15cff11d21fa9f4b275))
+
 ## [1.3.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.2.0...v1.3.0) (2026-10-06)
 
 
