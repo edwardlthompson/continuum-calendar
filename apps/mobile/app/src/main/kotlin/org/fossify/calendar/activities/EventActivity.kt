@@ -453,8 +453,11 @@ class EventActivity : SimpleActivity() {
             mEvent = event
             mEventOccurrenceTS = intent.getLongExtra(EVENT_OCCURRENCE_TS, 0L)
             if (savedInstanceState == null) {
-                val openAsView = !intent.getBooleanExtra(IS_DUPLICATE_INTENT, false) &&
-                    ContinuumEventViewMode.isViewMode(intent.getStringExtra(EVENT_DISPLAY_MODE))
+                val openAsView = ContinuumEventViewMode.shouldOpenExistingAsView(
+                    displayModeExtra = intent.getStringExtra(EVENT_DISPLAY_MODE),
+                    intentAction = intent.action,
+                    isDuplicate = intent.getBooleanExtra(IS_DUPLICATE_INTENT, false),
+                )
                 if (openAsView) {
                     setupViewEvent()
                 } else {

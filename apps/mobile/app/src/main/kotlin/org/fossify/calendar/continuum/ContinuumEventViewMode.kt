@@ -24,6 +24,26 @@ object ContinuumEventViewMode {
     fun isViewMode(raw: String?): Boolean = parseMode(raw) == MODE_VIEW
 
     /**
+     * Existing-event opens from Continuum UI default to view (desktop parity).
+     * System ACTION_EDIT / ACTION_INSERT / duplicate stay on the editor unless
+     * [displayModeExtra] is explicitly `view`.
+     */
+    fun shouldOpenExistingAsView(
+        displayModeExtra: String?,
+        intentAction: String?,
+        isDuplicate: Boolean,
+    ): Boolean {
+        if (isDuplicate) return false
+        if (intentAction == android.content.Intent.ACTION_EDIT ||
+            intentAction == android.content.Intent.ACTION_INSERT
+        ) {
+            return isViewMode(displayModeExtra)
+        }
+        // Missing extra (day/week forgot the flag) → view, not edit.
+        return parseMode(displayModeExtra, defaultMode = MODE_VIEW) == MODE_VIEW
+    }
+
+    /**
      * Hide pencil for holidays / contact birthday-anniversary sources
      * (matches desktop EventDetailCard canEdit gates for holidays).
      */

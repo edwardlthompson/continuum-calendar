@@ -194,6 +194,9 @@ class DayFragment : Fragment() {
             putExtra(EVENT_ID, event.id)
             putExtra(EVENT_OCCURRENCE_TS, event.startTS)
             putExtra(IS_TASK_COMPLETED, event.isTaskCompleted())
+            if (!event.isTask()) {
+                putExtra(EVENT_DISPLAY_MODE, EVENT_DISPLAY_MODE_VIEW)
+            }
             startActivity(this)
         }
     }

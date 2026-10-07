@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: `v1.2.0` (Release Please [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38)). Next ship: event view card, maps chooser, settings calendars (`8f76ab4`).
+- Latest tag: shipping `v1.3.2` (Release Please [#62](https://github.com/edwardlthompson/continuum-calendar/pull/62)). Day/week taps default existing events to view; CI-signed APK required for `install -r`.
 
 ### Key Constraints
 
@@ -49,6 +49,8 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-10-07 | /ship v1.3.2 view default | Day/Week + missing-mode → view; device smoke on debug both phones; skip bad CodeQL bundle pin | Merge RP #62; dispatch signed FOSS APK; sideload -r; Medium glib still deferred |
+| 2026-10-07 | /ship v1.3.1 | Android view card; desktop casing NSIS; web HIGH overrides; RP #59; CodeQL pin revert | Attach EXE/APK to tag; Medium glib still deferred; release keystore not on this Windows host |
 | 2026-10-06 | /ship event view + maps | rubyzip #45; view card + HTML linkify; OSM/Google/Apple chooser; Android createChooser | Wait CI + Release Please; attach installers to new tag |
 | 2026-09-15 | /ship v1.2.0 | RP [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38); required CI/CodeQL/Security Scan green after skipping removed SDK `tools`; Unreleased already present | Copy EXE/APK/`.deb` onto `v1.2.0`; Medium `glib` stays deferred |
 | 2026-09-14 | ADB widget glance | OP13 `install -r` FOSS release; today highlight + Open vs `1`; Settings rolling-week toggle on; no reboot/wipe; Launcher3 restored as HOME | `Open` wraps on 4×1; Hermes tried to become Home when using KEYCODE_HOME |

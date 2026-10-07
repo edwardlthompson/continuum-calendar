@@ -46,6 +46,8 @@ import org.fossify.calendar.helpers.Config
 import org.fossify.calendar.helpers.EDIT_ALL_OCCURRENCES
 import org.fossify.calendar.helpers.EDIT_FUTURE_OCCURRENCES
 import org.fossify.calendar.helpers.EDIT_SELECTED_OCCURRENCE
+import org.fossify.calendar.helpers.EVENT_DISPLAY_MODE
+import org.fossify.calendar.helpers.EVENT_DISPLAY_MODE_VIEW
 import org.fossify.calendar.helpers.EVENT_ID
 import org.fossify.calendar.helpers.EVENT_OCCURRENCE_TS
 import org.fossify.calendar.helpers.FLAG_ALL_DAY
@@ -839,6 +841,9 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                                 putExtra(EVENT_ID, event.id!!)
                                 putExtra(EVENT_OCCURRENCE_TS, event.startTS)
                                 putExtra(IS_TASK_COMPLETED, event.isTaskCompleted())
+                                if (!event.isTask()) {
+                                    putExtra(EVENT_DISPLAY_MODE, EVENT_DISPLAY_MODE_VIEW)
+                                }
                                 startActivity(this)
                             }
                         }
@@ -1071,6 +1076,9 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                     putExtra(EVENT_ID, event.id)
                     putExtra(EVENT_OCCURRENCE_TS, event.startTS)
                     putExtra(IS_TASK_COMPLETED, event.isTaskCompleted())
+                    if (!event.isTask()) {
+                        putExtra(EVENT_DISPLAY_MODE, EVENT_DISPLAY_MODE_VIEW)
+                    }
                     startActivity(this)
                 }
             }

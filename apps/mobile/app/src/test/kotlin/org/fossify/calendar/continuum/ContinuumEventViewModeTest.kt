@@ -30,6 +30,63 @@ class ContinuumEventViewModeTest {
     }
 
     @Test
+    fun shouldOpenExistingAsViewDefaultsMissingExtraToView() {
+        assertTrue(
+            ContinuumEventViewMode.shouldOpenExistingAsView(
+                displayModeExtra = null,
+                intentAction = null,
+                isDuplicate = false,
+            )
+        )
+        assertTrue(
+            ContinuumEventViewMode.shouldOpenExistingAsView(
+                displayModeExtra = "",
+                intentAction = null,
+                isDuplicate = false,
+            )
+        )
+        assertFalse(
+            ContinuumEventViewMode.shouldOpenExistingAsView(
+                displayModeExtra = ContinuumEventViewMode.MODE_EDIT,
+                intentAction = null,
+                isDuplicate = false,
+            )
+        )
+    }
+
+    @Test
+    fun shouldOpenExistingAsViewKeepsSystemEditAndDuplicateOnForm() {
+        assertFalse(
+            ContinuumEventViewMode.shouldOpenExistingAsView(
+                displayModeExtra = null,
+                intentAction = android.content.Intent.ACTION_EDIT,
+                isDuplicate = false,
+            )
+        )
+        assertFalse(
+            ContinuumEventViewMode.shouldOpenExistingAsView(
+                displayModeExtra = null,
+                intentAction = android.content.Intent.ACTION_INSERT,
+                isDuplicate = false,
+            )
+        )
+        assertFalse(
+            ContinuumEventViewMode.shouldOpenExistingAsView(
+                displayModeExtra = ContinuumEventViewMode.MODE_VIEW,
+                intentAction = null,
+                isDuplicate = true,
+            )
+        )
+        assertTrue(
+            ContinuumEventViewMode.shouldOpenExistingAsView(
+                displayModeExtra = ContinuumEventViewMode.MODE_VIEW,
+                intentAction = android.content.Intent.ACTION_EDIT,
+                isDuplicate = false,
+            )
+        )
+    }
+
+    @Test
     fun canShowEditActionBlocksHolidaysAndContactSources() {
         assertTrue(
             ContinuumEventViewMode.canShowEditAction(

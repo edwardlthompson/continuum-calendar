@@ -17,6 +17,20 @@
 
 ## Entries
 
+### 2026-10-07 — /ship v1.3.2 Android view-mode default
+- **Status:** Accepted
+- **Context:** v1.3.1 still opened day/week taps in edit because those intents omitted `EVENT_DISPLAY_MODE` and EventActivity defaulted missing → edit. Local `upd audit` still Medium `glib` + unmaintained unic (same as v1.3.1); Dependabot Critical/High zero. `upd --apply` tried to pin `codeql-action@vcodeql-bundle-v2.27.1` (reverted — broke prior CI).
+- **Decision:** `shouldOpenExistingAsView` defaults missing extra to view (except ACTION_EDIT/INSERT/duplicate); Day/Week/widget pass `view`; smoke on both phones via debug package; `/ship` → RP [#62](https://github.com/edwardlthompson/continuum-calendar/pull/62); dispatch `android-signed-foss` attach to `v1.3.2` then `adb install -r`.
+- **Alternatives considered:** Uninstall release to install local-keystore APK (rejected — signature must match CI). Rely only on explicit `EVENT_DISPLAY_MODE` without default (rejected — day/week already forgot the flag once).
+- **Consequences:** Production phones stay on v1.3.1 until CI-signed 1.3.2 APK is sideloaded.
+
+### 2026-10-07 — /ship v1.3.1 Android view card
+- **Status:** Accepted
+- **Context:** `/ship` after Android view-first event UX parity and desktop Windows NSIS casing breakage. Local `upd audit` still reports Medium `glib` + unmaintained unic crates; Dependabot Critical/High was zero.
+- **Decision:** Ship Android `EVENT_DISPLAY_MODE=view` (pencil → edit) + OSM preview; rename desktop modules that collided on case-insensitive CI; revert mistaken `codeql-action@vcodeql-bundle-*` pins to `@v4`; refresh `examples/node` lockfile. Merge Release Please [#59](https://github.com/edwardlthompson/continuum-calendar/pull/59) with admin fallback. Keep Medium `glib` deferred (GTK4). Dispatch Android signed FOSS + Desktop NSIS attach to `v1.3.1`.
+- **Alternatives considered:** Bump `glib` to 0.20 (rejected — GTK4). Uninstall phones to sideload local-debug-signed APK (rejected — user required `install -r` with release signature).
+- **Consequences:** Tag `v1.3.1` needs EXE/APK attached by CI. Sideload phones only with release-signed APK from the tag.
+
 ### 2026-10-06 — /ship event view + maps chooser
 - **Status:** Accepted
 - **Context:** Desktop needed view-vs-edit for events, clickable description links (including Google HTML anchors), and a maps app chooser; Android needed the system maps picker.
