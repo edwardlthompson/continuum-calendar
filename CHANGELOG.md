@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2](https://github.com/edwardlthompson/continuum-calendar/compare/v1.3.1...v1.3.2) (2026-10-07)
+
+
+### Fixed
+
+* **android:** default existing event opens to view mode ([c4b21d0](https://github.com/edwardlthompson/continuum-calendar/commit/c4b21d08217df60b48d29e6d528f91fb700aa210))
+* **ci:** sync root package-lock with desktop dependency bumps ([52b91de](https://github.com/edwardlthompson/continuum-calendar/commit/52b91de8fbe7f56e11eebfad1612c0853bed082d))
+
 ## [Unreleased]
 
 ## [1.3.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.3.0...v1.3.1) (2026-10-07)
