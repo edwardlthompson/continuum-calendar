@@ -101,4 +101,17 @@ object ContinuumLocationSearch {
             conn.disconnect()
         }
     }
+
+    /** First Photon hit with coordinates for map preview; null on miss/error. */
+    fun geocodeFirstCoords(query: String): Pair<Double, Double>? {
+        val q = query.trim()
+        if (q.length < MIN_QUERY) return null
+        return try {
+            val encoded = URLEncoder.encode(q, "UTF-8")
+            val json = httpGet("https://photon.komoot.io/api/?q=$encoded&limit=1") ?: return null
+            ContinuumEventViewMode.parsePhotonCoords(json)
+        } catch (_: Exception) {
+            null
+        }
+    }
 }

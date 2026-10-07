@@ -15,6 +15,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.Data
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -22,6 +23,8 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
@@ -37,7 +40,9 @@ import org.fossify.calendar.dialogs.ReminderWarningDialog
 import org.fossify.calendar.dialogs.RepeatLimitTypePickerDialog
 import org.fossify.calendar.dialogs.RepeatRuleWeeklyDialog
 import org.fossify.calendar.continuum.ContinuumConflict
+import org.fossify.calendar.continuum.ContinuumEventViewMode
 import org.fossify.calendar.continuum.ContinuumLocationAdapter
+import org.fossify.calendar.continuum.ContinuumLocationSearch
 import org.fossify.calendar.continuum.ContinuumScheduling
 import org.fossify.calendar.continuum.ContinuumSettingsSync
 import org.fossify.calendar.dialogs.SelectCalendarDialog
@@ -74,12 +79,14 @@ import org.fossify.calendar.helpers.END_TS
 import org.fossify.calendar.helpers.EVENT
 import org.fossify.calendar.helpers.EVENT_CALENDAR_ID
 import org.fossify.calendar.helpers.EVENT_COLOR
+import org.fossify.calendar.helpers.EVENT_DISPLAY_MODE
 import org.fossify.calendar.helpers.EVENT_ID
 import org.fossify.calendar.helpers.EVENT_OCCURRENCE_TS
 import org.fossify.calendar.helpers.FLAG_ALL_DAY
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.IS_DUPLICATE_INTENT
 import org.fossify.calendar.helpers.IS_NEW_EVENT
+import org.fossify.calendar.helpers.IS_VIEW_MODE
 import org.fossify.calendar.helpers.LOCAL_CALENDAR_ID
 import org.fossify.calendar.helpers.NEW_EVENT_SET_HOUR_DURATION
 import org.fossify.calendar.helpers.NEW_EVENT_START_TS
@@ -205,6 +212,8 @@ class EventActivity : SimpleActivity() {
     private var mOriginalStartTS = 0L
     private var mOriginalEndTS = 0L
     private var mIsNewEvent = true
+    /** Continuum: read-only card first (desktop EventDetailCard parity). */
+    private var mIsViewMode = false
     private var mEventColor = 0
     private var mConvertedFromOriginalAllDay = false
     /** After user confirms “Save anyway” on a Continuum conflict dialog. */
@@ -337,6 +346,7 @@ class EventActivity : SimpleActivity() {
             putLong(CALENDAR_ID, mCalendarId)
             putInt(EVENT_CALENDAR_ID, mEventCalendarId)
             putBoolean(IS_NEW_EVENT, mIsNewEvent)
+            putBoolean(IS_VIEW_MODE, mIsViewMode)
             putLong(ORIGINAL_START_TS, mOriginalStartTS)
             putLong(ORIGINAL_END_TS, mOriginalEndTS)
         }
@@ -384,6 +394,7 @@ class EventActivity : SimpleActivity() {
             mCalendarId = getLong(CALENDAR_ID)
             mEventCalendarId = getInt(EVENT_CALENDAR_ID)
             mIsNewEvent = getBoolean(IS_NEW_EVENT)
+            mIsViewMode = getBoolean(IS_VIEW_MODE, false)
             mOriginalStartTS = getLong(ORIGINAL_START_TS)
             mOriginalEndTS = getLong(ORIGINAL_END_TS)
         }
@@ -394,6 +405,11 @@ class EventActivity : SimpleActivity() {
         updateCalendar()
         checkAttendees()
         updateActionBarTitle()
+        if (mIsViewMode) {
+            applyViewModeChrome()
+            loadMapPreviewIfNeeded()
+        }
+        refreshMenuItems()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -437,17 +453,25 @@ class EventActivity : SimpleActivity() {
             mEvent = event
             mEventOccurrenceTS = intent.getLongExtra(EVENT_OCCURRENCE_TS, 0L)
             if (savedInstanceState == null) {
-                setupEditEvent()
+                val openAsView = !intent.getBooleanExtra(IS_DUPLICATE_INTENT, false) &&
+                    ContinuumEventViewMode.isViewMode(intent.getStringExtra(EVENT_DISPLAY_MODE))
+                if (openAsView) {
+                    setupViewEvent()
+                } else {
+                    setupEditEvent()
+                }
             }
 
             if (intent.getBooleanExtra(IS_DUPLICATE_INTENT, false)) {
                 mEvent.id = null
+                mIsViewMode = false
                 eventToolbar.title = getString(R.string.new_event)
             } else {
                 cancelNotification(mEvent.id!!)
             }
         } else {
             mEvent = Event(null)
+            mIsViewMode = false
             config.apply {
                 mReminder1Minutes =
                     if (usePreviousEventReminders && lastEventReminderMinutes1 >= -1) {
@@ -583,9 +607,12 @@ class EventActivity : SimpleActivity() {
     private fun refreshMenuItems() {
         if (::mEvent.isInitialized) {
             binding.eventToolbar.menu.apply {
+                val editVisible = mIsViewMode && canEditCurrentEvent()
+                findItem(R.id.edit)?.isVisible = editVisible
+                findItem(R.id.save).isVisible = !mIsViewMode
                 findItem(R.id.delete).isVisible = mEvent.id != null
                 findItem(R.id.share).isVisible = mEvent.id != null
-                findItem(R.id.duplicate).isVisible = mEvent.id != null
+                findItem(R.id.duplicate).isVisible = mEvent.id != null && !mIsViewMode
             }
         }
     }
@@ -597,6 +624,7 @@ class EventActivity : SimpleActivity() {
             }
 
             when (menuItem.itemId) {
+                R.id.edit -> enterEditMode()
                 R.id.save -> saveCurrentEvent()
                 R.id.delete -> deleteEvent()
                 R.id.duplicate -> duplicateEvent()
@@ -708,6 +736,7 @@ class EventActivity : SimpleActivity() {
 
     private fun setupEditEvent() {
         mIsNewEvent = false
+        mIsViewMode = false
         val realStart = if (mEventOccurrenceTS == 0L) mEvent.startTS else mEventOccurrenceTS
         val duration = mEvent.endTS - mEvent.startTS
         mOriginalStartTS = realStart
@@ -757,9 +786,167 @@ class EventActivity : SimpleActivity() {
 
         checkRepeatTexts(mRepeatInterval)
         checkAttendees()
+        applyEditableChrome()
+        hideMapPreview()
+    }
+
+    private fun setupViewEvent() {
+        setupEditEvent()
+        mIsViewMode = true
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        binding.eventToolbar.title = getString(R.string.view_event)
+        applyViewModeChrome()
+        loadMapPreviewIfNeeded()
+    }
+
+    private fun enterEditMode() {
+        if (isFinishing || isDestroyed || !mIsViewMode) return
+        mIsViewMode = false
+        binding.eventToolbar.title = getString(R.string.edit_event)
+        applyEditableChrome()
+        hideMapPreview()
+        refreshMenuItems()
+    }
+
+    private fun canEditCurrentEvent(): Boolean {
+        if (!::mEvent.isInitialized) return false
+        val cal = mStoredCalendars.firstOrNull { it.id == mEvent.calendarId }
+            ?: mStoredCalendars.firstOrNull { it.id == mCalendarId }
+        return ContinuumEventViewMode.canShowEditAction(
+            eventSource = mEvent.source,
+            calendarType = cal?.type,
+            calendarTitle = cal?.title,
+            calendarDisplayName = cal?.caldavDisplayName,
+            calendarEmail = cal?.caldavEmail,
+        )
+    }
+
+    private fun applyViewModeChrome() = binding.apply {
+        setFieldReadOnly(eventTitle, true)
+        setFieldReadOnly(eventLocation, true)
+        setDescriptionReadOnly(true)
+        eventAllDay.isEnabled = false
+        eventAllDayHolder.isClickable = false
+        eventStartDate.isClickable = false
+        eventStartTime.isClickable = false
+        eventEndDate.isClickable = false
+        eventEndTime.isClickable = false
+        eventTimeZone.isClickable = false
+        eventRepetition.isClickable = false
+        eventRepetitionRuleHolder.isClickable = false
+        eventRepetitionLimitHolder.isClickable = false
+        eventReminder1.isClickable = false
+        eventReminder2.isClickable = false
+        eventReminder3.isClickable = false
+        eventReminder1Type.isClickable = false
+        eventReminder2Type.isClickable = false
+        eventReminder3Type.isClickable = false
+        eventCalendarHolder.isClickable = false
+        eventColorHolder.isClickable = false
+        eventAvailability.isClickable = false
+        eventAccessLevel.isClickable = false
+        eventStatus.isClickable = false
+    }
+
+    private fun applyEditableChrome() = binding.apply {
+        setFieldReadOnly(eventTitle, false)
+        setFieldReadOnly(eventLocation, false)
+        setDescriptionReadOnly(false)
+        eventAllDay.isEnabled = true
+        eventAllDayHolder.isClickable = true
+        eventStartDate.isClickable = true
+        eventStartTime.isClickable = true
+        eventEndDate.isClickable = true
+        eventEndTime.isClickable = true
+        eventTimeZone.isClickable = true
+        eventRepetition.isClickable = true
+        eventRepetitionRuleHolder.isClickable = true
+        eventRepetitionLimitHolder.isClickable = true
+        eventReminder1.isClickable = true
+        eventReminder2.isClickable = true
+        eventReminder3.isClickable = true
+        eventReminder1Type.isClickable = true
+        eventReminder2Type.isClickable = true
+        eventReminder3Type.isClickable = true
+        eventCalendarHolder.isClickable = true
+        eventColorHolder.isClickable = true
+        eventAvailability.isClickable = true
+        eventAccessLevel.isClickable = true
+        eventStatus.isClickable = true
+    }
+
+    private fun setFieldReadOnly(field: android.widget.TextView, readOnly: Boolean) {
+        field.isFocusable = !readOnly
+        field.isFocusableInTouchMode = !readOnly
+        field.isCursorVisible = !readOnly
+        field.isLongClickable = !readOnly
+        if (field is android.widget.EditText) {
+            field.isClickable = !readOnly
+        }
+    }
+
+    private fun setDescriptionReadOnly(readOnly: Boolean) = binding.apply {
+        eventDescription.isFocusable = !readOnly
+        eventDescription.isFocusableInTouchMode = !readOnly
+        eventDescription.isCursorVisible = !readOnly
+        eventDescription.isLongClickable = !readOnly
+        if (readOnly) {
+            eventDescription.keyListener = null
+            Linkify.addLinks(eventDescription, Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES)
+            eventDescription.movementMethod = LinkMovementMethod.getInstance()
+            eventDescription.linksClickable = true
+        } else {
+            eventDescription.setText(eventDescription.text, android.widget.TextView.BufferType.EDITABLE)
+            eventDescription.inputType =
+                android.text.InputType.TYPE_CLASS_TEXT or
+                    android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
+                    android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            eventDescription.movementMethod = android.text.method.ArrowKeyMovementMethod.getInstance()
+        }
+    }
+
+    private fun positionDescriptionBelow(anchorId: Int) {
+        val params = binding.eventDescription.layoutParams as RelativeLayout.LayoutParams
+        params.addRule(RelativeLayout.BELOW, anchorId)
+        binding.eventDescription.layoutParams = params
+    }
+
+    private fun hideMapPreview() = binding.apply {
+        eventMapPreview.visibility = View.GONE
+        eventMapPreview.setOnClickListener(null)
+        Glide.with(this@EventActivity).clear(eventMapPreview)
+        positionDescriptionBelow(R.id.event_location)
+    }
+
+    private fun loadMapPreviewIfNeeded() {
+        val location = mEvent.location.trim()
+        if (location.isEmpty() || !mIsViewMode) {
+            hideMapPreview()
+            return
+        }
+        ensureBackgroundThread {
+            val coords = ContinuumLocationSearch.geocodeFirstCoords(location)
+            runOnUiThread {
+                if (isDestroyed || isFinishing || !mIsViewMode) return@runOnUiThread
+                if (coords == null) {
+                    hideMapPreview()
+                    return@runOnUiThread
+                }
+                val (lat, lon) = coords
+                val url = ContinuumEventViewMode.osmStaticMapUrl(lat, lon)
+                binding.eventMapPreview.visibility = View.VISIBLE
+                positionDescriptionBelow(R.id.event_map_preview)
+                binding.eventMapPreview.setOnClickListener { showOnMap() }
+                Glide.with(this@EventActivity)
+                    .load(url)
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .into(binding.eventMapPreview)
+            }
+        }
     }
 
     private fun setupNewEvent() {
+        mIsViewMode = false
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         binding.eventTitle.requestFocus()
         binding.eventToolbar.title = getString(R.string.new_event)
@@ -2487,10 +2674,10 @@ class EventActivity : SimpleActivity() {
     }
 
     private fun updateActionBarTitle() {
-        binding.eventToolbar.title = if (mIsNewEvent) {
-            getString(R.string.new_event)
-        } else {
-            getString(R.string.edit_event)
+        binding.eventToolbar.title = when {
+            mIsNewEvent -> getString(R.string.new_event)
+            mIsViewMode -> getString(R.string.view_event)
+            else -> getString(R.string.edit_event)
         }
     }
 }

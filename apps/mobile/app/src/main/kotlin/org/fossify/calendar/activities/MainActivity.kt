@@ -45,6 +45,8 @@ import org.fossify.calendar.helpers.BIRTHDAY_EVENT
 import org.fossify.calendar.helpers.DAILY_VIEW
 import org.fossify.calendar.helpers.DAY_CODE
 import org.fossify.calendar.helpers.EVENTS_LIST_VIEW
+import org.fossify.calendar.helpers.EVENT_DISPLAY_MODE
+import org.fossify.calendar.helpers.EVENT_DISPLAY_MODE_VIEW
 import org.fossify.calendar.helpers.EVENT_ID
 import org.fossify.calendar.helpers.EVENT_OCCURRENCE_TS
 import org.fossify.calendar.helpers.FETCH_INTERVAL
@@ -608,6 +610,9 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
                 Intent(this, getActivityToOpen(isTask)).apply {
                     putExtra(EVENT_ID, eventIdToOpen)
                     putExtra(EVENT_OCCURRENCE_TS, eventOccurrenceToOpen)
+                    if (!isTask) {
+                        putExtra(EVENT_DISPLAY_MODE, EVENT_DISPLAY_MODE_VIEW)
+                    }
                     startActivity(this)
                 }
             }
@@ -632,6 +637,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
                             hideKeyboard()
                             Intent(this, EventActivity::class.java).apply {
                                 putExtra(EVENT_ID, id)
+                                putExtra(EVENT_DISPLAY_MODE, EVENT_DISPLAY_MODE_VIEW)
                                 startActivity(this)
                             }
                         } else {
@@ -1556,6 +1562,9 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
                             Intent(applicationContext, getActivityToOpen(it.isTask)).apply {
                                 putExtra(EVENT_ID, it.id)
                                 putExtra(EVENT_OCCURRENCE_TS, it.startTS)
+                                if (!it.isTask) {
+                                    putExtra(EVENT_DISPLAY_MODE, EVENT_DISPLAY_MODE_VIEW)
+                                }
                                 startActivity(this)
                             }
                         }

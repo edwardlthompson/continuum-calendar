@@ -47,6 +47,8 @@ import org.fossify.calendar.helpers.DELETE_ALL_OCCURRENCES
 import org.fossify.calendar.helpers.DELETE_FUTURE_OCCURRENCES
 import org.fossify.calendar.helpers.DELETE_SELECTED_OCCURRENCE
 import org.fossify.calendar.helpers.DUMMY_ALARM_REQUEST_CODE
+import org.fossify.calendar.helpers.EVENT_DISPLAY_MODE
+import org.fossify.calendar.helpers.EVENT_DISPLAY_MODE_VIEW
 import org.fossify.calendar.helpers.EVENT_ID
 import org.fossify.calendar.helpers.EVENT_OCCURRENCE_TS
 import org.fossify.calendar.helpers.EventsHelper
@@ -1015,6 +1017,10 @@ fun Context.editEvent(event: ListEvent) {
         putExtra(EVENT_ID, event.id)
         putExtra(EVENT_OCCURRENCE_TS, event.startTS)
         putExtra(IS_TASK_COMPLETED, event.isTaskCompleted)
+        // Tasks keep TaskActivity edit form; calendar events open the view card first.
+        if (!event.isTask) {
+            putExtra(EVENT_DISPLAY_MODE, EVENT_DISPLAY_MODE_VIEW)
+        }
         startActivity(this)
     }
 }

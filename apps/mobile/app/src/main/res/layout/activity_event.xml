@@ -77,6 +77,20 @@
                 android:padding="@dimen/small_margin"
                 android:src="@drawable/ic_place_vector" />
 
+            <ImageView
+                android:id="@+id/event_map_preview"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_below="@+id/event_location"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:layout_marginTop="@dimen/medium_margin"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/accessibility_map_preview"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
             <org.fossify.commons.views.MyEditText
                 android:id="@+id/event_description"
                 android:layout_width="match_parent"

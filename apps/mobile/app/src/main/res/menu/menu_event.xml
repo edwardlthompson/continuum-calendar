@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/edit"
+        android:icon="@drawable/ic_edit_vector"
+        android:title="@string/edit"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/save"
         android:icon="@drawable/ic_check_vector"
         android:title="@string/save"

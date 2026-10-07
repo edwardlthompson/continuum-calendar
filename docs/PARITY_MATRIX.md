@@ -38,13 +38,14 @@
 | Redact titles (screenshots) | Toggle | Toggle | `redactTitlesInScreenshots` |
 | Settings App Data sync | **Peer remote:** either device seeds/pushes/pulls Drive `continuum-settings.json` (CAS). Sign-in reconciles (seed if empty, push pending, else pull). 1s FG poll. | **Peer remote:** same file; CalDAV for calendars + Continuum Google API for settings. Poller runs `reconcilePeerRemote`. Same GCP Client ID project as desktop. | envelope revision |
 | Event editor | Repeat, TZ, up to 3 reminders, busy/visibility/color, location search, attendees | Fossify `EventActivity` | `defaultReminderMinutes` |
+| Event view card | Tap existing → `EventDetailCard` then pencil → editor; create → editor | Tap existing → `EventActivity` view mode then pencil → edit; FAB/create → editor | — |
 | Location autocomplete | History + Photon via native `ureq` (User-Agent) | History + Geocoder, then Photon | — |
 | Date / calendar pickers | In-app calendar + hour/minute menus (WebKitGTK native `datetime-local`/`select` freeze or overlay HTML) | Fossify themed `DatePickerDialog` | — |
 | Recurrence | Daily/weekly/monthly/yearly + until; Google instances hydrate master RRULE so this/following/all works | Repeat interval / rule / until | — |
 | Time zone on event | IANA picker | Per-event TZ picker | — |
 | Extra reminders | Up to 3 popup reminders | Up to 3 reminders + type | — |
 | Busy / free / visibility / event color | Busy checkbox, visibility, color swatches | Availability, access, color | — |
-| Open location on map | Google Maps search link (Photon still suggests places) | `geo:` / map intent | — |
+| Open location on map | OSM / Google / Apple chooser + static OSM preview on view card | `geo:` chooser + OSM static preview on view card | — |
 | Month “today” cell | Red inset ring (`--cc-brand-now`) | Red cell surround (`continuum_brand_now`) | — |
 | Reminders / notifications | OS toast | AlarmManager | reminder fields on events |
 | Contacts autocomplete | People API | ContactsContract + People | — |

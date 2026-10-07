@@ -29,6 +29,10 @@ const val YEAR_LABEL = "year"
 const val EVENT_ID = "event_id"
 const val IS_DUPLICATE_INTENT = "is_duplicate_intent"
 const val EVENT_OCCURRENCE_TS = "event_occurrence_ts"
+/** Continuum: `view` opens read-only card; `edit` opens the form (default). */
+const val EVENT_DISPLAY_MODE = "event_display_mode"
+const val EVENT_DISPLAY_MODE_VIEW = "view"
+const val EVENT_DISPLAY_MODE_EDIT = "edit"
 const val IS_TASK_COMPLETED = "is_task_completed"
 const val NEW_EVENT_START_TS = "new_event_start_ts"
 const val WEEK_START_TIMESTAMP = "week_start_timestamp"
@@ -286,6 +290,7 @@ const val CLASS = "CLASS"
 const val CALENDAR_ID = "CALENDAR_ID"
 const val EVENT_CALENDAR_ID = "EVENT_CALENDAR_ID"
 const val IS_NEW_EVENT = "IS_NEW_EVENT"
+const val IS_VIEW_MODE = "IS_VIEW_MODE"
 const val EVENT_COLOR = "EVENT_COLOR"
 
 // From Status attribute (RFC 5545 3.8.1.11)
