@@ -4,8 +4,6 @@ import { queueGoogleTasksScope } from '../services/googleTasksMap'
 import { humanizeOAuthFailure, isInsufficientDriveScope } from '../auth/oauthErrors'
 import { getSettingsSyncError } from '../services/settingsSync'
 import { saveCalendars } from '../data/localStore'
-import { VENMO_DONATE_URL } from '../about/donate'
-import { openExternal } from '../about/openExternal'
 import { textMatches } from './settingsCatalog'
 import { SettingsRow } from './settingsUi'
 import type { SettingsSectionProps } from './settingsTypes'
@@ -123,15 +121,6 @@ export function SettingsAccount({ form, query }: SettingsSectionProps) {
           />
         </SettingsRow>
       ) : null}
-      <p>
-        <button
-          type="button"
-          className="text-sm text-[var(--cc-accent)] underline-offset-2 hover:underline"
-          onClick={() => void openExternal(VENMO_DONATE_URL)}
-        >
-          Donate via Venmo
-        </button>
-      </p>
     </div>
   )
 }

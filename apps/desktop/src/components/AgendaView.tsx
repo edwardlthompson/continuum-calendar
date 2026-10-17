@@ -283,10 +283,13 @@ function EventRow({
           </span>
         ) : null}
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-[var(--cc-text)]">
+          <span
+            className="block truncate text-sm font-medium"
+            style={{ color: 'var(--cc-text)' }}
+          >
             {displayTitle(ev.title, redactTitles)}
           </span>
-          <span className="block text-xs text-[var(--cc-muted)]">
+          <span className="block text-xs" style={{ color: 'var(--cc-muted)' }}>
             {formatEventTimeRange(ev.start, ev.end, use24HourFormat, ev.allDay)}
           </span>
         </span>

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -32,6 +33,13 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.fossify.calendar.R
 import org.fossify.calendar.adapters.AutoCompleteTextViewAdapter
+import org.fossify.calendar.continuum.ContinuumConflict
+import org.fossify.calendar.continuum.ContinuumEventPreviewFormat
+import org.fossify.calendar.continuum.ContinuumEventViewMode
+import org.fossify.calendar.continuum.ContinuumLocationAdapter
+import org.fossify.calendar.continuum.ContinuumLocationSearch
+import org.fossify.calendar.continuum.ContinuumScheduling
+import org.fossify.calendar.continuum.ContinuumSettingsSync
 import org.fossify.calendar.databinding.ActivityEventBinding
 import org.fossify.calendar.databinding.ItemAttendeeBinding
 import org.fossify.calendar.dialogs.DeleteEventDialog
@@ -39,12 +47,6 @@ import org.fossify.calendar.dialogs.EditRepeatingEventDialog
 import org.fossify.calendar.dialogs.ReminderWarningDialog
 import org.fossify.calendar.dialogs.RepeatLimitTypePickerDialog
 import org.fossify.calendar.dialogs.RepeatRuleWeeklyDialog
-import org.fossify.calendar.continuum.ContinuumConflict
-import org.fossify.calendar.continuum.ContinuumEventViewMode
-import org.fossify.calendar.continuum.ContinuumLocationAdapter
-import org.fossify.calendar.continuum.ContinuumLocationSearch
-import org.fossify.calendar.continuum.ContinuumScheduling
-import org.fossify.calendar.continuum.ContinuumSettingsSync
 import org.fossify.calendar.dialogs.SelectCalendarDialog
 import org.fossify.calendar.dialogs.SelectEventColorDialog
 import org.fossify.calendar.extensions.calDAVHelper
@@ -135,9 +137,11 @@ import org.fossify.commons.extensions.getColoredDrawableWithColor
 import org.fossify.commons.extensions.getDatePickerDialogTheme
 import org.fossify.commons.extensions.getFormattedMinutes
 import org.fossify.commons.extensions.getIntValue
+import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.getProperTextColor
+import org.fossify.commons.extensions.adjustAlpha
 import org.fossify.commons.extensions.getStringValue
 import org.fossify.commons.extensions.getTimePickerDialogTheme
 import org.fossify.commons.extensions.hasPermission
@@ -407,7 +411,10 @@ class EventActivity : SimpleActivity() {
         updateActionBarTitle()
         if (mIsViewMode) {
             applyViewModeChrome()
+            showEventPreviewSheet()
             loadMapPreviewIfNeeded()
+        } else {
+            hideEventPreviewSheet()
         }
         refreshMenuItems()
     }
@@ -790,6 +797,7 @@ class EventActivity : SimpleActivity() {
         checkRepeatTexts(mRepeatInterval)
         checkAttendees()
         applyEditableChrome()
+        hideEventPreviewSheet()
         hideMapPreview()
     }
 
@@ -799,6 +807,7 @@ class EventActivity : SimpleActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         binding.eventToolbar.title = getString(R.string.view_event)
         applyViewModeChrome()
+        showEventPreviewSheet()
         loadMapPreviewIfNeeded()
     }
 
@@ -806,9 +815,134 @@ class EventActivity : SimpleActivity() {
         if (isFinishing || isDestroyed || !mIsViewMode) return
         mIsViewMode = false
         binding.eventToolbar.title = getString(R.string.edit_event)
+        hideEventPreviewSheet()
         applyEditableChrome()
         hideMapPreview()
         refreshMenuItems()
+    }
+
+    private fun showEventPreviewSheet() = binding.apply {
+        eventNestedScrollview.beGone()
+        eventPreviewScroll.beVisible()
+        // Theme walk first, then force high-contrast on preview TextViews/icons
+        // (plain TextViews + dark surfaces can otherwise keep black primary text).
+        updateTextColors(eventPreviewScroll)
+        bindEventPreviewSheet()
+    }
+
+    private fun hideEventPreviewSheet() = binding.apply {
+        eventPreviewScroll.beGone()
+        eventNestedScrollview.beVisible()
+        hidePreviewMapOnly()
+    }
+
+    private fun bindEventPreviewSheet() {
+        if (!::mEvent.isInitialized) return
+        val preview = binding.eventPreview
+        val surface = getProperBackgroundColor()
+        val textColor = surface.getContrastColor()
+        // Secondary stays on the same contrast side as primary (never near-black on dark).
+        val secondaryColor = textColor.adjustAlpha(0.82f)
+        preview.eventPreviewRoot.setBackgroundColor(surface)
+        preview.eventPreviewTitle.text = mEvent.title.ifBlank { getString(R.string.event) }
+        preview.eventPreviewTitle.setTextColor(textColor)
+        val whenLine = ContinuumEventPreviewFormat.formatWhenLine(
+            startTsSeconds = mEventStartDateTime.seconds(),
+            endTsSeconds = mEventEndDateTime.seconds(),
+            allDay = mIsAllDayEvent,
+            use24Hour = config.use24HourFormat,
+        )
+        preview.eventPreviewWhen.text = whenLine
+        preview.eventPreviewWhen.setTextColor(textColor)
+
+        val cal = mStoredCalendars.firstOrNull { it.id == mEvent.calendarId }
+            ?: mStoredCalendars.firstOrNull { it.id == mCalendarId }
+        val color = when {
+            mEventColor != 0 -> mEventColor
+            mEvent.color != 0 -> mEvent.color
+            cal != null -> cal.color
+            else -> getProperPrimaryColor()
+        }
+        val chip = preview.eventPreviewColor.background
+        if (chip is GradientDrawable) {
+            chip.setColor(color)
+        } else {
+            preview.eventPreviewColor.setBackgroundColor(color)
+        }
+
+        val location = ContinuumEventPreviewFormat.nonBlank(mEvent.location)
+        preview.eventPreviewLocationRow.beVisibleIf(location != null)
+        if (location != null) {
+            preview.eventPreviewLocation.text = location
+            preview.eventPreviewLocation.setTextColor(textColor)
+            preview.eventPreviewLocationIcon.applyColorFilter(textColor)
+            preview.eventPreviewLocationRow.setOnClickListener { showOnMap() }
+        } else {
+            preview.eventPreviewLocationRow.setOnClickListener(null)
+        }
+
+        val reminderText = ContinuumEventPreviewFormat.reminderLabels(
+            listOf(mReminder1Minutes, mReminder2Minutes, mReminder3Minutes),
+        ).joinToString("\n")
+        preview.eventPreviewReminderRow.beVisibleIf(reminderText.isNotEmpty())
+        if (reminderText.isNotEmpty()) {
+            preview.eventPreviewReminder.text = reminderText
+            preview.eventPreviewReminder.setTextColor(textColor)
+            preview.eventPreviewReminderIcon.applyColorFilter(textColor)
+        }
+
+        val organizer = ContinuumEventPreviewFormat.organizerRow(mEvent.attendees)
+        preview.eventPreviewOrganizerRow.beVisibleIf(organizer != null)
+        if (organizer != null) {
+            preview.eventPreviewOrganizerPrimary.text = organizer.primary
+            preview.eventPreviewOrganizerPrimary.setTextColor(textColor)
+            preview.eventPreviewOrganizerIcon.applyColorFilter(textColor)
+            val email = organizer.secondary
+            preview.eventPreviewOrganizerSecondary.beVisibleIf(email != null)
+            if (email != null) {
+                preview.eventPreviewOrganizerSecondary.text = email
+                preview.eventPreviewOrganizerSecondary.setTextColor(secondaryColor)
+            }
+        }
+
+        val calendarName = when {
+            cal == null -> null
+            cal.caldavCalendarId != 0 -> cal.caldavDisplayName.ifEmpty { cal.title }
+            else -> cal.title
+        }.let { ContinuumEventPreviewFormat.nonBlank(it) }
+        val calendarEmail = ContinuumEventPreviewFormat.calendarSubtitle(
+            if (cal != null && cal.caldavCalendarId != 0) cal.caldavEmail else null,
+        )
+        preview.eventPreviewCalendarRow.beVisibleIf(calendarName != null)
+        if (calendarName != null) {
+            preview.eventPreviewCalendarPrimary.text = calendarName
+            preview.eventPreviewCalendarPrimary.setTextColor(textColor)
+            preview.eventPreviewCalendarIcon.applyColorFilter(textColor)
+            preview.eventPreviewCalendarSecondary.beVisibleIf(calendarEmail != null)
+            if (calendarEmail != null) {
+                preview.eventPreviewCalendarSecondary.text = calendarEmail
+                preview.eventPreviewCalendarSecondary.setTextColor(secondaryColor)
+            }
+        }
+
+        val description = ContinuumEventPreviewFormat.nonBlank(mEvent.description)
+        preview.eventPreviewDescription.beVisibleIf(description != null)
+        if (description != null) {
+            preview.eventPreviewDescription.text = description
+            preview.eventPreviewDescription.setTextColor(textColor)
+            Linkify.addLinks(
+                preview.eventPreviewDescription,
+                Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES,
+            )
+            preview.eventPreviewDescription.movementMethod = LinkMovementMethod.getInstance()
+        }
+    }
+
+    private fun hidePreviewMapOnly() {
+        val map = binding.eventPreview.eventPreviewMap
+        map.visibility = View.GONE
+        map.setOnClickListener(null)
+        Glide.with(this).clear(map)
     }
 
     private fun canEditCurrentEvent(): Boolean {
@@ -919,6 +1053,7 @@ class EventActivity : SimpleActivity() {
         eventMapPreview.setOnClickListener(null)
         Glide.with(this@EventActivity).clear(eventMapPreview)
         positionDescriptionBelow(R.id.event_location)
+        hidePreviewMapOnly()
     }
 
     private fun loadMapPreviewIfNeeded() {
@@ -932,24 +1067,25 @@ class EventActivity : SimpleActivity() {
             runOnUiThread {
                 if (isDestroyed || isFinishing || !mIsViewMode) return@runOnUiThread
                 if (coords == null) {
-                    hideMapPreview()
+                    hidePreviewMapOnly()
                     return@runOnUiThread
                 }
                 val (lat, lon) = coords
                 val url = ContinuumEventViewMode.osmStaticMapUrl(lat, lon)
-                binding.eventMapPreview.visibility = View.VISIBLE
-                positionDescriptionBelow(R.id.event_map_preview)
-                binding.eventMapPreview.setOnClickListener { showOnMap() }
+                val map = binding.eventPreview.eventPreviewMap
+                map.visibility = View.VISIBLE
+                map.setOnClickListener { showOnMap() }
                 Glide.with(this@EventActivity)
                     .load(url)
                     .diskCacheStrategy(DiskCacheStrategy.DATA)
-                    .into(binding.eventMapPreview)
+                    .into(map)
             }
         }
     }
 
     private fun setupNewEvent() {
         mIsViewMode = false
+        hideEventPreviewSheet()
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         binding.eventTitle.requestFocus()
         binding.eventToolbar.title = getString(R.string.new_event)

@@ -21,6 +21,8 @@ import org.fossify.commons.adapters.MyRecyclerViewAdapter
 import org.fossify.commons.extensions.adjustAlpha
 import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beVisibleIf
+import org.fossify.commons.extensions.getContrastColor
+import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.helpers.MEDIUM_ALPHA
 import org.fossify.commons.helpers.ensureBackgroundThread
@@ -124,7 +126,6 @@ class DayEventsAdapter(
                 conflictKeys.contains(ContinuumConflict.occurrenceKey(event)),
             )
             eventItemTitle.checkViewStrikeThrough(event.shouldStrikeThrough())
-            eventItemTitle.enableOverflowMarquee()
             eventItemTime.text = if (event.getIsAllDay()) allDayString else Formatter.getTimeFromTS(activity, event.startTS)
             if (event.startTS != event.endTS) {
                 val startDayCode = Formatter.getDayCodeFromTS(event.startTS)
@@ -146,7 +147,8 @@ class DayEventsAdapter(
             eventItemDescription.beVisibleIf(displayDescription && eventItemDescription.text.isNotEmpty())
             eventItemColorBar.background.applyColorFilter(event.color)
 
-            var newTextColor = textColor
+            val surfaceText = activity.getProperBackgroundColor().getContrastColor()
+            var newTextColor = if (isPrintVersion) textColor else surfaceText
 
             val adjustAlpha = if (event.isTask()) {
                 dimCompletedTasks && event.isTaskCompleted()
@@ -161,6 +163,7 @@ class DayEventsAdapter(
 
             eventItemTime.setTextColor(newTextColor)
             eventItemTitle.setTextColor(newTextColor)
+            eventItemTitle.enableOverflowMarquee()
             eventItemDescription.setTextColor(newTextColor)
             eventItemTaskImage.beVisibleIf(event.isTask())
             eventItemTaskImage.applyColorFilter(newTextColor)

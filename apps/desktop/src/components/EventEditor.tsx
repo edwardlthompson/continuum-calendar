@@ -162,7 +162,7 @@ export function EventEditor({
               />
               All day
             </label>
-            <div className="grid min-w-0 gap-2 sm:grid-cols-2">
+            <div className="flex min-w-0 flex-col gap-3">
               <DateTimeLocalField
                 label="Start"
                 allDay={allDay}

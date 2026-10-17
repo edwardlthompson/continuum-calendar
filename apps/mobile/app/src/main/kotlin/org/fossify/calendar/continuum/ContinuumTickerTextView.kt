@@ -111,7 +111,16 @@ class ContinuumTickerTextView @JvmOverloads constructor(
         }
     }
 
+    override fun setTextColor(color: Int) {
+        super.setTextColor(color)
+        // Custom onDraw uses paint directly — keep it in lockstep with the TextView color
+        // (otherwise long birthday titles can paint near-black on dark surfaces).
+        paint.color = color
+        invalidate()
+    }
+
     override fun onDraw(canvas: Canvas) {
+        paint.color = currentTextColor
         if (ticker.overflow <= 0f || ticker.mode == TitleOverflowMode.SHRINK) {
             if (ticker.overflow <= 0f) ellipsize = TextUtils.TruncateAt.END
             super.onDraw(canvas)

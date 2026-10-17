@@ -1,4 +1,5 @@
 import type { Ref } from 'react'
+import type { WeekHourDisplay } from '@continuum/shared'
 import { hotkeyTitle } from '../hooks/desktopHotkeys'
 import { DateOnlyField } from './DateTimeLocalField'
 
@@ -21,6 +22,8 @@ export function CalendarToolbar(props: {
   onToday: () => void
   searchRef?: Ref<HTMLInputElement>
   firstDayOfWeek?: number
+  weekHourDisplay?: WeekHourDisplay
+  onWeekHourDisplay?: (mode: WeekHourDisplay) => void
 }) {
   const btn = (id: MainView, label: string, hint: string) => (
     <button
@@ -68,6 +71,40 @@ export function CalendarToolbar(props: {
           ariaLabel="Go to date"
         />
       </div>
+      {props.view === 'rolling' && props.onWeekHourDisplay ? (
+        <div
+          className="flex items-center gap-0.5 rounded border border-[var(--cc-border)] p-0.5"
+          role="group"
+          aria-label="Week hours display"
+        >
+          <button
+            type="button"
+            className={`cc-btn rounded px-2 py-0.5 text-xs ${
+              props.weekHourDisplay === 'scroll'
+                ? 'bg-[var(--cc-accent)] text-[var(--cc-on-accent)]'
+                : ''
+            }`}
+            aria-pressed={props.weekHourDisplay === 'scroll'}
+            title="Scroll the full day"
+            onClick={() => props.onWeekHourDisplay?.('scroll')}
+          >
+            Scroll
+          </button>
+          <button
+            type="button"
+            className={`cc-btn rounded px-2 py-0.5 text-xs ${
+              props.weekHourDisplay === 'fit24'
+                ? 'bg-[var(--cc-accent)] text-[var(--cc-on-accent)]'
+                : ''
+            }`}
+            aria-pressed={props.weekHourDisplay === 'fit24'}
+            title="Fit all 24 hours in the view"
+            onClick={() => props.onWeekHourDisplay?.('fit24')}
+          >
+            Fit 24h
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }

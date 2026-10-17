@@ -13,6 +13,9 @@ export interface CalendarNotifyPrefs {
   reminder: boolean
 }
 
+/** Desktop week time-grid: compress 24h into the pane, or scroll tall slots. */
+export type WeekHourDisplay = 'fit24' | 'scroll'
+
 export interface ContinuumSettings {
   themeMode: ThemeMode
   showEmptyDaysInAgenda: boolean
@@ -45,6 +48,11 @@ export interface ContinuumSettings {
   useGoogleCalendar: boolean
   /** Per logicalId notify prefs (New event / Event reminder). */
   calendarNotifyPrefs: Record<string, CalendarNotifyPrefs>
+  /**
+   * Desktop week grid: fit all 24 hours in the viewport, or scroll.
+   * Working hours still drive free-slot / propose math only.
+   */
+  weekHourDisplay: WeekHourDisplay
 }
 
 export interface SettingsUpdatedBy {
@@ -92,6 +100,7 @@ export function defaultContinuumSettings(): ContinuumSettings {
     firstDayOfWeek: 0,
     useGoogleCalendar: true,
     calendarNotifyPrefs: {},
+    weekHourDisplay: 'scroll',
   }
 }
 
@@ -148,4 +157,9 @@ export function normalizeFirstDayOfWeek(value: unknown): number {
   const i = Math.trunc(n)
   if (i < 0 || i > 6) return 0
   return i
+}
+
+/** Invalid/missing → scroll (readable tall slots). */
+export function normalizeWeekHourDisplay(value: unknown): WeekHourDisplay {
+  return value === 'fit24' || value === 'scroll' ? value : 'scroll'
 }

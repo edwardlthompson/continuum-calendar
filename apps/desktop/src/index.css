@@ -85,8 +85,36 @@ body {
   box-shadow: inset 0 0 0 2px var(--cc-brand-now);
 }
 
-.fc .fc-timegrid-slot {
+/* Week title: day-shift arrows flanking the date range. */
+.cc-week-scroll .fc .fc-prevDay-button,
+.cc-week-scroll .fc .fc-nextDay-button,
+.cc-week-fit24 .fc .fc-prevDay-button,
+.cc-week-fit24 .fc .fc-nextDay-button {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+  min-width: 2rem;
+  padding: 0.15rem 0.45rem;
+}
+
+.cc-week-scroll .fc .fc-toolbar-title,
+.cc-week-fit24 .fc .fc-toolbar-title {
+  font-size: 1.05rem;
+}
+
+/* Scroll mode only: fixed hour-row height (enables vertical scroll). */
+.cc-week-scroll .fc .fc-timegrid-slot {
   height: 2.25rem;
+}
+
+/*
+ * Fit 24h: FullCalendar expandRows sets the slots table height to the liquid
+ * pane on every resize. height:0 on slots lets HTML table rows share that
+ * height equally (compress or expand with the window). Do not set overflow
+ * hidden on the timegrid body/scroller — that previously clipped ~19:00.
+ */
+.cc-week-fit24 .fc .fc-timegrid-slot {
+  height: 0;
 }
 
 .cc-fab {

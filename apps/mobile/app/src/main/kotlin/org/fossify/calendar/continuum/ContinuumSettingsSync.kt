@@ -237,6 +237,10 @@ class ContinuumSettingsSync(private val context: Context) {
             } else {
                 baseSettings.calendarNotifyPrefs
             },
+            weekHourDisplay = when (patch.weekHourDisplay) {
+                "fit24", "scroll" -> patch.weekHourDisplay
+                else -> baseSettings.weekHourDisplay
+            },
         )
         val revision = (remote?.optLong("revision") ?: lastRevision()) + 1
         val hash = sha256(settingsToJson(merged).toString())
@@ -373,6 +377,10 @@ class ContinuumSettingsSync(private val context: Context) {
                 }
             } ?: listOf("google:primary"),
             calendarNotifyPrefs = parseNotifyPrefs(json.optJSONObject("calendarNotifyPrefs")),
+            weekHourDisplay = when (val raw = json.optString("weekHourDisplay", "scroll")) {
+                "fit24", "scroll" -> raw
+                else -> "scroll"
+            },
         )
     }
 
@@ -415,6 +423,7 @@ class ContinuumSettingsSync(private val context: Context) {
             .put("use24HourFormat", s.use24HourFormat)
             .put("firstDayOfWeek", s.firstDayOfWeek)
             .put("useGoogleCalendar", s.useGoogleCalendar)
+            .put("weekHourDisplay", s.weekHourDisplay)
             .put("defaultWriteCalendarId", s.defaultWriteCalendarId)
             .put("visibleCalendarIds", JSONArray(s.visibleCalendarIds))
             .put(

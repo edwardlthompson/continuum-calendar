@@ -120,9 +120,10 @@ def pre_release_steps(local: bool) -> list[str]:
 
 
 def audit_jobs(root: Path) -> list[tuple[list[str], Path | None]]:
+    """Local scanners. upd JSON audit is filtered to HIGH/CRITICAL in the CLI."""
     jobs: list[tuple[list[str], Path | None]] = []
     if shutil.which("uvx"):
-        jobs.append((upd_base() + ["audit", "--check"], None))
+        jobs.append((upd_base() + ["audit", "--format", "json"], None))
     for sub in ("examples/web", "examples/node"):
         if (root / sub / "package-lock.json").is_file() and shutil.which("npm"):
             jobs.append((["npm", "audit", "--audit-level=high"], root / sub))

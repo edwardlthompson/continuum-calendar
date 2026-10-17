@@ -5,6 +5,7 @@ import {
   isValidEnvelope,
   normalizeCalendarNotifyPrefs,
   normalizeFirstDayOfWeek,
+  normalizeWeekHourDisplay,
   prepareSettingsWrite,
   shouldApplyRemote,
   type ContinuumSettings,
@@ -95,6 +96,7 @@ export function normalizeSettings(raw: ContinuumSettings): ContinuumSettings {
         ? raw.notificationEnabled
         : defaults.notificationEnabled,
     calendarNotifyPrefs: normalizeCalendarNotifyPrefs(raw.calendarNotifyPrefs),
+    weekHourDisplay: normalizeWeekHourDisplay(raw.weekHourDisplay),
   }
 }
 

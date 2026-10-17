@@ -46,6 +46,8 @@ data class ContinuumSettings(
     val firstDayOfWeek: Int = 0,
     val useGoogleCalendar: Boolean = true,
     val calendarNotifyPrefs: Map<String, CalendarNotifyPrefs> = emptyMap(),
+    /** Desktop week grid: fit24 | scroll (peer-synced; Android week already scrolls 24h). */
+    val weekHourDisplay: String = "scroll",
 )
 
 data class SettingsUpdatedBy(

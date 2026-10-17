@@ -24,6 +24,8 @@ import org.fossify.commons.adapters.MyRecyclerViewAdapter
 import org.fossify.commons.extensions.adjustAlpha
 import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beVisibleIf
+import org.fossify.commons.extensions.getContrastColor
+import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.helpers.MEDIUM_ALPHA
 import org.fossify.commons.helpers.ensureBackgroundThread
@@ -153,7 +155,6 @@ class EventListAdapter(
             val conflict = conflictIds.contains(ContinuumConflict.occurrenceKey(listEvent))
             eventItemTitle.text = ContinuumConflict.titleWithConflictWarning(listEvent.title, conflict)
             eventItemTitle.checkViewStrikeThrough(listEvent.shouldStrikeThrough())
-            eventItemTitle.enableOverflowMarquee()
             eventItemTime.text = if (listEvent.isAllDay) allDayString else Formatter.getTimeFromTS(activity, listEvent.startTS)
             if (listEvent.startTS != listEvent.endTS) {
                 if (!listEvent.isAllDay) {
@@ -171,7 +172,9 @@ class EventListAdapter(
             eventItemDescription.beVisibleIf(displayDescription && eventItemDescription.text.isNotEmpty())
             eventItemColorBar.background.applyColorFilter(listEvent.color)
 
-            var newTextColor = textColor
+            // Force surface contrast so long marquee titles never paint black on dark themes.
+            val surfaceText = activity.getProperBackgroundColor().getContrastColor()
+            var newTextColor = if (isPrintVersion) textColor else surfaceText
             if (listEvent.isAllDay || listEvent.startTS <= now && listEvent.endTS <= now) {
                 if (listEvent.isAllDay && Formatter.getDayCodeFromTS(listEvent.startTS) == Formatter.getDayCodeFromTS(now) && !isPrintVersion) {
                     newTextColor = properPrimaryColor
@@ -191,6 +194,7 @@ class EventListAdapter(
 
             eventItemTime.setTextColor(newTextColor)
             eventItemTitle.setTextColor(newTextColor)
+            eventItemTitle.enableOverflowMarquee()
             eventItemDescription.setTextColor(newTextColor)
             eventItemTaskImage.applyColorFilter(newTextColor)
             eventItemTaskImage.beVisibleIf(listEvent.isTask)

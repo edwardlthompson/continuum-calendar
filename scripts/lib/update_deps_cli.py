@@ -17,6 +17,7 @@ from update_deps import (
     timeout_seconds,
     upd_argv,
 )
+from upd_audit_severity import run_upd_audit_json
 
 
 def run_cmd(argv: list[str], timeout: int, cwd: Path | None) -> int:
@@ -76,6 +77,10 @@ def main(argv: list[str] | None = None, root: Path | None = None) -> int:
             cmd, cwd = item
             label = " ".join(cmd)
             print(f"=== audit: {label} ===", flush=True)
+            if cmd[:1] == ["uvx"] and "audit" in cmd and "--format" in cmd:
+                from agent_run_env import child_env
+
+                return label, run_upd_audit_json(cmd, timeout, cwd, child_env())
             return label, run_cmd(cmd, timeout, cwd)
 
         with ThreadPoolExecutor(max_workers=workers) as pool:

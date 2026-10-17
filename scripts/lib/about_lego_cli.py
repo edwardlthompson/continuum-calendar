@@ -7,6 +7,8 @@ import re
 import shutil
 from pathlib import Path
 
+from win_copy_retry import copy2_retry
+
 ROOT = Path(__file__).resolve().parents[2]
 STUBS = ROOT / "schemas" / "golden-path" / "about-without"
 TRACKED = (
@@ -58,7 +60,7 @@ def restore(src: Path, root: Path) -> None:
         if bak.is_file():
             dest = root / rel
             dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(bak, dest)
+            copy2_retry(bak, dest)
             copied = True
     if not copied:
         raise SystemExit("about CLI backup missing")

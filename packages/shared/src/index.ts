@@ -22,6 +22,7 @@ export type {
   ContinuumSettings,
   ContinuumSettingsEnvelope,
   SettingsUpdatedBy,
+  WeekHourDisplay,
   WorkingHours,
 } from './settings.js'
 export {
@@ -35,6 +36,7 @@ export {
   defaultSettingsEnvelope,
   normalizeCalendarNotifyPrefs,
   normalizeFirstDayOfWeek,
+  normalizeWeekHourDisplay,
   resolveCalendarNotifyPrefs,
 } from './settings.js'
 export type { ContinuumLocalEventsEnvelope, LocalEventTombstone } from './localEvents.js'

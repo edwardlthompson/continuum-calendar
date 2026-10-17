@@ -65,6 +65,25 @@ export function slotWindowFromWorkingHours(hours?: {
   return { slotMinTime: min, slotMaxTime: max }
 }
 
+/** Full-day slot window for week grid (fit24 / scroll modes). */
+export function fullDaySlotWindow(): { slotMinTime: string; slotMaxTime: string } {
+  return { slotMinTime: '00:00:00', slotMaxTime: '24:00:00' }
+}
+
+/**
+ * Initial scroll time for scroll mode: prefer working-hours start, else now.
+ * FullCalendar scrollToTime expects HH:MM:SS.
+ */
+export function weekScrollFocusTime(
+  hours?: { start?: string; end?: string },
+  now = new Date(),
+): string {
+  const fromWork = toFcTime(hours?.start)
+  if (fromWork) return fromWork
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(now.getHours())}:${pad(now.getMinutes())}:00`
+}
+
 /** Persist payload from a FullCalendar drop/resize. Timed events use ISO instants. */
 export function eventTimesFromFcEvent(arg: GridMoveArg): { start: string; end: string } | null {
   if (ignoreGridMove(arg)) return null

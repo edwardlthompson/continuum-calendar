@@ -6,30 +6,20 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { DateSelectArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core'
-import { eventOccurrenceKey, type CalendarEvent, type CalendarListEntry } from '@continuum/shared'
+import {
+  eventOccurrenceKey,
+  type CalendarEvent,
+  type CalendarListEntry,
+  type WeekHourDisplay,
+} from '@continuum/shared'
 import { fullCalendarTimeFormats } from '../utils/timeFormat'
 import {
+  fullDaySlotWindow,
   isGridEventEditable,
-  slotWindowFromWorkingHours,
+  weekScrollFocusTime,
   type GridMoveArg,
 } from '../grid/gridMove'
-
-function startOfDay(d: Date): Date {
-  const x = new Date(d)
-  x.setHours(0, 0, 0, 0)
-  x.setMilliseconds(0)
-  return x
-}
-
-/** Week start from [firstDayOfWeek] when rollingWeekFromToday is false. */
-function weekAnchor(fromToday: boolean, firstDayOfWeek = 0, base = new Date()): Date {
-  const d = startOfDay(base)
-  if (fromToday) return d
-  const day = d.getDay()
-  const offset = (day - firstDayOfWeek + 7) % 7
-  d.setDate(d.getDate() - offset)
-  return d
-}
+import { weekAnchor } from './weekNav'
 
 interface RollingWeekViewProps {
   events: CalendarEvent[]
@@ -40,7 +30,9 @@ interface RollingWeekViewProps {
   firstDayOfWeek?: number
   weeklyViewDays?: number
   conflictIds?: Set<string>
+  /** Used only for initial scroll focus in scroll mode (not slot clipping). */
   workingHours?: { start?: string; end?: string }
+  weekHourDisplay?: WeekHourDisplay
   moveBusy?: boolean
   onSelectEvent?: (event: CalendarEvent) => void
   onSelectSlot?: (start: Date, end: Date) => void
@@ -49,7 +41,13 @@ interface RollingWeekViewProps {
   focusDate?: string
   focusSeq?: number
   focusScrollTime?: string
+  /** Shift the rolling week by ±1 day (arrows beside the date-range title). */
+  onShiftDays?: (deltaDays: number) => void
 }
+
+/** Hourly slots in fit24 so 24 rows fill the pane without a forced CSS height. */
+const FIT_SLOT_DURATION = '01:00:00'
+const SCROLL_SLOT_DURATION = '00:30:00'
 
 export function RollingWeekView({
   events,
@@ -61,6 +59,7 @@ export function RollingWeekView({
   weeklyViewDays = 7,
   conflictIds,
   workingHours,
+  weekHourDisplay = 'scroll',
   moveBusy = false,
   onSelectEvent,
   onSelectSlot,
@@ -69,11 +68,29 @@ export function RollingWeekView({
   focusDate,
   focusSeq = 0,
   focusScrollTime,
+  onShiftDays,
 }: RollingWeekViewProps) {
   const calendarRef = useRef<FullCalendar>(null)
+  const onShiftDaysRef = useRef(onShiftDays)
+  onShiftDaysRef.current = onShiftDays
   const today = useMemo(
     () => weekAnchor(rollingWeekFromToday, firstDayOfWeek),
     [rollingWeekFromToday, firstDayOfWeek],
+  )
+  const weekNavButtons = useMemo(
+    () => ({
+      prevDay: {
+        text: '‹',
+        hint: 'Previous day',
+        click: () => onShiftDaysRef.current?.(-1),
+      },
+      nextDay: {
+        text: '›',
+        hint: 'Next day',
+        click: () => onShiftDaysRef.current?.(1),
+      },
+    }),
+    [],
   )
   const byId = useMemo(() => new Map(events.map((e) => [e.id, e])), [events])
   const colorByCal = useMemo(() => {
@@ -104,7 +121,12 @@ export function RollingWeekView({
       }),
     [events, redactTitles, conflictIds, colorByCal, calendars, moveBusy],
   )
-  const slotWindow = useMemo(() => slotWindowFromWorkingHours(workingHours), [workingHours])
+  const slotWindow = useMemo(() => fullDaySlotWindow(), [])
+  const scrollMode = weekHourDisplay === 'scroll'
+  const defaultScrollTime = useMemo(
+    () => weekScrollFocusTime(workingHours),
+    [workingHours],
+  )
 
   function handleEventClick(arg: EventClickArg) {
     const ev = byId.get(arg.event.id)
@@ -175,27 +197,45 @@ export function RollingWeekView({
   }
 
   const timeFormats = fullCalendarTimeFormats(use24HourFormat)
+  const slotDuration = scrollMode ? SCROLL_SLOT_DURATION : FIT_SLOT_DURATION
+  // Fit 24h: expandRows sizes the slots table to the liquid pane on every layout/resize.
+  // Scroll: fixed CSS row height; expandRows off so the grid scrolls.
+  const expandRows = !scrollMode
 
   useEffect(() => {
     const api = calendarRef.current?.getApi()
     if (!api) return
     if (calendarView && api.view.type !== calendarView) api.changeView(calendarView)
     if (focusDate) api.gotoDate(focusDate)
-    if (focusScrollTime && calendarView === 'rollingWeek') api.scrollToTime(focusScrollTime)
-  }, [calendarView, focusDate, focusScrollTime, focusSeq])
+    if (calendarView === 'rollingWeek' && scrollMode) {
+      api.scrollToTime(focusScrollTime || defaultScrollTime)
+    }
+  }, [calendarView, focusDate, focusScrollTime, focusSeq, scrollMode, defaultScrollTime])
+
+  useEffect(() => {
+    const api = calendarRef.current?.getApi()
+    if (!api || calendarView !== 'rollingWeek') return
+    api.setOption('slotDuration', slotDuration)
+    api.setOption('expandRows', expandRows)
+  }, [slotDuration, expandRows, calendarView])
 
   return (
-    <div className="h-full min-h-[28rem] rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-2 shadow-sm">
+    <div
+      className={`h-full min-h-0 rounded-xl border border-[var(--cc-border)] bg-[var(--cc-surface)] p-2 shadow-sm ${
+        scrollMode ? 'cc-week-scroll' : 'cc-week-fit24'
+      }`}
+    >
       <FullCalendar
-        key={`${today.toISOString()}-${use24HourFormat}-${firstDayOfWeek}-${weeklyViewDays}-${slotWindow.slotMinTime}-${slotWindow.slotMaxTime}`}
+        key={`${today.toISOString()}-${use24HourFormat}-${firstDayOfWeek}-${weeklyViewDays}-${weekHourDisplay}-${slotWindow.slotMinTime}-${slotWindow.slotMaxTime}-${slotDuration}`}
         ref={calendarRef}
         plugins={[timeGridPlugin, dayGridPlugin, multiMonthPlugin, interactionPlugin]}
         initialView={calendarView}
-        headerToolbar={{
-          left: '',
-          center: 'title',
-          right: '',
-        }}
+        headerToolbar={
+          calendarView === 'rollingWeek'
+            ? { left: 'prevDay', center: 'title', right: 'nextDay' }
+            : { left: '', center: 'title', right: '' }
+        }
+        customButtons={calendarView === 'rollingWeek' ? weekNavButtons : undefined}
         buttonText={{
           today: 'Today',
           month: 'Month',
@@ -215,14 +255,15 @@ export function RollingWeekView({
             buttonText: 'Year',
           },
         }}
-        initialDate={today}
+        initialDate={focusDate || today}
         firstDay={firstDayOfWeek}
         nowIndicator
         weekends
         allDaySlot
         slotMinTime={slotWindow.slotMinTime}
         slotMaxTime={slotWindow.slotMaxTime}
-        expandRows
+        slotDuration={slotDuration}
+        expandRows={expandRows}
         height="100%"
         events={fcEvents}
         editable={!moveBusy}

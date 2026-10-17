@@ -583,15 +583,16 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
 
     private fun checkIsOpenIntent(): Boolean {
         val dayCodeToOpen = intent.getStringExtra(DAY_CODE) ?: ""
-        val viewToOpen = intent.getIntExtra(VIEW_TO_OPEN, DAILY_VIEW)
+        val viewToOpen = intent.getIntExtra(VIEW_TO_OPEN, LAST_VIEW)
         intent.removeExtra(VIEW_TO_OPEN)
         intent.removeExtra(DAY_CODE)
         if (dayCodeToOpen.isNotEmpty()) {
             binding.calendarFab.beVisible()
-            if (viewToOpen != LAST_VIEW) {
-                config.storedView = viewToOpen
-            }
-            updateViewPager(dayCodeToOpen)
+            // Show the requested view for this open only — do not overwrite the
+            // user's last view (restored on the next cold start via storedView).
+            val displayView = if (viewToOpen == LAST_VIEW) config.storedView else viewToOpen
+            binding.calendarFab.beVisibleIf(displayView != YEARLY_VIEW && displayView != WEEKLY_VIEW)
+            updateViewPager(dayCodeToOpen, displayView)
             return true
         }
 
@@ -1198,12 +1199,13 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         }
     }
 
-    private fun updateViewPager(dayCode: String? = null) {
-        val fragment = getFragmentsHolder()
+    private fun updateViewPager(dayCode: String? = null, viewOverride: Int? = null) {
+        val view = viewOverride ?: config.storedView
+        val fragment = getFragmentsHolder(view)
         val bundle = Bundle()
-        val fixedDayCode = fixDayCode(dayCode)
+        val fixedDayCode = fixDayCode(dayCode, view)
 
-        when (config.storedView) {
+        when (view) {
             DAILY_VIEW -> bundle.putString(DAY_CODE, fixedDayCode ?: Formatter.getTodayCode())
             WEEKLY_VIEW -> bundle.putString(
                 WEEK_START_DATE_TIME,
@@ -1225,12 +1227,12 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         binding.mainMenu.toggleForceArrowBackIcon(false)
     }
 
-    private fun fixDayCode(dayCode: String? = null): String? = when {
-        config.storedView == WEEKLY_VIEW && (dayCode?.length == DAYCODE_PATTERN.length) -> {
+    private fun fixDayCode(dayCode: String? = null, view: Int = config.storedView): String? = when {
+        view == WEEKLY_VIEW && (dayCode?.length == DAYCODE_PATTERN.length) -> {
             getFirstDayOfWeek(Formatter.getLocalDateTimeFromCode(dayCode))
         }
 
-        config.storedView == YEARLY_VIEW && (dayCode?.length == DAYCODE_PATTERN.length) -> {
+        view == YEARLY_VIEW && (dayCode?.length == DAYCODE_PATTERN.length) -> {
             Formatter.getYearFromDayCode(dayCode)
         }
 
@@ -1361,7 +1363,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         showBackNavigationArrow()
     }
 
-    private fun getFragmentsHolder() = when (config.storedView) {
+    private fun getFragmentsHolder(view: Int = config.storedView) = when (view) {
         DAILY_VIEW -> DayFragmentsHolder()
         MONTHLY_VIEW -> MonthFragmentsHolder()
         MONTHLY_DAILY_VIEW -> MonthDayFragmentsHolder()
@@ -1675,8 +1677,8 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
     private fun openDayAt(timestamp: Long) {
         val dayCode = Formatter.getDayCodeFromTS(timestamp / 1000L)
         binding.calendarFab.beVisible()
-        config.storedView = DAILY_VIEW
-        updateViewPager(dayCode)
+        // Temporary daily navigation from widgets/intents — keep storedView for next launch.
+        updateViewPager(dayCode, DAILY_VIEW)
     }
 
     private fun getHolidayRadioItems(callback: (ArrayList<RadioItem>) -> Unit) {

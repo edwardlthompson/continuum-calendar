@@ -1,4 +1,4 @@
-import type { ThemeMode } from '@continuum/shared'
+import type { ThemeMode, WeekHourDisplay } from '@continuum/shared'
 import { textMatches } from './settingsCatalog'
 import { SettingsFieldSelect, SettingsRow } from './settingsUi'
 import type { SettingsSectionProps } from './settingsTypes'
@@ -26,6 +26,17 @@ export function SettingsAppearance({ form, query }: SettingsSectionProps) {
             checked={form.settings.use24HourFormat}
             onChange={(e) => form.persistSettings({ use24HourFormat: e.target.checked })}
           />
+        </SettingsRow>
+      ) : null}
+      {show('Week hours', 'fit 24', 'scroll', 'week grid') ? (
+        <SettingsRow label="Week hours">
+          <SettingsFieldSelect
+            value={form.settings.weekHourDisplay}
+            onChange={(v) => form.persistSettings({ weekHourDisplay: v as WeekHourDisplay })}
+          >
+            <option value="scroll">Scroll (full day)</option>
+            <option value="fit24">Fit 24 hours</option>
+          </SettingsFieldSelect>
         </SettingsRow>
       ) : null}
       {show('Redact titles', 'screenshots', 'privacy') ? (

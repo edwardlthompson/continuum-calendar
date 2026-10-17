@@ -4,10 +4,12 @@ import type { CalendarEvent, CalendarListEntry } from '@continuum/shared'
 import {
   applyGridMove,
   eventTimesFromFcEvent,
+  fullDaySlotWindow,
   ignoreGridMove,
   isGridEventEditable,
   isSeriesEvent,
   slotWindowFromWorkingHours,
+  weekScrollFocusTime,
 } from './gridMove.ts'
 
 const cal = (over: Partial<CalendarListEntry> = {}): CalendarListEntry => ({
@@ -53,6 +55,21 @@ test('slotWindowFromWorkingHours falls back when empty or inverted', () => {
     slotMinTime: '09:00:00',
     slotMaxTime: '17:00:00',
   })
+})
+
+test('fullDaySlotWindow covers 00:00–24:00', () => {
+  assert.deepEqual(fullDaySlotWindow(), {
+    slotMinTime: '00:00:00',
+    slotMaxTime: '24:00:00',
+  })
+})
+
+test('weekScrollFocusTime prefers working-hours start', () => {
+  assert.equal(weekScrollFocusTime({ start: '08:00', end: '16:00' }), '08:00:00')
+  assert.equal(
+    weekScrollFocusTime(undefined, new Date('2026-10-16T15:30:00')),
+    '15:30:00',
+  )
 })
 
 test('isGridEventEditable respects read-only calendars and events', () => {

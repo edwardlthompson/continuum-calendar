@@ -129,7 +129,7 @@ export function DateOnlyField({
         autoComplete="off"
         spellCheck={false}
         placeholder="YYYY-MM-DD"
-        className={`${fieldClass} w-full min-w-[11ch] tabular-nums`}
+        className={`${fieldClass} w-full min-w-[14ch] tabular-nums`}
         aria-labelledby={labelledBy}
         aria-label={ariaLabel}
         required={required}

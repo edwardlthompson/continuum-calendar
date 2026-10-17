@@ -25,6 +25,7 @@ import {
   type FreeSlot,
 } from '@continuum/shared'
 import { RollingWeekView } from './components/RollingWeekView'
+import { shiftDateKey, weekViewAnchorKey } from './components/weekNav'
 import { AgendaView } from './components/AgendaView'
 import { EventEditor } from './components/EventEditor'
 import { RecurrenceScopeDialog } from './grid/RecurrenceScopeDialog'
@@ -132,6 +133,7 @@ import { hotkeyTitle } from './hooks/desktopHotkeys'
 import { mergeHolidayEvents, type HolidayPackId } from './services/holidayPacks'
 import { SettingsPanel } from './settings/SettingsPanel'
 import { renderBadgePng, renderOverlayPng } from './services/dayBadge'
+import { loadLastMainView, saveLastMainView } from './services/lastMainView'
 import {
   loadWindowBehavior,
   toNativeArgs,
@@ -168,10 +170,18 @@ export default function App() {
   )
   const [events, setEvents] = useState<CalendarEvent[]>(() => ensureSeededEvents())
   const [calendars, setCalendars] = useState(() => loadCalendars())
-  const [view, setView] = useState<MainView>('agenda')
+  const [view, setViewState] = useState<MainView>(() => loadLastMainView('rolling'))
+  const setView = useCallback((next: MainView) => {
+    setViewState(next)
+    saveLastMainView(next)
+  }, [])
   const [eventQuery, setEventQuery] = useState('')
   const [jumpDate, setJumpDate] = useState(() => localDateKey())
   const [focusSeq, setFocusSeq] = useState(0)
+  /** When true, rolling week keeps today as the leftmost column (incl. midnight advance). */
+  const weekFollowsTodayRef = useRef(true)
+  const jumpDateRef = useRef(jumpDate)
+  jumpDateRef.current = jumpDate
   const [holidayPack, setHolidayPack] = useState<HolidayPackId>(() => {
     const raw = localStorage.getItem('continuum.holidayPack')
     return raw === 'us' || raw === 'ca' || raw === 'gb' || raw === 'de' ? raw : 'none'
@@ -1147,7 +1157,17 @@ export default function App() {
   }
 
   function goToday() {
-    jumpCalendarTo(localDateKey())
+    const anchor = weekViewAnchorKey(settings.rollingWeekFromToday, settings.firstDayOfWeek)
+    weekFollowsTodayRef.current = true
+    jumpCalendarTo(anchor)
+  }
+
+  function shiftWeekDays(deltaDays: number) {
+    if (!deltaDays) return
+    weekFollowsTodayRef.current = false
+    const next = shiftDateKey(jumpDate, deltaDays)
+    setJumpDate(next)
+    setFocusSeq((n) => n + 1)
   }
 
   function jumpCalendarTo(dateKey: string) {
@@ -1156,6 +1176,8 @@ export default function App() {
     setShowSettings(false)
     setConflictPrompt(null)
     const today = localDateKey()
+    const liveAnchor = weekViewAnchorKey(settings.rollingWeekFromToday, settings.firstDayOfWeek)
+    weekFollowsTodayRef.current = dateKey === liveAnchor || dateKey === today
     const agendaEnd = (() => {
       const d = new Date(`${today}T12:00:00`)
       d.setDate(d.getDate() + Math.max(1, settings.agendaRangeDays ?? 30))
@@ -1313,6 +1335,44 @@ export default function App() {
     onJump: () => setChromePrompt('jump'),
     onPalette: () => setPaletteOpen(true),
   })
+
+  // Rolling week: at local midnight (and on wake), keep today as the leftmost column.
+  useEffect(() => {
+    let timer = 0
+    const advanceRollingWeekToToday = () => {
+      if (!settings.rollingWeekFromToday) return
+      const anchor = weekViewAnchorKey(true, settings.firstDayOfWeek)
+      if (jumpDateRef.current === anchor) return
+      weekFollowsTodayRef.current = true
+      setJumpDate(anchor)
+      setFocusSeq((n) => n + 1)
+    }
+    const msUntilNextMidnight = () => {
+      const now = new Date()
+      const next = new Date(now)
+      next.setHours(24, 0, 0, 0)
+      return Math.max(1000, next.getTime() - now.getTime() + 50)
+    }
+    const schedule = () => {
+      window.clearTimeout(timer)
+      timer = window.setTimeout(() => {
+        advanceRollingWeekToToday()
+        schedule()
+      }, msUntilNextMidnight())
+    }
+    schedule()
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        advanceRollingWeekToToday()
+        schedule()
+      }
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [settings.rollingWeekFromToday, settings.firstDayOfWeek])
 
   useEffect(() => {
     if (!showSettings) return
@@ -1558,6 +1618,8 @@ export default function App() {
         onToday={goToday}
         searchRef={searchRef}
         firstDayOfWeek={settings.firstDayOfWeek}
+        weekHourDisplay={settings.weekHourDisplay}
+        onWeekHourDisplay={(mode) => persistSettings({ weekHourDisplay: mode })}
       />
 
       <div className="flex min-h-0 flex-1 gap-5">
@@ -1653,8 +1715,10 @@ export default function App() {
                 firstDayOfWeek={settings.firstDayOfWeek}
                 weeklyViewDays={settings.weeklyViewDays}
                 workingHours={settings.workingHours}
+                weekHourDisplay={settings.weekHourDisplay}
                 moveBusy={gridMoveBusy || Boolean(gridScopePrompt)}
                 conflictIds={new Set(conflicts.flatMap((c) => [eventOccurrenceKey(c.a), eventOccurrenceKey(c.b)]))}
+                onShiftDays={shiftWeekDays}
                 onSelectEvent={(ev) => {
                   void openEventView(ev)
                 }}
@@ -1669,7 +1733,7 @@ export default function App() {
             )}
               </div>
               {editing ? (
-                <aside className="flex min-h-0 w-full max-w-lg shrink-0 flex-col border-l border-[var(--cc-border)] pl-3">
+                <aside className="flex min-h-0 w-full max-w-3xl shrink-0 flex-col border-l border-[var(--cc-border)] pl-3">
                   {eventPanelMode === 'view' ? (
                     <EventDetailCard
                       event={editing}

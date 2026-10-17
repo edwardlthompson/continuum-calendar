@@ -4,7 +4,7 @@ Signed-out Google relabel (never hide), first-run copy, Menu prune, idle status 
 
 ## Acceptance criteria
 
-- User-visible behavior: google calendars when signed out say “Sign in to sync”; header is “On this computer” or “Signed in”; Menu keeps scheduling plus Import calendar; Donate lives in Settings Account; idle status bar hidden
+- User-visible behavior: google calendars when signed out say “Sign in to sync”; header is “On this computer” or “Signed in”; Menu keeps scheduling plus Import calendar; Donate is not under Account & Google (About / launch nudge only); idle status bar hidden
 - Offline/error behavior: missing displayName uses calendar id; flash timer cleared on unmount
 - Accessibility: Start/End hour and minute have distinct aria-labels; date field min 11ch
 - i18n: N/A — desktop copy stays English
@@ -23,7 +23,6 @@ Signed-out Google relabel (never hide), first-run copy, Menu prune, idle status 
 | View | `App.tsx`, `SettingsAccount.tsx`, `EventEditor` / `DateTimeLocalField` / `DateTimePopovers` |
 | Tests | `apps/desktop/src/chrome/calendarLabel.test.ts` |
 | Wiring | map calendars through `calendarCaption` before sidebar |
-
 ## Tests
 
 - Automated: yes — `apps/desktop/src/chrome/calendarLabel.test.ts`
