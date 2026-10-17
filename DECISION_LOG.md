@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-10-17 — /ship v1.4.0 week hours, preview, last view
+- **Status:** Accepted
+- **Context:** Desktop needed Fit 24h vs Scroll (full 00–24), day arrows, midnight rolling advance, and per-device last main view; Android needed Google-style event preview and last-view restore without widget intents overwriting prefs. `upd --apply` again mis-tagged `codeql-action@vcodeql-bundle-*` (reverted to `@v4`). Local `upd audit --check` failed on Medium `glib` + unmaintained unic; Dependabot Critical/High zero (one Medium `glib`).
+- **Decision:** Ship feature set; filter local audit to HIGH/CRITICAL only (`upd_audit_severity.py`); restore CodeQL `@v4`; fix web axe `label-content-name-mismatch` on App info nav; Windows About restore retries file locks. Merge Release Please [#66](https://github.com/edwardlthompson/continuum-calendar/pull/66) via admin fallback after CI green.
+- **Alternatives considered:** Bump `glib` to 0.20 (rejected — Tauri gtk `^0.18`). Keep `upd audit --check` failing ship on unmaintained (rejected — conflicts with ship HIGH/CRITICAL policy and npm `--audit-level=high`).
+- **Consequences:** Tag `v1.4.0` needs EXE/APK attached by CI. Last view is device-local (not Drive-synced).
+
 ### 2026-10-07 — /ship v1.3.2 Android view-mode default
 - **Status:** Accepted
 - **Context:** v1.3.1 still opened day/week taps in edit because those intents omitted `EVENT_DISPLAY_MODE` and EventActivity defaulted missing → edit. Local `upd audit` still Medium `glib` + unmaintained unic (same as v1.3.1); Dependabot Critical/High zero. `upd --apply` tried to pin `codeql-action@vcodeql-bundle-v2.27.1` (reverted — broke prior CI).

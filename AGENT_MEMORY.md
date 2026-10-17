@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: shipping `v1.3.2` (Release Please [#62](https://github.com/edwardlthompson/continuum-calendar/pull/62)). Day/week taps default existing events to view; CI-signed APK required for `install -r`.
+- Latest tag: shipping `v1.4.0` (Release Please [#66](https://github.com/edwardlthompson/continuum-calendar/pull/66)). Week Fit 24h/Scroll + day nav + remember last view; Android event preview; CI-signed APK required for `install -r`.
 
 ### Key Constraints
 
