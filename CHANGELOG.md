@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.3.2...v1.4.0) (2026-10-17)
+
+
+### Added
+
+* week hours, Android preview, week nav, remember last view ([c2ea754](https://github.com/edwardlthompson/continuum-calendar/commit/c2ea754d1e09c7ba44db1649fd60410dfd3ed833))
+
+
+### Fixed
+
+* **ci:** restore codeql-action@v4 pins after upd mis-tag ([1385292](https://github.com/edwardlthompson/continuum-calendar/commit/1385292ae8675f411ffa3e4dfe1168ccfdcbe88a))
+* **web:** align App info button accessible name with visible text ([08b4999](https://github.com/edwardlthompson/continuum-calendar/commit/08b49993a3786720084cc7baddfd58aa48e940dd))
+
+
+### Changed
+
+* **release:** prepare next Release Please bump ([c2ea754](https://github.com/edwardlthompson/continuum-calendar/commit/c2ea754d1e09c7ba44db1649fd60410dfd3ed833))
+
 ## [Unreleased]
 
 ## [1.3.2](https://github.com/edwardlthompson/continuum-calendar/compare/v1.3.1...v1.3.2) (2026-10-07)
