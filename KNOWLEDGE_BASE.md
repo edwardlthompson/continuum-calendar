@@ -253,4 +253,21 @@
 | **Fix** | Pass `packages: platform-tools` on every `setup-android@v4` step (`ci.yml`, `codeql.yml`, `android-signed-foss.yml`) |
 | **Prevention** | Do not restore the action default. Empty `packages: ''` also works if the runner already has cmdline-tools |
 | **Last seen** | v1.2.0 `/ship` (2026-09-15) — required checks on `4f694e8` |
- |
+
+### KB-038 — `upd` rewrites CodeQL to `@vcodeql-bundle-*`
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | CodeQL workflow fails immediately: unable to resolve `github/codeql-action@vcodeql-bundle-v2.27.x` |
+| **Cause** | `upd --apply --update-action-shas` invents invalid version tags instead of leaving `@v4` (or a real SHA pin) |
+| **Fix** | Restore `github/codeql-action/{init,analyze,upload-sarif}@v4` (seen again on v1.3.1 and v1.4.0 ships) |
+| **Prevention** | After `update-deps --apply`, grep workflows for `vcodeql-bundle` before push; prefer floating `@v4` for CodeQL until upd learns the tag |
+
+### KB-039 — axe `label-content-name-mismatch` on settings nav
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Playwright e2e fails: settings panel axe expects `violations=[]`; finds `label-content-name-mismatch` on App info |
+| **Cause** | Button `aria-label="App info"` omits the visible hint span (“Version, updates…”); axe 4.14 / WCAG 2.5.3 |
+| **Fix** | Drop the redundant `aria-label` so the accessible name is computed from visible children |
+| **Prevention** | Do not set `aria-label` that is a strict subset of multi-line button content; prefer labelled-by or content-only naming |
