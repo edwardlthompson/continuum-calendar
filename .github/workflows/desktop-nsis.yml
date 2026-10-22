@@ -24,6 +24,11 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Write desktop Google OAuth env
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_GOOGLE_CLIENT_SECRET: ${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}
+        run: python scripts/ci-write-desktop-oauth-env.py
       - name: Build NSIS installer
         working-directory: apps/desktop
         run: npm run tauri:build:nsis

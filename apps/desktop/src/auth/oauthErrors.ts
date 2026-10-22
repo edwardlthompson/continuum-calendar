@@ -13,7 +13,10 @@ export function humanizeOAuthFailure(err: unknown): string {
     )
   }
   if (/client_secret is missing/i.test(raw)) {
-    return 'This installer cannot finish Google sign-in. Reinstall Continuum Calendar from GitHub Releases.'
+    return (
+      'This build was packaged without Google Desktop credentials. ' +
+      'The publisher must rebuild with both Client ID and Client Secret baked in.'
+    )
   }
   if (/Failed to fetch|NetworkError|Load failed|error sending request/i.test(raw)) {
     return 'Continuum could not reach Google to finish sign-in. Check the network and try again.'

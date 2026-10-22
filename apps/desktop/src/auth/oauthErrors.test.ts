@@ -32,6 +32,15 @@ test('network errors stay network-focused', () => {
   assert.match(msg, /network/i)
 })
 
+test('client_secret is missing points at rebuild with credentials', () => {
+  const msg = humanizeOAuthFailure(
+    new Error('Token exchange failed (400): invalid_request — client_secret is missing'),
+  )
+  assert.match(msg, /packaged without Google Desktop credentials/i)
+  assert.match(msg, /Client ID and Client Secret/i)
+  assert.doesNotMatch(msg, /Reinstall.*GitHub Releases/i)
+})
+
 test('invalid_grant asks to sign in again and keep local edits', () => {
   const msg = humanizeOAuthFailure(new Error('Token exchange failed (400): invalid_grant'))
   assert.match(msg, /expired/i)

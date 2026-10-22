@@ -51,7 +51,7 @@ Agent polish (not HUMAN, not required for GitHub-only v1): Commons About / Fossi
 
 ## 1) Public OAuth for end users (F-002)
 
-Strangers must only tap **Sign in** — they must not create a Cloud project. Ship **Client IDs only** (PKCE). **Never** put `client_secret` in GitHub Release artifacts.
+Strangers must only tap **Sign in** — they must not create a Cloud project. Ship Continuum’s OAuth clients baked into release binaries (end users never open Google Cloud). **Desktop** Release EXEs must bake both Client ID and the installed-app Client Secret (Google’s token endpoint rejects Desktop clients without it; see DECISION_LOG 2026-08-15). **Android** Release APKs ship Client ID only — never bake `client_secret` into the APK.
 
 ### 1.1 Consent screen
 
@@ -85,7 +85,7 @@ npm run tauri:dev -w @continuum/desktop
 
 ```
 
-3. For **public Release builds**: inject **Client ID** via CI secrets / build env; omit secret from the published binary. If Google still requires a Desktop secret for token exchange on your client type, document that limitation in the Release notes until a pure public+PKCE path lands — secret stays on CI/maintainer hosts only.
+3. For **public Release builds**: add GitHub Actions secrets `VITE_GOOGLE_CLIENT_ID` and `VITE_GOOGLE_CLIENT_SECRET` (Desktop OAuth client). Desktop NSIS/Deb workflows run `scripts/ci-write-desktop-oauth-env.py` before `tauri:build` and **fail** if either secret is empty. Never commit `.env`.
 
 ### 1.3 Android client in ship APK
 
@@ -98,7 +98,7 @@ Release `applicationId`: `org.continuumcalendar.app` + **release** keystore SHA-
 **Done 2026-09-13:** Android client **Continuum Calendar Android** (`org.continuumcalendar.app`) SHA-1 updated to the current maintainer key. Custom URI scheme stays on. Bake with `python scripts/set-android-google-client-id.py --release <ID>` (gitignored `continuum.google.android.release.client.id`). Debug APKs keep using a debug Android client or the Desktop fallback.
 
 ```text
-[HUMAN] F-002 done: Desktop + Android OAuth clients are public / PKCE; no client_secret in GitHub Release binaries. Consent screen scopes set.
+[HUMAN] F-002 done: Desktop Release bakes ID+secret via CI secrets; Android APK bakes ID only. Consent screen scopes set.
 
 ```
 

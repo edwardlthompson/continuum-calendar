@@ -76,4 +76,8 @@ cd apps/desktop && npm run install:local
 
 Google’s token endpoint requires the Desktop client secret (`invalid_request — client_secret is missing` without it). Vite bakes `VITE_GOOGLE_*` into release EXEs from this gitignored `.env`. Do not strip the secret in `PROD`. Do **not** set `VITE_GOOGLE_CLIENT_SECRET=` (empty) in `.env.production` — that overrides `.env` and ships a broken installer. Desktop 0.17.2+ exchanges the code from native Rust (not the WebView) so CORS cannot block `oauth2.googleapis.com/token`.
 
+### GitHub Actions (NSIS / Deb)
+
+Release workflows write the same `apps/desktop/.env` via `scripts/ci-write-desktop-oauth-env.py` from Actions secrets `VITE_GOOGLE_CLIENT_ID` and `VITE_GOOGLE_CLIENT_SECRET` (fail-closed if either is empty). Local `set-desktop-google-client-id.py` and CI use the same bake shape.
+
 5. Restart `npm run tauri:dev` (or relaunch the installed app) so the baked env is live.
