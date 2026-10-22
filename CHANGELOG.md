@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2](https://github.com/edwardlthompson/continuum-calendar/compare/v1.4.1...v1.4.2) (2026-10-22)
+
+
+### Documentation
+
+* record /ship v1.4.1 OAuth bake and KB-040/041 ([45010f7](https://github.com/edwardlthompson/continuum-calendar/commit/45010f7a08ea6f7105cc161a37b753275f9ed712))
+
 ## [1.4.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.4.0...v1.4.1) (2026-10-22)
 
 
