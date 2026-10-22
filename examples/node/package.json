@@ -19,7 +19,7 @@
     "source-map-js": "1.2.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.15",
+    "@biomejs/biome": "^2.6.2",
     "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.5",
     "fast-check": "^4.10.2",

@@ -32,22 +32,22 @@
     "react-dom": "^19.3.1"
   },
   "optionalDependencies": {
-    "@oxlint/binding-linux-x64-gnu": "^1.88.0",
-    "@rolldown/binding-linux-x64-gnu": "^1.2.14",
+    "@oxlint/binding-linux-x64-gnu": "^1.89.0",
+    "@rolldown/binding-linux-x64-gnu": "^1.2.15",
     "@tailwindcss/oxide-linux-x64-gnu": "^4.3.3",
-    "@tauri-apps/cli-linux-x64-gnu": "^2.12.3",
+    "@tauri-apps/cli-linux-x64-gnu": "^2.12.4",
     "lightningcss-linux-x64-gnu": "^1.33.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
-    "@tauri-apps/cli": "^2.12.3",
+    "@tauri-apps/cli": "^2.12.4",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "oxlint": "^1.88.0",
+    "oxlint": "^1.89.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3",
-    "vite": "^8.3.4"
+    "vite": "^8.3.5"
   }
 }
