@@ -271,3 +271,21 @@
 | **Cause** | Button `aria-label="App info"` omits the visible hint span (“Version, updates…”); axe 4.14 / WCAG 2.5.3 |
 | **Fix** | Drop the redundant `aria-label` so the accessible name is computed from visible children |
 | **Prevention** | Do not set `aria-label` that is a strict subset of multi-line button content; prefer labelled-by or content-only naming |
+
+### KB-040 — Root `npm install` misses examples/*/package-lock.json
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | CI `npm ci` in `examples/web` (or node) fails: lock file biome/vite versions do not satisfy package.json after `/update-deps` |
+| **Cause** | Root workspace `npm install` refreshed root `package-lock.json` but not nested Golden Path lockfiles |
+| **Fix** | Run `npm install` in `examples/web` and `examples/node` (commit both locks) before push |
+| **Prevention** | After `update-deps --apply`, `npm ci` in each examples stack that has its own lockfile |
+
+### KB-041 — About feature-gate under WSL cannot find Node
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `verify-about-feature-gate.sh` fails: WSL 1 not supported / Could not determine Node.js install directory; or times out at 180s |
+| **Cause** | Default `bash` resolves to WSL; Node lives on Windows (`Program Files\nodejs`) |
+| **Fix** | Run via Git Bash with Node on PATH; raise `FEATURE_GATE_TIMEOUT_about` (e.g. 600) |
+| **Prevention** | Prefer `C:\Program Files\Git\bin\bash.exe` for agent-run shell scripts on this Windows host |

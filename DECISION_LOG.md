@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-10-22 — /ship v1.4.1 Desktop OAuth bake in CI
+- **Status:** Accepted
+- **Context:** GitHub Release EXEs failed Sign in with `client_secret is missing` because Desktop NSIS/Deb never wrote `apps/desktop/.env`. `upd --apply` again tried `codeql-action@vcodeql-bundle-*` (reverted to `@v4`). Example web/node lockfiles lagged package.json bumps and broke `npm ci` until synced.
+- **Decision:** Inject `VITE_GOOGLE_CLIENT_ID` / `VITE_GOOGLE_CLIENT_SECRET` via `scripts/ci-write-desktop-oauth-env.py` before `tauri:build` (fail-closed); document Desktop must bake installed-app secret; merge Release Please [#68](https://github.com/edwardlthompson/continuum-calendar/pull/68); attach NSIS to `v1.4.1`.
+- **Alternatives considered:** PKCE-only token exchange without secret (rejected — Google Desktop clients require secret). Ship ID-only Releases (rejected — same user-facing failure).
+- **Consequences:** Maintainers must keep Actions secrets set; re-run Desktop NSIS/Deb after each release tag for Sign-in-capable installers.
+
 ### 2026-10-17 — /ship v1.4.0 week hours, preview, last view
 - **Status:** Accepted
 - **Context:** Desktop needed Fit 24h vs Scroll (full 00–24), day arrows, midnight rolling advance, and per-device last main view; Android needed Google-style event preview and last-view restore without widget intents overwriting prefs. `upd --apply` again mis-tagged `codeql-action@vcodeql-bundle-*` (reverted to `@v4`). Local `upd audit --check` failed on Medium `glib` + unmaintained unic; Dependabot Critical/High zero (one Medium `glib`).

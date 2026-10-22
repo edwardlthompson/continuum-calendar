@@ -35,7 +35,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: shipping `v1.4.0` (Release Please [#66](https://github.com/edwardlthompson/continuum-calendar/pull/66)). Week Fit 24h/Scroll + day nav + remember last view; Android event preview; CI-signed APK required for `install -r`.
+- Latest tag: shipping `v1.4.1` (Release Please [#68](https://github.com/edwardlthompson/continuum-calendar/pull/68)). Desktop NSIS/Deb bake Google OAuth via Actions secrets; re-run Desktop NSIS with `attach_to_tag=v1.4.1` for a working Sign-in EXE.
 
 ### Key Constraints
 
@@ -49,6 +49,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-10-22 | /ship v1.4.1 OAuth bake | CI `.env` inject; RP #68; CodeQL `@v4` revert; sync web/node locks; NSIS → v1.4.1 | Prefer Git Bash + Node PATH on Windows about-gate; rotate GH token if dry-run echoed it |
 | 2026-10-07 | /ship v1.3.2 view default | Day/Week + missing-mode → view; device smoke on debug both phones; skip bad CodeQL bundle pin | Merge RP #62; dispatch signed FOSS APK; sideload -r; Medium glib still deferred |
 | 2026-10-07 | /ship v1.3.1 | Android view card; desktop casing NSIS; web HIGH overrides; RP #59; CodeQL pin revert | Attach EXE/APK to tag; Medium glib still deferred; release keystore not on this Windows host |
 | 2026-10-06 | /ship event view + maps | rubyzip #45; view card + HTML linkify; OSM/Google/Apple chooser; Android createChooser | Wait CI + Release Please; attach installers to new tag |
