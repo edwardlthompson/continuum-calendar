@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.4.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.4.0...v1.4.1) (2026-10-22)
 
 
@@ -24,8 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * add KB-038/039 from v1.4.0 /ship regress ([f29d11c](https://github.com/edwardlthompson/continuum-calendar/commit/f29d11cc9b5ecd9c94f2fbddca8a46ad43391f15))
 * record /ship v1.4.0 week hours and preview milestone ([242b2fe](https://github.com/edwardlthompson/continuum-calendar/commit/242b2feb3b1507b1961b3638ffe01cfb8da1348a))
-
-## [Unreleased]
 
 ## [1.4.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.3.2...v1.4.0) (2026-10-17)
 
