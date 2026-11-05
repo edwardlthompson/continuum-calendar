@@ -103,3 +103,10 @@ More for contributors and agents: [`docs/START_HERE.md`](docs/START_HERE.md) · 
 MIT — see [`LICENSE`](LICENSE). Use it, share it, improve it. Continuum stays free because the calendar should be yours.
 
 GitHub Pages demo: https://edwardlthompson.github.io/continuum-calendar/
+
+## What this is not
+
+- A finished commercial product promise
+- A place for secrets or production credentials
+- An unbounded scope — see README goals above
+
