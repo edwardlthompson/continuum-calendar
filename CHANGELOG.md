@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2](https://github.com/edwardlthompson/continuum-calendar/compare/v1.4.1...v1.4.2) (2026-11-05)
+
+
+### Changed
+
+* **argus:** Add or improve a "What this is not" section ([23cbee9](https://github.com/edwardlthompson/continuum-calendar/commit/23cbee9e6e1e802ed3c3678a63f1d76410789afb))
+* **argus:** Bump .template-version toward parent ([5564a27](https://github.com/edwardlthompson/continuum-calendar/commit/5564a27e9a2b64fef1803ae16363823e3451df04))
+* **argus:** Move agent memory/log files into .agent/ ([4894573](https://github.com/edwardlthompson/continuum-calendar/commit/4894573c3cad78ac7f299a350765672829777978))
+
+
+### Documentation
+
+* record /ship v1.4.1 OAuth bake and KB-040/041 ([45010f7](https://github.com/edwardlthompson/continuum-calendar/commit/45010f7a08ea6f7105cc161a37b753275f9ed712))
+
 ## [Unreleased]
 
 ## [1.4.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.4.0...v1.4.1) (2026-10-22)
