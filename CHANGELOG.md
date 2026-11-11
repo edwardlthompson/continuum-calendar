@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [2.0.0](https://github.com/edwardlthompson/continuum-calendar/compare/v1.13.0...v2.0.0) (2026-11-11)
 
 
@@ -176,8 +178,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * record v0.22.0 ship regressions ([d0ecd46](https://github.com/edwardlthompson/continuum-calendar/commit/d0ecd46997735b66bd37193a0c7d1e434bd11068))
 * record v1.1.0 /push milestone ([593b128](https://github.com/edwardlthompson/continuum-calendar/commit/593b128cf5d3518c13ba8a7a31a52cf1759bd461))
 * record v1.2.0 ship and Android SDK tools failure ([3f5c641](https://github.com/edwardlthompson/continuum-calendar/commit/3f5c6410c286878b44b71293ad083bd90a20fa38))
-
-## [Unreleased]
 
 ## [1.4.1](https://github.com/edwardlthompson/continuum-calendar/compare/v1.4.0...v1.4.1) (2026-10-22)
 
