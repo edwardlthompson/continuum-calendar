@@ -1,7 +1,7 @@
 # Build Plan
 
 <!-- remaining-tally -->
-**Remaining:** AGENT 0 · AUTO 0 · HUMAN 0 · ADB 0 · **0 open**
+**Remaining:** AGENT 1 · AUTO 0 · HUMAN 0 · ADB 0 · **1 open**
 <!-- /remaining-tally -->
 
 Finished: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md) · Ship: [`docs/HUMAN_REMAINING.md`](docs/HUMAN_REMAINING.md) · Backlog: [`HUMAN_BACKLOG.md`](HUMAN_BACKLOG.md)
