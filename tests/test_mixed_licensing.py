@@ -55,6 +55,11 @@ class MixedLicensingTests(unittest.TestCase):
         self.assertIn('register("foss") { disableGoogleOAuth() }', gradle)
         self.assertIn('maybeCreate("release")', gradle)
         self.assertIn('signingConfigs.findByName("release")', gradle)
+        self.assertIn("androidComponents", gradle)
+        self.assertIn('withFlavor("variants" to "gplay")', gradle)
+        gplay = gradle.split('register("gplay")', 1)[1].split("androidComponents", 1)[0]
+        self.assertNotIn("taskNames", gplay)
+        self.assertIn("resolveContinuumGoogleAndroidClientId()", gplay)
         settings = (ROOT / "apps" / "mobile" / "settings.gradle.kts").read_text(encoding="utf-8")
         self.assertIn("jitpack.io", settings.lower())
 

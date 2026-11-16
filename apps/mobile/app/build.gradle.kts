@@ -195,13 +195,7 @@ android {
         register("foss") { disableGoogleOAuth() }
         register("gplay") {
             val continuumClientId = project.resolveContinuumGoogleClientId()
-            val releaseRequested = gradle.startParameter.taskNames.joinToString(" ").lowercase()
-                .contains("release")
-            val continuumAndroidClientId = if (releaseRequested) {
-                project.resolveContinuumGoogleAndroidReleaseClientId()
-            } else {
-                project.resolveContinuumGoogleAndroidClientId()
-            }
+            val continuumAndroidClientId = project.resolveContinuumGoogleAndroidClientId()
             val continuumClientSecret = project.resolveContinuumGoogleClientSecret()
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
@@ -210,7 +204,7 @@ android {
             buildConfigField("String", "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID", "\"$continuumAndroidClientId\"")
             buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_SECRET", "\"$continuumClientSecret\"")
             manifestPlaceholders["appAuthRedirectScheme"] =
-                project.continuumAndroidRedirectScheme(continuumAndroidClientId, releaseRequested)
+                project.continuumAndroidRedirectScheme(continuumAndroidClientId, release = false)
         }
     }
 
@@ -254,6 +248,24 @@ android {
         language {
             enableSplit = false
         }
+    }
+}
+
+androidComponents {
+    onVariants(selector().withFlavor("variants" to "gplay").withBuildType("release")) { variant ->
+        val releaseAndroidId = project.resolveContinuumGoogleAndroidReleaseClientId()
+        variant.buildConfigFields?.put(
+            "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID",
+            com.android.build.api.variant.BuildConfigField(
+                "String",
+                "\"$releaseAndroidId\"",
+                "gplayRelease Android OAuth client",
+            ),
+        )
+        variant.manifestPlaceholders.put(
+            "appAuthRedirectScheme",
+            project.continuumAndroidRedirectScheme(releaseAndroidId, release = true),
+        )
     }
 }
 
