@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -35,9 +36,11 @@ class FeedbackCopyUiTest {
         composeTestRule.onNodeWithText("Report a bug").performClick()
         composeTestRule.onNodeWithTag("feedback-panel").assertIsDisplayed()
         composeTestRule.onNodeWithTag("feedback-description").performTextInput("repro steps")
-        composeTestRule.onNodeWithTag("feedback-copy").performClick()
-        composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag("feedback-copied").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("feedback-copy").performScrollTo().performClick()
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.onAllNodesWithTag("feedback-copied").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithTag("feedback-copied").performScrollTo().assertIsDisplayed()
         val context = ApplicationProvider.getApplicationContext<Context>()
         val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = cm.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString().orEmpty()
