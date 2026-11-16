@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v2.0.1...v2.1.0) (2026-11-16)
+
+
+### Added
+
+* **kmp:** ship CMP deferred parity and Continuum brand kit ([2b1d66e](https://github.com/edwardlthompson/continuum-calendar/commit/2b1d66ea46c91282463a71af7205f9c1c3aef918))
+
+
+### Fixed
+
+* **ci:** restore codeql-action@v4 pins after upd mis-tag ([5a2e4e2](https://github.com/edwardlthompson/continuum-calendar/commit/5a2e4e2eaf23fa8cc0a9d3104ef8f100a563e0bc))
+* **readme:** emit badge and Pages demo contract from product generator ([be73000](https://github.com/edwardlthompson/continuum-calendar/commit/be73000eeedd904d6c55db2013927268d452f542))
+
 ## [2.0.1](https://github.com/edwardlthompson/continuum-calendar/compare/v2.0.0...v2.0.1) (2026-11-16)
 
 
