@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Continuum Calendar</string>
+    <string name="app_title_continuum">Continuum</string>
+    <string name="app_title_calendar"> Calendar</string>
+    <string name="nav_agenda">Agenda</string>
+    <string name="nav_week">Week</string>
+    <string name="nav_month">Month</string>
+    <string name="nav_year">Year</string>
+    <string name="nav_today">Today</string>
+    <string name="open_day">Open</string>
+    <string name="show_open_days">Show %1$d Open days</string>
+    <string name="empty_agenda">No events in range</string>
+    <string name="all_day">All day</string>
+    <string name="fab_new_event">New event</string>
+    <string name="placeholder_month">Month view coming soon</string>
+    <string name="placeholder_year">Year view coming soon</string>
+</resources>

@@ -60,3 +60,10 @@
 | In-app update asset | Windows `…-setup.exe`; Linux `continuum-calendar_{ver}_amd64.deb` | APK `…-foss.apk` | — |
 | Local install helper | `npm run install:local` → Windows `%LOCALAPPDATA%` / Linux `dpkg -i` `.deb` | sideload APK | — |
 Logical calendar ids: `{source}:{calendarId}` e.g. `google:primary`.
+
+## Compose Multiplatform track (`kmp/`)
+
+Parallel MIT apps under `kmp/` (ADR-0006). Not yet at shipping parity with the
+columns above. First slice: shared agenda + Open empty days on CMP desktop JVM
+and `org.continuumcalendar.cmp` Android. iOS shell scaffolds with
+`-Pcontinuum.enableIos=true` on macOS (`[HUMAN]` signing).

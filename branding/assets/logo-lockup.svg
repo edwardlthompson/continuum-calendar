@@ -1,5 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" role="img" aria-label="Golden Path">
-  <rect x="0" y="4" width="64" height="64" rx="12" fill="#1a1a2e"/>
-  <path d="M16 44 L32 20 L48 44 Z" fill="#e94560"/>
-  <text x="80" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#1a1a2e">Golden Path</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="Continuum Calendar">
+  <rect x="0" y="16" width="64" height="64" rx="12" fill="#0B1220"/>
+  <g transform="translate(0 16) scale(0.125)" fill="none" stroke-width="42" stroke-linecap="butt">
+    <path d="M248 118 A112 112 0 1 0 248 394" stroke="#00E5FF"/>
+    <path d="M264 118 A112 112 0 1 1 264 394" stroke="#E040FB"/>
+    <circle cx="190" cy="256" r="22" fill="#E040FB"/>
+    <circle cx="322" cy="256" r="22" fill="#00E5FF"/>
+  </g>
+  <text x="84" y="58" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="36" font-weight="650" fill="#0B1220">Continuum Calendar</text>
 </svg>

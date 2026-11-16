@@ -1,0 +1,32 @@
+CREATE TABLE CalendarEventEntity (
+  id TEXT NOT NULL,
+  calendarId TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  location TEXT,
+  startIso TEXT NOT NULL,
+  endIso TEXT NOT NULL,
+  allDay INTEGER NOT NULL DEFAULT 0,
+  source TEXT,
+  updatedIso TEXT,
+  PRIMARY KEY (calendarId, id)
+);
+
+selectAll:
+SELECT * FROM CalendarEventEntity ORDER BY startIso ASC;
+
+selectInRange:
+SELECT * FROM CalendarEventEntity
+WHERE startIso >= :rangeStart AND startIso <= :rangeEndInclusive
+ORDER BY startIso ASC;
+
+upsert:
+INSERT OR REPLACE INTO CalendarEventEntity(
+  id, calendarId, title, description, location, startIso, endIso, allDay, source, updatedIso
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteByKey:
+DELETE FROM CalendarEventEntity WHERE calendarId = ? AND id = ?;
+
+deleteAll:
+DELETE FROM CalendarEventEntity;

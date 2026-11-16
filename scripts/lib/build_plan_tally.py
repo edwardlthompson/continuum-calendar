@@ -7,9 +7,10 @@ import sys
 from pathlib import Path
 
 OWNERS = ("AGENT", "AUTO", "HUMAN", "ADB")
-OPEN = {"🔲", "❌"}
+# 🔶 = CMP parity partial (counts as open). ⏸ = deferred gap (not open).
+OPEN = {"🔲", "❌", "🔶"}
 ROW = re.compile(
-    r"^(?:(?:\d+[a-z]?)\.|-)\s+(?P<status>🔲|✅|❌|⬜)\s+"
+    r"^(?:(?:\d+[a-z]?)\.|-)\s+(?P<status>🔲|✅|❌|⬜|🔶|⏸)\s+"
     r"\[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]"
 )
 BLOCK = re.compile(

@@ -1,4 +1,18 @@
 {
   "name": "brand",
-  "note": "stub for doc-link gate; replace with real brand"
+  "brand_name": "Continuum Calendar",
+  "icon": "branding/assets/app-icon-1024.png",
+  "icon_sha256": "97ad161b8d9f80b1b1c6b3928ec5f535e960e7ab5d1e829d71ed32abe3057e33",
+  "source": "owned",
+  "tokens": "apps/desktop/src/styles/brand.css",
+  "mark": "branding/assets/logo-mark.svg",
+  "lockup": "branding/assets/logo-lockup.svg",
+  "favicon": "branding/assets/favicon.svg",
+  "social_preview": "branding/assets/social-preview.svg",
+  "colors": {
+    "cyan": "#00E5FF",
+    "purple": "#E040FB",
+    "ink": "#0B1220"
+  },
+  "note": "Cyan+purple infinity mark \u2014 owned Continuum brand (not Golden Path stub)"
 }

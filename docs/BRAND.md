@@ -44,7 +44,10 @@ python scripts/generate-infinity-mark.py
 
 | Asset | Path |
 |-------|------|
-| Official flat reference | `docs/brand/logo-official.png` |
+| Brand contract (bots) | `branding/brand.json` (`icon`, `icon_sha256`, `source: owned`) |
+| Canonical PNG | `branding/assets/app-icon-1024.png` |
+| Mark / lockup / favicon | `branding/assets/logo-mark.svg`, `logo-lockup.svg`, `favicon.svg` |
+| Official flat reference | `docs/brand/logo-official.png` (+ `.svg`) |
 | Master raster | `apps/desktop/public/continuum-mark.png` |
 | Favicon | `apps/desktop/public/favicon.png` (+ SVG fallback) |
 | Android launcher | `apps/mobile/app/src/main/res/mipmap-*/ic_launcher.png` |

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../../branding/assets/logo-mark.svg" alt="Golden Path" width="64" />
+  <img src="../../branding/assets/logo-mark.svg" alt="Continuum Calendar logo" width="64" height="64" />
 </p>
 
 # Golden Path Python

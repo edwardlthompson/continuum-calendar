@@ -13,11 +13,20 @@ Continuum Calendar is a FOSS monorepo for a cross-platform calendar ecosystem.
 ## Layout
 
 ```text
-apps/desktop/     Tauri + React + Vite + Tailwind + FullCalendar
-apps/mobile/      FossifyOrg/Calendar fork notes / submodule target
-packages/shared/  Shared TS types (events, OAuth, contacts, theme)
+apps/desktop/     Shipping: Tauri + React + Vite + Tailwind + FullCalendar
+apps/mobile/      Shipping: Fossify Views fork (GPL-3)
+packages/shared/  Shared TS types (desktop contract; golden fixtures for KMP)
+kmp/              Parallel MIT Compose Multiplatform track (ADR-0006)
 docs/             Agent docs, API setup, architecture, widget specs
+
 ```
+
+## KMP parallel track (`kmp/`)
+
+MIT modules: `continuum-domain` (pure logic), `continuum-platform` (ports),
+`continuum-data` (SQLDelight + sync), `continuum-ui` (Compose), plus
+`androidApp` / `desktopApp` / `iosApp`. Does not replace shipping apps until
+FR-1..3 + peer sync parity. See [ADR-0006](../adr/0006-compose-multiplatform.md).
 
 ## Desktop
 

@@ -304,6 +304,103 @@ def main() -> None:
         mono = fg.split()[-1].point(lambda a: 255 if a > 40 else 0)
         Image.merge("RGBA", (mono, mono, mono, mono)).save(folder / "ic_launcher_monochrome.png")
 
+    # Branding kit (machine-readable + README / OG / favicon SoT)
+    brand_assets = ROOT / "branding" / "assets"
+    brand_assets.mkdir(parents=True, exist_ok=True)
+    master_1024 = draw_infinity_mark(1024, with_plate=True)
+    master_1024.save(brand_assets / "app-icon-1024.png")
+    draw_infinity_mark(512, with_plate=True).save(brand_assets / "app-icon-512.png")
+    write_svg(brand_assets / "logo-mark.svg")
+    write_svg(brand_assets / "favicon.svg")
+    write_svg(brand_assets / "app-icon-512.svg")
+    write_svg(ROOT / "docs" / "brand" / "logo-official.svg")
+    master_1024.save(ROOT / "docs" / "brand" / "logo-official.png")
+
+    lockup = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="Continuum Calendar">
+  <rect x="0" y="16" width="64" height="64" rx="12" fill="#0B1220"/>
+  <g transform="translate(0 16) scale(0.125)" fill="none" stroke-width="42" stroke-linecap="butt">
+    <path d="M248 118 A112 112 0 1 0 248 394" stroke="#00E5FF"/>
+    <path d="M264 118 A112 112 0 1 1 264 394" stroke="#E040FB"/>
+    <circle cx="190" cy="256" r="22" fill="#E040FB"/>
+    <circle cx="322" cy="256" r="22" fill="#00E5FF"/>
+  </g>
+  <text x="84" y="58" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="36" font-weight="650" fill="#0B1220">Continuum Calendar</text>
+</svg>
+"""
+    (brand_assets / "logo-lockup.svg").write_text(lockup, encoding="utf-8")
+    (brand_assets / "logo-wordmark.svg").write_text(
+        """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 48" role="img" aria-label="Continuum Calendar">
+  <text x="0" y="34" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="32" font-weight="650" fill="#0B1220">Continuum Calendar</text>
+</svg>
+""",
+        encoding="utf-8",
+    )
+    mono = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Continuum Calendar">
+  <rect width="512" height="512" rx="96" fill="#0B1220"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="42" stroke-linecap="butt">
+    <path d="M248 118 A112 112 0 1 0 248 394"/>
+    <path d="M264 118 A112 112 0 1 1 264 394"/>
+  </g>
+  <circle cx="190" cy="256" r="22" fill="#FFFFFF"/>
+  <circle cx="322" cy="256" r="22" fill="#FFFFFF"/>
+</svg>
+"""
+    (brand_assets / "logo-mark-mono.svg").write_text(mono, encoding="utf-8")
+
+    social = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img" aria-label="Continuum Calendar">
+  <!-- design-tokens dark: #12121f #1a1a2e #D63854 #E6E6F0 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12121f"/>
+      <stop offset="100%" stop-color="#1a1a2e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <g transform="translate(120 144) scale(0.6875)">
+    <rect width="512" height="512" rx="96" fill="#12121f"/>
+    <g fill="none" stroke-width="42" stroke-linecap="butt">
+      <path d="M248 118 A112 112 0 1 0 248 394" stroke="#00E5FF"/>
+      <path d="M264 118 A112 112 0 1 1 264 394" stroke="#E040FB"/>
+    </g>
+    <circle cx="190" cy="256" r="22" fill="#E040FB"/>
+    <circle cx="322" cy="256" r="22" fill="#00E5FF"/>
+  </g>
+  <text x="520" y="290" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="64" font-weight="700" fill="#E6E6F0">Continuum Calendar</text>
+  <text x="520" y="360" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="28" fill="#C4C4D4">Your week, your devices, your rules</text>
+  <text x="520" y="420" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="22" fill="#D63854">MIT · FOSS · cyan + purple infinity</text>
+</svg>
+"""
+    (brand_assets / "social-preview.svg").write_text(social, encoding="utf-8")
+    (brand_assets / "readme-hero.svg").write_text(social, encoding="utf-8")
+
+    import hashlib
+    import json
+
+    icon_rel = "branding/assets/app-icon-1024.png"
+    digest = hashlib.sha256((ROOT / icon_rel).read_bytes()).hexdigest()
+    brand = {
+        "name": "brand",
+        "brand_name": "Continuum Calendar",
+        "icon": icon_rel,
+        "icon_sha256": digest,
+        "source": "owned",
+        "tokens": "apps/desktop/src/styles/brand.css",
+        "mark": "branding/assets/logo-mark.svg",
+        "lockup": "branding/assets/logo-lockup.svg",
+        "favicon": "branding/assets/favicon.svg",
+        "social_preview": "branding/assets/social-preview.svg",
+        "colors": {
+            "cyan": "#00E5FF",
+            "purple": "#E040FB",
+            "ink": "#0B1220",
+        },
+        "note": "Cyan+purple infinity mark — owned Continuum brand (not Golden Path stub)",
+    }
+    (ROOT / "branding" / "brand.json").write_text(
+        json.dumps(brand, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print("wrote branding kit + brand.json", digest[:12])
     print("done — flat mark locked; glass preview at .cursor/logo-preview-glass.png")
 
 

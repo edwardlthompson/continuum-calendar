@@ -10,21 +10,23 @@ Replaceable product identity for projects bootstrapped from **agent-project-boot
 | Logos / favicon / heroes | [`branding/assets/`](assets/) | `python3 scripts/sync-design-tokens.py` |
 | Name, pitch, README copy | [`branding/product.json`](product.json) | `python3 scripts/generate-project-readme.py` |
 | Voice guidelines | [`branding/voice.md`](voice.md) | (docs only) |
-
 Official color stylesheet (generated): [`official-colors.css`](official-colors.css).
 
 ## Asset inventory
 
 | File | Use |
 |------|-----|
-| `assets/logo-mark.svg` | App mark; synced to web `icon.svg` / `logo.svg` |
+| `assets/logo-mark.svg` | Continuum cyan+purple ∞ mark; synced to web `icon.svg` / `logo.svg` |
 | `assets/logo-mark-mono.svg` | Monochrome / print |
 | `assets/logo-wordmark.svg` | Wordmark only |
-| `assets/logo-lockup.svg` | Mark + wordmark |
+| `assets/logo-lockup.svg` | Mark + “Continuum Calendar” |
 | `assets/favicon.svg` | Browser tab |
-| `assets/app-icon-512.svg` | Export to store `icon.png` 512×512 (`[HUMAN]`/`[ADB]`) |
-| `assets/readme-hero.svg` | README banner |
-| `assets/social-preview.svg` | GitHub / OG 1280×640 (upload PNG export in repo Settings → Social preview) |
+| `assets/app-icon-1024.png` | Canonical PNG for `brand.json` / store parents |
+| `assets/app-icon-512.svg` / `.png` | Store `icon.png` 512×512 |
+| `assets/readme-hero.svg` | README / marketing banner |
+| `assets/social-preview.svg` | GitHub / OG 1280×640 (upload PNG/JPG in repo Settings → Social preview) |
+| `brand.json` | Machine contract: `brand_name`, `icon`, `icon_sha256`, `source: owned` |
+Regen Continuum marks: `python3 scripts/generate-infinity-mark.py`
 
 ## Clear space & contrast
 

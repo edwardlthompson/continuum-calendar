@@ -17,15 +17,22 @@ if (-not (Test-Path $Upload)) {
         Write-Host "ERROR: missing $Source — generate brand assets first."
         exit 1
     }
-    Write-Host "Creating under-1MB upload JPEG from neon social PNG…"
+    Write-Host "Creating under-1MB upload JPEG (letterbox — never stretch)…"
     python -c @"
 from PIL import Image
 from pathlib import Path
 src = Path(r'$($Source.Replace('\','/'))')
 out = Path(r'$($Upload.Replace('\','/'))')
-im = Image.open(src).convert('RGB').resize((1280, 640), Image.Resampling.LANCZOS)
-im.save(out, format='JPEG', quality=88, optimize=True)
-print(out, out.stat().st_size)
+im = Image.open(src).convert('RGB')
+W, H = 1280, 640
+canvas = Image.new('RGB', (W, H), (11, 18, 32))
+# Contain fit: preserve aspect, pad (do not stretch)
+scale = min(W / im.width, H / im.height)
+nw, nh = int(im.width * scale), int(im.height * scale)
+fitted = im.resize((nw, nh), Image.Resampling.LANCZOS)
+canvas.paste(fitted, ((W - nw) // 2, (H - nh) // 2))
+canvas.save(out, format='JPEG', quality=90, optimize=True)
+print(out, out.stat().st_size, 'fitted', nw, nh)
 "@
 }
 

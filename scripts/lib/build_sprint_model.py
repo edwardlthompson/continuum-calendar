@@ -6,7 +6,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-OPEN = r"(?:🔲|⬜|\[ \])"
+# 🔶 = CMP parity partial (actionable for /build). ⏸ deferred stays closed here.
+OPEN = r"(?:🔲|⬜|\[ \]|🔶)"
 ROW_NUMBERED = re.compile(
     rf"^(?P<num>\d+[a-z]?)\.\s+{OPEN}\s+\[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]\s+(?P<task>.+)$"
 )

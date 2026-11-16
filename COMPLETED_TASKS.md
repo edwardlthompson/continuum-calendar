@@ -2,6 +2,75 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint CMP parity deferred P2 (2026-11-16)
+
+1. ✅ [AGENT] P2-HOTKEYS: N / T / 1–4 / F / G / Ctrl+K
+2. ✅ [AGENT] P2-ICS-CALDAV: Import/export/subscribe + CalDAV + settings JSON backup
+3. ✅ [AGENT] P2-HOLIDAY: Holiday packs
+4. ✅ [AGENT] P2-TASKS: Google Tasks overlay
+5. ✅ [AGENT] P2-MENU: Free slots / propose
+
+## Sprint CMP parity remaining + prior CMP sprints (2026-11-16)
+
+### Sprint CMP parity remaining (Sequential)
+
+1. ✅ [AGENT] P0-AUTH: In-app Google OAuth + reconnect banner; Drive peer still out of scope here
+2. ✅ [AGENT] P1-SYNC: Peer settings / local events + Drive App Data overlays
+3. ✅ [AGENT] P1-SCHED: Use travel buffer + slot min in free-slot / scheduling UX (beyond settings + open-day)
+4. ✅ [AGENT] P1-WEEK polish: event resize on time grid (drag-move done)
+5. ✅ [AGENT] P0-CRUD polish: date/time pickers (replace raw ISO text fields)
+6. ✅ [AGENT] P2-WINDOW: Honor minimize-to / close-to tray behavior
+7. ✅ [AGENT] P2-MISC: Splash, update check, crash feedback, Contacts (About/donate/maps done)
+
+### Sprint CMP parity gaps P0 (Sequential)
+
+1. ✅ [AGENT] Audit old desktop vs CMP; write CMP_PARITY_GAPS.md
+2. ✅ [AGENT] P0-SET/CAL: Settings categories for ContinuumSettings + calendar visibility/★/notify
+3. ✅ [AGENT] Persist local settings; filter events by visibility
+4. ✅ [AGENT] P0-CRUD/AGENDA-OPEN: Event editor + FAB/Open-day + Google write
+5. ✅ [AGENT] P0-AUTH: Sign-out + reconnect messaging (vault already loads)
+6. ✅ [AGENT] P1-TOOLBAR: Search + go-to date + true Today focus
+7. ✅ [AGENT] P1-WEEK: Day shift + fit24 label; conflict chip highlight
+8. ✅ [AGENT] P1-MONTH-YEAR: Month grid + year overview
+9. ✅ [AGENT] P1-CONFLICT: Overlap detect + banner + agenda/week highlight
+10. ✅ [AGENT] P1-REMIND: Desktop tray notifications for upcoming events
+11. ✅ [AGENT] Birthday toggle: applyBirthdayCalendarVisibility + eventType filter (shipping workaround)
+12. ✅ [AGENT] Window settings: Open at startup wording + chrome prefs / Run key when packaged
+13. ✅ [AGENT] Week modes: Scroll / Fit 24h grid (½-hour slots, now bar) / Agenda stack +
+14. ✅ [AGENT] Week time gutter; Scroll = enlarged 24h (focus 06–18); persist window size/position
+15. ✅ [AGENT] Event round-trip: attendees/reminders/recurrence on Google fetch·write + EventDraft
+16. ✅ [AGENT] Event editor: reminders, guests, all-day convert, default ★ calendar
+17. ✅ [AGENT] Event detail: guests/reminders/repeat + clickable location + OSM map preview/chooser
+18. ✅ [AGENT] Gap list hygiene: mark P0-SET/CRUD, P1-DETAIL/REMIND practical ✅
+19. ✅ [AGENT] P1-WEEK vertical drag-move on timed bands → Google/local save
+
+### Sprint CMP Google vault + parity chrome (Sequential)
+
+1. ✅ [AGENT] Reuse Tauri %APPDATA%/org.continuumcalendar.app/google-tokens.json + refresh/Calendar fetch
+2. ✅ [AGENT] Shell auth status, Refresh, Settings (theme/24h/empty days), event side sheet
+3. ✅ [AGENT] Week chips with time + click-to-detail; vault smoke test
+
+### Sprint CMP UI visual parity (Sequential)
+
+1. ✅ [AGENT] Port rand.css --cc-* into ContinuumColors/Theme + OpenMark vector
+2. ✅ [AGENT] Port ormatAgendaSectionTitle + collapseEmptyAgendaSections into continuum-domain + tests
+3. ✅ [AGENT] Rebuild AgendaScreen to match AgendaView (headers, Open, now-bar, fold, density)
+4. ✅ [AGENT] Build ContinuumShell (wordmark, toolbar, FAB, canvas); default rolling
+5. ✅ [AGENT] Add simplified 7-column RollingWeekScreen with today ring and Open chips
+6. ✅ [AGENT] Richer demo seed; wire desktopApp + androidApp through ContinuumShell
+
+## Sprint KMP — Compose Multiplatform foundation (2026-11-15)
+
+1. ✅ [AGENT] ADR-0006 Compose Multiplatform (`docs/adr/0006-compose-multiplatform.md`)
+2. ✅ [AGENT] Scaffold `kmp/` Gradle multi-module (domain, platform, data, ui, androidApp, desktopApp, iosApp) + space-safe build dirs
+3. ✅ [AGENT] Port `packages/shared` models + agenda/week/settings peer reconcile into `continuum-domain` with `commonTest` golden fixtures
+4. ✅ [AGENT] `continuum-platform` ports + `continuum-data` SQLDelight schema + SyncCoordinator with fake adapters
+5. ✅ [AGENT] `continuum-ui` + `desktopApp` agenda vertical slice (empty Open days + theme)
+6. ✅ [AGENT] `androidApp` agenda vertical slice (local store; no Fossify host)
+7. ✅ [AGENT] `iosApp` thin shell sharing `continuum-ui` (JVM stub; iosMain when `-Pcontinuum.enableIos=true`)
+8. ✅ [AGENT] Update `docs/architecture/OVERVIEW.md`, `docs/PARITY_MATRIX.md`, `AGENT_MEMORY.md` for KMP track
+9. ✅ [AUTO] CI job: `.github/workflows/kmp.yml` (domain/data desktopTest + desktop compile)
+
 ## /ship v1.2.0 (2026-09-15)
 
 - ✅ [AGENT] Merge release [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38) (chore(main): release 1.2.0)

@@ -17,6 +17,21 @@
 
 ## Entries
 
+### 2026-11-16 — /ship CMP deferred parity + Continuum brand reclaim
+- **Status:** Accepted
+- **Context:** Post-v2.0.1 main; uncommitted kmp/ deferred P2 and cyan/purple brand kit needed a release train.
+- **Decision:** /ship applied patch/minor deps (no majors; Kotlin stays <2.3.30), fixed social-preview token gate, set randing/product.json mode=product with generated README, commit CMP+brand+deps, push main, merge Release Please when opened.
+- **Alternatives considered:** Keep brand as Golden Path stubs (rejected); major dep bumps (deferred).
+- **Consequences:** HUMAN still re-uploads GitHub social JPG; iOS signing remains HUMAN_BACKLOG; next semver via Release Please.
+
+
+### 2026-11-15 — Compose Multiplatform parallel track (`kmp/`)
+- **Status:** Accepted
+- **Context:** Dual shipping UIs (Tauri/React + Fossify GPL Views) duplicated Continuum domain (TS `packages/shared` + Kotlin `continuum/`). Product goal: Android, iOS, desktop from one KMP + Compose codebase without breaking releases.
+- **Decision:** ADR-0006 — parallel MIT Gradle tree under `kmp/` (domain, platform, data, ui, androidApp, desktopApp, iosApp); keep Tauri/Fossify shipping; REST-first CMP Android; SQLDelight local store; golden fixtures vs TS; CI `.github/workflows/kmp.yml`.
+- **Alternatives considered:** Rewrite Fossify in place (GPL contamination); WASM TS bridge (poor mobile); big-bang delete shipping apps (too risky).
+- **Consequences:** Two Android package IDs until parity (`org.continuumcalendar.app` vs `.cmp`); iOS link/sign is `[HUMAN]` on macOS; dual-maintain domain until desktop migrates off TS.
+
 ### 2026-10-22 — /ship v1.4.1 Desktop OAuth bake in CI
 - **Status:** Accepted
 - **Context:** GitHub Release EXEs failed Sign in with `client_secret is missing` because Desktop NSIS/Deb never wrote `apps/desktop/.env`. `upd --apply` again tried `codeql-action@vcodeql-bundle-*` (reverted to `@v4`). Example web/node lockfiles lagged package.json bumps and broke `npm ci` until synced.

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Continuum Calendar">
+  <rect width="512" height="512" rx="96" fill="#0B1220"/>
+  <!-- Simplified vector silhouette of cyan+purple ∞ (raster is canonical) -->
+  <g fill="none" stroke-width="42" stroke-linecap="butt">
+    <path d="M248 118 A112 112 0 1 0 248 394" stroke="#00E5FF"/>
+    <path d="M264 118 A112 112 0 1 1 264 394" stroke="#E040FB"/>
+  </g>
+  <circle cx="190" cy="256" r="22" fill="#E040FB"/>
+  <circle cx="322" cy="256" r="22" fill="#00E5FF"/>
+</svg>

@@ -123,3 +123,10 @@ scratchpad.md
 .cursor/auth-check.txt
 .cursor/settings-prefs.xml
 .cursor/*.png
+
+kmp/.gradle/
+kmp/**/build/
+kmp/.kotlin/
+kmp/local.properties
+.cursor/upd-apply-last.json
+.cursor/upd-status.md
