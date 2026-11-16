@@ -289,3 +289,14 @@
 | **Cause** | Default `bash` resolves to WSL; Node lives on Windows (`Program Files\nodejs`) |
 | **Fix** | Run via Git Bash with Node on PATH; raise `FEATURE_GATE_TIMEOUT_about` (e.g. 600) |
 | **Prevention** | Prefer `C:\Program Files\Git\bin\bash.exe` for agent-run shell scripts on this Windows host |
+
+### KB-042 — Product README generator must keep badge/Pages contract
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Template Upgrade Simulation fails check-readme-badges / check-pages-demo-link after mode=product |
+| **Cause** | generate-project-readme.py omitted template/owner badges, CI workflow href, fixed stack colors, and GitHub Pages demo URL |
+| **Fix** | Emit those from randing/templates/README.product.md + generator (STACK_BADGE_COLORS, owner_badges, pages_demo_url) |
+| **Prevention** | After changing product README template, run python3 scripts/generate-project-readme.py then
+eadme_badges.py + pages_demo_health.py |
+| **Last seen** | v2.1.0 /ship (2026-11-16) |
