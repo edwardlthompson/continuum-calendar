@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## License
 
-- Pure FOSS under MIT license
+- Pure FOSS; default MIT; `apps/mobile/` is GPL-3.0-only (Fossify Calendar fork). See `LICENSING.md`
 - No proprietary closed-source SDKs in production path
 - Android: no Google Play Services, Firebase, or closed telemetry trackers
 

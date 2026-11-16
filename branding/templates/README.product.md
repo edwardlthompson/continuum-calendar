@@ -10,6 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-{{badge_license}}?style=flat-square" alt="MIT" />
+  <img src="https://img.shields.io/badge/Android-GPL--3.0-a32d2d?style=flat-square" alt="Android GPL-3.0" />
   <img src="https://img.shields.io/badge/template-{{template_version}}-0969da?style=flat-square" alt="Template" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-{{badge_foss}}?style=flat-square" alt="FOSS" />
   <a href="https://github.com/{{ci_repo}}/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/{{ci_repo}}/ci.yml?style=flat-square&label=CI" alt="CI" /></a>
@@ -75,7 +76,10 @@ See [`{{url_security}}`]({{url_security}}). Enable Dependabot alerts and follow 
 
 ## License
 
-[{{license_name}}]({{url_license}}) — see the license file for terms.
+This repository uses **per-directory licenses**. See [`LICENSING.md`]({{url_licensing}}).
+
+- Default (desktop, KMP, docs, examples): [MIT License]({{url_license}}) — Edward Thompson, **not relicensed** by the Android fork.
+- Android app ([`apps/mobile/`]({{url_mobile_dir}})): [GPL-3.0-only]({{url_mobile_license}}) — Fossify Calendar fork. Copyright Fossify, Simple Mobile Tools, and Continuum modifications; see [`NOTICE`]({{url_mobile_notice}}).
 
 ## Acknowledgments
 

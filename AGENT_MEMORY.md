@@ -12,7 +12,7 @@
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | KMP | Kotlin 2.1.21 + Compose Multiplatform 1.7.3 | 0.1.0-kmp | Parallel MIT tree `kmp/` (ADR-0006); not shipping yet |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
-| License | MIT | - | Pure FOSS (`apps/mobile` Fossify fork remains GPL-3) |
+| License | MIT + GPL-3.0-only | - | Default MIT; `apps/mobile/` Fossify Calendar fork is GPL-3.0-only (`LICENSING.md`) |
 | Bootstrap | agent-project-bootstrap | 0.21.0 | See `bootstrap-manifest.yaml` |
 ## Active Modules
 
@@ -51,6 +51,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-11-16 | F-Droid source readiness | Mixed MIT/GPL-3 map; foss OAuth off; Fastlane at apps/mobile; maybeCreate signing | HUMAN: tag android-1.0.0; fdroiddata branch; license option 1 vs 2 |
 | 2026-11-16 | /build CMP parity remaining | P1-SYNC Drive overlays; P1-SCHED free-slot; P2-MISC splash/update/crash; gates+smoke PASS; HUMAN iOS backlogged | Deferred P2 hotkeys/ICS/holidays/Tasks/menu stay ⏸ |
 | 2026-11-15 | Sprint KMP foundation | ADR-0006; `kmp/` domain/platform/data/ui + CMP apps; desktopTest + assembleDebug; smoke PASS; archived | Number BUILD_PLAN rows for smoke parser; iOS still `[HUMAN]` macOS |
 | 2026-10-22 | /ship v1.4.1 OAuth bake | CI `.env` inject; RP #68; CodeQL `@v4` revert; sync web/node locks; NSIS → v1.4.1 | Prefer Git Bash + Node PATH on Windows about-gate; rotate GH token if dry-run echoed it |

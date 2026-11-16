@@ -1,0 +1,5 @@
+Continuum Calendar 1.0.0 (26)
+
+• Rolling week, explicit empty days, widgets, and CalDAV calendars
+• Continuum branding on a Fossify Calendar (GPL-3) fork
+• F-Droid FOSS flavor has no baked Google OAuth client; CalDAV still works

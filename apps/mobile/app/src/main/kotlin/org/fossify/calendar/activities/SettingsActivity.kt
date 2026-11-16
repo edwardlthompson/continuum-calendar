@@ -957,6 +957,11 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupContinuumPeerSync() = binding.apply {
+        if (!ContinuumSettingsOAuth.isFlavorEnabled()) {
+            settingsContinuumPeerSyncHolder.beGone()
+            settingsContinuumPasteOauthHolder.beGone()
+            return@apply
+        }
         fun refresh() {
             val signedIn = ContinuumGoogleAuth(this@SettingsActivity).isSignedIn()
             settingsContinuumPeerSync.text = getString(

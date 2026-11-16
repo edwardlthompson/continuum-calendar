@@ -9,6 +9,7 @@ SCREEN_DIRS = ("phoneScreenshots", "sevenInchScreenshots", "tenInchScreenshots")
 ROOTS = (
     Path("examples") / "android" / "metadata",
     Path("examples") / "android" / "fastlane" / "metadata" / "android",
+    Path("apps") / "mobile" / "fastlane" / "metadata" / "android",
 )
 
 

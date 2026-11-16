@@ -40,6 +40,21 @@ if [ ! -f THIRD_PARTY_LICENSES.md ]; then
 
 fi
 
+if [ -d apps/mobile ]; then
+  if [ ! -f apps/mobile/LICENSE ]; then
+    echo "MISSING: apps/mobile/LICENSE (GPL-3.0-only for Fossify fork)"
+    ERRORS=$((ERRORS + 1))
+  fi
+  if [ ! -f apps/mobile/NOTICE ]; then
+    echo "MISSING: apps/mobile/NOTICE"
+    ERRORS=$((ERRORS + 1))
+  fi
+  if [ ! -f LICENSING.md ]; then
+    echo "MISSING: LICENSING.md (mixed MIT + GPL-3.0 map)"
+    ERRORS=$((ERRORS + 1))
+  fi
+fi
+
 
 
 check_web() {

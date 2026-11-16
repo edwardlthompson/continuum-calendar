@@ -10,7 +10,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-2ea043?style=flat-square" alt="MIT" />
-  <img src="https://img.shields.io/badge/template-2.0.1-0969da?style=flat-square" alt="Template" />
+  <img src="https://img.shields.io/badge/Android-GPL--3.0-a32d2d?style=flat-square" alt="Android GPL-3.0" />
+  <img src="https://img.shields.io/badge/template-2.1.0-0969da?style=flat-square" alt="Template" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
   <a href="https://github.com/edwardlthompson/continuum-calendar/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/edwardlthompson/continuum-calendar/ci.yml?style=flat-square&label=CI" alt="CI" /></a>
   <img src="https://api.securityscorecards.dev/projects/github.com/edwardlthompson/continuum-calendar/badge" alt="OpenSSF Scorecard" />
@@ -49,7 +50,7 @@ Continuum is a free and open-source calendar for people who want Google when it�
 - Rolling week from today with explicit Open empty days
 - Google Calendar sync with peer settings and local-event overlays
 - CalDAV + ICS import/export alongside Google
-- Desktop + Android FOSS apps under MIT
+- Desktop MIT app plus Android GPL-3 Fossify Calendar fork
 - Cyan + purple infinity brand mark — owned Continuum identity
 
 ## Quick start
@@ -89,7 +90,10 @@ See [`../../SECURITY.md`](../../SECURITY.md). Enable Dependabot alerts and follo
 
 ## License
 
-[MIT License](../../LICENSE) — see the license file for terms.
+This repository uses **per-directory licenses**. See [`LICENSING.md`](../../LICENSING.md).
+
+- Default (desktop, KMP, docs, examples): [MIT License](../../LICENSE) — Edward Thompson, **not relicensed** by the Android fork.
+- Android app ([`apps/mobile/`](../../apps/mobile/)): [GPL-3.0-only](../../apps/mobile/LICENSE) — Fossify Calendar fork. Copyright Fossify, Simple Mobile Tools, and Continuum modifications; see [`NOTICE`](../../apps/mobile/NOTICE).
 
 ## Acknowledgments
 

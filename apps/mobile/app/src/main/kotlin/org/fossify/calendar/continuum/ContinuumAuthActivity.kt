@@ -18,6 +18,10 @@ import org.fossify.calendar.R
 class ContinuumAuthActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!ContinuumSettingsOAuth.isFlavorEnabled()) {
+            finish()
+            return
+        }
         val data = intent?.data
         if (data != null && (!data.getQueryParameter("code").isNullOrBlank() || !data.getQueryParameter("error").isNullOrBlank())) {
             handleRedirect(data)
