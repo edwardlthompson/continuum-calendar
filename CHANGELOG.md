@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [2.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v2.0.1...v2.1.0) (2026-11-16)
 
 
@@ -18,8 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **ci:** restore codeql-action@v4 pins after upd mis-tag ([5a2e4e2](https://github.com/edwardlthompson/continuum-calendar/commit/5a2e4e2eaf23fa8cc0a9d3104ef8f100a563e0bc))
 * **readme:** emit badge and Pages demo contract from product generator ([be73000](https://github.com/edwardlthompson/continuum-calendar/commit/be73000eeedd904d6c55db2013927268d452f542))
-
-## [Unreleased]
 
 ## [2.0.1](https://github.com/edwardlthompson/continuum-calendar/compare/v2.0.0...v2.0.1) (2026-11-16)
 
