@@ -75,14 +75,21 @@ def render_list(items: list[str], *, ordered: bool = False) -> str:
     return "\n".join(f"- {item}" for item in items)
 
 
+STACK_BADGE_COLORS = {
+    "web": "646cff",
+    "python": "3776AB",
+    "android": "3DDC84",
+}
+
+
 def stack_badges(product: dict) -> str:
     stacks = product.get("stacks") or []
     primary = product["badge"]["primary"]
     secondary = product["badge"]["secondary"]
-    colors = [primary, secondary, "3DDC84", "3776AB", "646cff"]
+    fallback = [primary, secondary, "3DDC84", "3776AB", "646cff"]
     lines = []
     for i, stack in enumerate(stacks):
-        color = colors[i % len(colors)]
+        color = STACK_BADGE_COLORS.get(str(stack).lower(), fallback[i % len(fallback)])
         lines.append(
             f'  <img src="https://img.shields.io/badge/{stack}-stack-{color}'
             f'?style=flat-square" alt="{stack}" />'
@@ -90,6 +97,18 @@ def stack_badges(product: dict) -> str:
     if not lines:
         return ""
     return "\n" + "\n".join(lines)
+
+
+def owner_badges() -> str:
+    return "\n".join(
+        [
+            '  <img src="https://img.shields.io/badge/AGENT-2ea043?style=flat-square" alt="AGENT" />',
+            '  <img src="https://img.shields.io/badge/HUMAN-0969da?style=flat-square" alt="HUMAN" />',
+            '  <img src="https://img.shields.io/badge/ADB-bf8700?style=flat-square" alt="ADB" />',
+            '  <img src="https://img.shields.io/badge/AUTO-656d76?style=flat-square" alt="AUTO" />',
+        ]
+    )
+
 
 
 def _rel_url(path: str, *, from_preview: bool) -> str:
@@ -132,6 +151,12 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         "{{badge_foss}}": badge["foss"],
         "{{badge_primary}}": badge["primary"],
         "{{stack_badges}}": stack_badges(product),
+        "{{owner_badges}}": owner_badges(),
+        "{{template_version}}": (root / ".template-version").read_text(encoding="utf-8").strip(),
+        "{{pages_demo_url}}": (
+            f"https://{str(urls.get('github_repo') or 'OWNER/REPO').split('/')[0]}.github.io/"
+            f"{str(urls.get('github_repo') or 'OWNER/REPO').split('/')[-1]}/"
+        ),
         "{{url_contributing}}": _rel_url(urls["contributing"], from_preview=for_preview),
         "{{url_security}}": _rel_url(urls["security"], from_preview=for_preview),
         "{{url_license}}": _rel_url(urls["license"], from_preview=for_preview),

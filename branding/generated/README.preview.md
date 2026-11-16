@@ -10,15 +10,20 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-2ea043?style=flat-square" alt="MIT" />
+  <img src="https://img.shields.io/badge/template-2.0.1-0969da?style=flat-square" alt="Template" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
-  <img src="https://img.shields.io/badge/status-active-00E5FF?style=flat-square" alt="status" />
-  <img src="https://img.shields.io/github/actions/workflow/status/edwardlthompson/continuum-calendar/ci.yml?style=flat-square&label=CI" alt="CI" />
+  <a href="https://github.com/edwardlthompson/continuum-calendar/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/edwardlthompson/continuum-calendar/ci.yml?style=flat-square&label=CI" alt="CI" /></a>
   <img src="https://api.securityscorecards.dev/projects/github.com/edwardlthompson/continuum-calendar/badge" alt="OpenSSF Scorecard" />
   <a href="https://codespaces.new/edwardlthompson/continuum-calendar"><img src="https://img.shields.io/badge/Codespaces-Open-181717?style=flat-square&logo=github" alt="Open in GitHub Codespaces" /></a>
+  <img src="https://img.shields.io/badge/AGENT-2ea043?style=flat-square" alt="AGENT" />
+  <img src="https://img.shields.io/badge/HUMAN-0969da?style=flat-square" alt="HUMAN" />
+  <img src="https://img.shields.io/badge/ADB-bf8700?style=flat-square" alt="ADB" />
+  <img src="https://img.shields.io/badge/AUTO-656d76?style=flat-square" alt="AUTO" />
 
-  <img src="https://img.shields.io/badge/web-stack-00E5FF?style=flat-square" alt="web" />
-  <img src="https://img.shields.io/badge/android-stack-E040FB?style=flat-square" alt="android" />
-  <img src="https://img.shields.io/badge/multi-stack-3DDC84?style=flat-square" alt="multi" />
+  <img src="https://img.shields.io/badge/web-stack-646cff?style=flat-square" alt="web" />
+  <img src="https://img.shields.io/badge/python-stack-3776AB?style=flat-square" alt="python" />
+  <img src="https://img.shields.io/badge/android-stack-3DDC84?style=flat-square" alt="android" />
+  <img src="https://img.shields.io/badge/multi-stack-3776AB?style=flat-square" alt="multi" />
 </p>
 
 ```mermaid
@@ -89,3 +94,5 @@ See [`../../SECURITY.md`](../../SECURITY.md). Enable Dependabot alerts and follo
 ## Acknowledgments
 
 Scaffolded with [agent-project-bootstrap](https://github.com/edwardlthompson/agent-project-bootstrap). Brand assets: [`../BRANDING.md`](../BRANDING.md). Design system: [`../../docs/BRAND.md`](../../docs/BRAND.md).
+
+GitHub Pages demo: https://edwardlthompson.github.io/continuum-calendar/

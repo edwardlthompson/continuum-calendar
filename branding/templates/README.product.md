@@ -10,11 +10,12 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-{{badge_license}}?style=flat-square" alt="MIT" />
+  <img src="https://img.shields.io/badge/template-{{template_version}}-0969da?style=flat-square" alt="Template" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-{{badge_foss}}?style=flat-square" alt="FOSS" />
-  <img src="https://img.shields.io/badge/status-active-{{badge_primary}}?style=flat-square" alt="status" />
-  <img src="https://img.shields.io/github/actions/workflow/status/{{ci_repo}}/ci.yml?style=flat-square&label=CI" alt="CI" />
+  <a href="https://github.com/{{ci_repo}}/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/{{ci_repo}}/ci.yml?style=flat-square&label=CI" alt="CI" /></a>
   <img src="https://api.securityscorecards.dev/projects/github.com/{{ci_repo}}/badge" alt="OpenSSF Scorecard" />
   <a href="https://codespaces.new/{{ci_repo}}"><img src="https://img.shields.io/badge/Codespaces-Open-181717?style=flat-square&logo=github" alt="Open in GitHub Codespaces" /></a>
+{{owner_badges}}
 {{stack_badges}}
 </p>
 
@@ -79,3 +80,5 @@ See [`{{url_security}}`]({{url_security}}). Enable Dependabot alerts and follow 
 ## Acknowledgments
 
 Scaffolded with [agent-project-bootstrap](https://github.com/edwardlthompson/agent-project-bootstrap). Brand assets: [`{{url_branding}}`]({{url_branding}}). Design system: [`{{url_design}}`]({{url_design}}).
+
+GitHub Pages demo: {{pages_demo_url}}
