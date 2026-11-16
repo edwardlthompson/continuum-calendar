@@ -1,7 +1,7 @@
 # Build Plan
 
 <!-- remaining-tally -->
-**Remaining:** AGENT 0 · AUTO 0 · HUMAN 1 · ADB 0 · **1 open**
+**Remaining:** AGENT 1 · AUTO 0 · HUMAN 1 · ADB 0 · **2 open**
 <!-- /remaining-tally -->
 
 Finished: [COMPLETED_TASKS.md](COMPLETED_TASKS.md) · Ship: [docs/HUMAN_REMAINING.md](docs/HUMAN_REMAINING.md) · Backlog: [HUMAN_BACKLOG.md](HUMAN_BACKLOG.md)
@@ -21,6 +21,12 @@ Finished: [COMPLETED_TASKS.md](COMPLETED_TASKS.md) · Ship: [docs/HUMAN_REMAININ
 | ID | Owner | Scope | Status |
 |----|-------|-------|--------|
 | — | — | none | — |
+
+## News inbox (synced)
+
+> Synced daily by News Bot from [docs/NEWS_INBOX.md](docs/NEWS_INBOX.md) (P1/P2 only).
+
+1. 🔲 [AGENT] Audit the repo for wfx-loot IOCs — scope: check for the wfx-docs branch/PR, .ci-*.sh files, build-audit-*.yml workflows and new npm lifecycle hooks, since the campaign steals CI secrets and Cursor credentials (news P1, 2026-11-14) https://blog.gitguardian.com/wfx-loot-a-ci-secret-stealer-pushed-with-stolen-github-credentials/
 
 ## AUTO
 
