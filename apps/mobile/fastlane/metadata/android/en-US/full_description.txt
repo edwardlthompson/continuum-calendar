@@ -1,4 +1,4 @@
-Continuum Calendar is a private, open-source schedule planner for Android — forked from Fossify Calendar with Continuum branding and desktop peer sync.
+Continuum Calendar is a private, open-source schedule planner for Android — forked from Fossify Calendar.
 
 What you get:
 
@@ -8,16 +8,13 @@ Your events stay on your device and accounts you choose. No ads, no tracking SDK
 FLEXIBLE EVENTS:
 Times, durations, reminders, and advanced repetition rules.
 
-GOOGLE & CALDAV SYNC:
-Connect Google Calendar (and other CalDAV providers) when you want cloud calendars.
-
-CONTINUUM DESKTOP PEER SYNC:
-Optional settings and local-event sync with Continuum Calendar on desktop via Google Drive App Data.
+CALDAV SYNC:
+Connect CalDAV providers (including Google Calendar over CalDAV) when you want cloud calendars.
 
 WIDGETS & VIEWS:
 Month, day, week, year, and agenda (event list) views plus home-screen widgets.
 
 OPEN SOURCE:
-MIT-licensed Continuum product shell; the Android app remains GPL-3 as a Fossify Calendar fork — see LICENSE and credits in the repository.
+This Android app is GPL-3.0-only (Fossify Calendar fork). Desktop and other Continuum trees stay MIT — see LICENSING.md in the repository.
 
-Download Continuum Calendar and keep your schedule continuous across phone and desktop.
+Download Continuum Calendar and keep your schedule on your terms.

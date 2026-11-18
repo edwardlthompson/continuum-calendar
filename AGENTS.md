@@ -20,7 +20,7 @@
 
 ## Architecture Constraints
 
-- Pure FOSS under MIT license; no proprietary closed-source SDKs in production path
+- Pure FOSS; root/default MIT, `apps/mobile/` GPL-3.0-only (Fossify Calendar fork). See `LICENSING.md`. No proprietary closed-source SDKs in production path
 - Max 300 lines per static data file (UI + i18n), 150 lines per pure logic file
 - Strict type safety and runtime validation at all data boundaries
 - Core business logic decoupled from layout framework (MVVM / Clean / Hexagonal)

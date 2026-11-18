@@ -14,7 +14,13 @@ object ContinuumSettingsOAuth {
 
     fun clientId(): String = androidClientId().ifBlank { desktopClientId() }
 
-    fun isConfigured(): Boolean = clientId().isNotBlank()
+    /** FOSS/F-Droid flavors compile without Google OAuth client IDs. */
+    fun isFlavorEnabled(): Boolean = BuildConfig.CONTINUUM_GOOGLE_OAUTH_ENABLED
+
+    fun oauthUsable(flavorEnabled: Boolean, clientId: String): Boolean =
+        flavorEnabled && clientId.isNotBlank()
+
+    fun isConfigured(): Boolean = oauthUsable(isFlavorEnabled(), clientId())
 
     fun usesAndroidClient(): Boolean = androidClientId().isNotBlank()
 

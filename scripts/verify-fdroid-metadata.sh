@@ -105,6 +105,64 @@ fi
 echo ""
 echo "SKIP [ADB] reproducible APK hash verification — run on device/emulator per modules/android/MODULE.md"
 
+PRODUCT_FL="$ROOT/apps/mobile/fastlane/metadata/android/en-US"
+if [ -d "$ROOT/apps/mobile/app" ]; then
+  if [ ! -d "$PRODUCT_FL" ]; then
+    fail "missing product Fastlane $PRODUCT_FL"
+  else
+    ok "product Fastlane present (apps/mobile)"
+    for f in title.txt short_description.txt full_description.txt; do
+      if [ ! -s "$PRODUCT_FL/$f" ]; then
+        fail "missing or empty $PRODUCT_FL/$f"
+      else
+        ok "product fastlane $f present"
+      fi
+    done
+  fi
+  MOBILE_PROPS="$ROOT/apps/mobile/gradle.properties"
+  if [ -f "$MOBILE_PROPS" ]; then
+    VC="$(grep -E '^VERSION_CODE=' "$MOBILE_PROPS" | head -1 | cut -d= -f2)"
+    if [ -z "${VC:-}" ]; then
+      fail "could not parse VERSION_CODE from apps/mobile/gradle.properties"
+    elif [ ! -s "$PRODUCT_FL/changelogs/${VC}.txt" ]; then
+      fail "missing product changelog $PRODUCT_FL/changelogs/${VC}.txt"
+    else
+      ok "product changelog for versionCode ${VC}"
+    fi
+  fi
+  if [ ! -s "$ROOT/apps/mobile/LICENSE" ]; then
+    fail "missing apps/mobile/LICENSE (GPL-3.0-only)"
+  else
+    ok "apps/mobile LICENSE present"
+  fi
+  if [ ! -s "$ROOT/LICENSING.md" ]; then
+    fail "missing LICENSING.md mixed-license map"
+  else
+    ok "LICENSING.md present"
+  fi
+  GRADLE_APP="$ROOT/apps/mobile/app/build.gradle.kts"
+  if ! grep -q 'maybeCreate("release")' "$GRADLE_APP"; then
+    fail "apps/mobile signingConfigs must use maybeCreate(\"release\")"
+  else
+    ok "release signing uses maybeCreate"
+  fi
+  if ! grep -q 'findByName("release")' "$GRADLE_APP"; then
+    fail "apps/mobile release buildType must use signingConfigs.findByName(\"release\")"
+  else
+    ok "release signing uses findByName"
+  fi
+  if ! grep -q 'jitpack.io' "$ROOT/apps/mobile/settings.gradle.kts"; then
+    fail "apps/mobile needs JitPack for Fossify commons 6.1.6 (patched locally)"
+  else
+    ok "JitPack present for Fossify Commons"
+  fi
+  if ! grep -q 'register("foss") { disableGoogleOAuth() }' "$GRADLE_APP"; then
+    fail "foss flavor must disable Google OAuth"
+  else
+    ok "foss flavor disables Google OAuth"
+  fi
+fi
+
 # Dummy/placeholder screenshots fail even when metadata text is present.
 if ! bash "$ROOT/scripts/check-fdroid-screenshots.sh"; then
   fail "dummy F-Droid screenshots are not allowed"

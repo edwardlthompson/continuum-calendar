@@ -101,6 +101,13 @@ fun Project.continuumAndroidRedirectScheme(clientId: String, release: Boolean): 
     return if (release) appId else "$appId.debug"
 }
 
+fun com.android.build.api.dsl.ApplicationProductFlavor.disableGoogleOAuth() {
+    buildConfigField("boolean", "CONTINUUM_GOOGLE_OAUTH_ENABLED", "false")
+    buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_ID", "\"\"")
+    buildConfigField("String", "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID", "\"\"")
+    buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_SECRET", "\"\"")
+}
+
 fun Project.resolveDesktopEnvValue(key: String): String {
     val desktopEnv = rootProject.rootDir.resolve("../desktop/.env")
     val desktopEnvAlt = rootProject.rootDir.parentFile?.resolve("desktop/.env")
@@ -133,32 +140,25 @@ android {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
-        // Peer settings sync with desktop requires the same Google Cloud project Client ID.
-        // Resolution order: -P / env → local.properties → apps/desktop/.env (local dev).
-        val continuumClientId = project.resolveContinuumGoogleClientId()
-        val continuumAndroidClientId = project.resolveContinuumGoogleAndroidClientId()
-        val continuumClientSecret = project.resolveContinuumGoogleClientSecret()
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-        buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_ID", "\"$continuumClientId\"")
-        buildConfigField("String", "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID", "\"$continuumAndroidClientId\"")
-        // Needed when using a Desktop OAuth client for Android browser/PKCE token exchange.
-        buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_SECRET", "\"$continuumClientSecret\"")
-        // Custom Tabs redirect scheme: com.googleusercontent.apps.<android-client-prefix>
-        manifestPlaceholders["appAuthRedirectScheme"] =
-            project.continuumAndroidRedirectScheme(continuumAndroidClientId, release = false)
+        // Default: no Google OAuth. gplay flavor fills IDs; foss/core stay empty for F-Droid.
+        buildConfigField("boolean", "CONTINUUM_GOOGLE_OAUTH_ENABLED", "false")
+        buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_ID", "\"\"")
+        buildConfigField("String", "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID", "\"\"")
+        buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_SECRET", "\"\"")
+        manifestPlaceholders["appAuthRedirectScheme"] = project.property("APP_ID").toString()
     }
 
     signingConfigs {
+        // maybeCreate so F-Droid can strip this block without getByName("release") failing.
         if (keystorePropertiesFile.exists()) {
-            register("release") {
+            maybeCreate("release").apply {
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
                 storeFile = file(keystoreProperties.getProperty("storeFile"))
                 storePassword = keystoreProperties.getProperty("storePassword")
             }
         } else if (hasSigningVars()) {
-            register("release") {
+            maybeCreate("release").apply {
                 keyAlias = providers.environmentVariable("SIGNING_KEY_ALIAS").get()
                 keyPassword = providers.environmentVariable("SIGNING_KEY_PASSWORD").get()
                 storeFile = file(providers.environmentVariable("SIGNING_STORE_FILE").get())
@@ -179,27 +179,33 @@ android {
             applicationIdSuffix = ".debug"
         }
         release {
-            val releaseAndroidId = project.resolveContinuumGoogleAndroidReleaseClientId()
-            buildConfigField("String", "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID", "\"$releaseAndroidId\"")
-            manifestPlaceholders["appAuthRedirectScheme"] =
-                project.continuumAndroidRedirectScheme(releaseAndroidId, release = true)
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            if (keystorePropertiesFile.exists() || hasSigningVars()) {
-                signingConfig = signingConfigs.getByName("release")
-            }
+            signingConfigs.findByName("release")?.let { signingConfig = it }
         }
     }
 
     flavorDimensions.add("variants")
     productFlavors {
-        register("core")
-        register("foss")
-        register("gplay")
+        register("core") { disableGoogleOAuth() }
+        register("foss") { disableGoogleOAuth() }
+        register("gplay") {
+            val continuumClientId = project.resolveContinuumGoogleClientId()
+            val continuumAndroidClientId = project.resolveContinuumGoogleAndroidClientId()
+            val continuumClientSecret = project.resolveContinuumGoogleClientSecret()
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+            buildConfigField("boolean", "CONTINUUM_GOOGLE_OAUTH_ENABLED", "true")
+            buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_ID", "\"$continuumClientId\"")
+            buildConfigField("String", "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID", "\"$continuumAndroidClientId\"")
+            buildConfigField("String", "CONTINUUM_GOOGLE_CLIENT_SECRET", "\"$continuumClientSecret\"")
+            manifestPlaceholders["appAuthRedirectScheme"] =
+                project.continuumAndroidRedirectScheme(continuumAndroidClientId, release = false)
+        }
     }
 
     sourceSets {
@@ -242,6 +248,24 @@ android {
         language {
             enableSplit = false
         }
+    }
+}
+
+androidComponents {
+    onVariants(selector().withFlavor("variants" to "gplay").withBuildType("release")) { variant ->
+        val releaseAndroidId = project.resolveContinuumGoogleAndroidReleaseClientId()
+        variant.buildConfigFields?.put(
+            "CONTINUUM_GOOGLE_ANDROID_CLIENT_ID",
+            com.android.build.api.variant.BuildConfigField(
+                "String",
+                "\"$releaseAndroidId\"",
+                "gplayRelease Android OAuth client",
+            ),
+        )
+        variant.manifestPlaceholders.put(
+            "appAuthRedirectScheme",
+            project.continuumAndroidRedirectScheme(releaseAndroidId, release = true),
+        )
     }
 }
 

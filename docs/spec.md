@@ -18,10 +18,10 @@
 | FR-3 | As a user I keep local events when Google is off | Room / desktop store persist local calendars; peer sync does not require a Continuum account |
 ## Non-Functional Constraints
 
-- MIT FOSS; no proprietary SDKs on the production path
+- Mixed FOSS licenses: MIT default; `apps/mobile/` GPL-3.0-only. See `LICENSING.md`
 - Never commit `.env`, keystores, or OAuth client secrets
 - File budgets: 300 lines static data, 150 lines pure logic
-- Desktop product version and Android `versionName` may trail the GitHub template tag
+- Android store version is `apps/mobile/gradle.properties` (`1.0.0` / `26`); template tags like `v2.1.0` are not the APK version. Tag F-Droid as `android-<versionName>`
 
 ## Architecture & Data Flow
 

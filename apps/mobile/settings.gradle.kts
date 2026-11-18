@@ -12,7 +12,8 @@ dependencyResolutionManagement {
         maven { setUrl(uri("${rootDir}/libs/m2")) }
         google()
         mavenCentral()
-        maven { setUrl("https://www.jitpack.io") }
+        // Fossify commons 6.1.6 is not on Maven Central; patch task rewrites it to 6.1.6-continuum in libs/m2.
+        maven { setUrl("https://jitpack.io") }
         mavenLocal()
     }
 }

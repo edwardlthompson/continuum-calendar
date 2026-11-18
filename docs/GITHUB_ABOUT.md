@@ -2,7 +2,7 @@
 
 ## Draft Description (edit to <=350 chars)
 
-FOSS calendar with rolling week views (Today first), explicit empty days, Google Calendar & Contacts sync, Light/Dark/System themes, and an Android homescreen widget. MIT.
+FOSS calendar with rolling week views (Today first), explicit empty days, CalDAV, Light/Dark/System themes, and an Android homescreen widget. Desktop MIT; Android GPL-3.0 (Fossify Calendar fork).
 
 ## Topics
 
@@ -12,4 +12,4 @@ Suggested for GitHub discoverability (Settings → About). Prefer 5–10 short t
 
 ## Child Project Draft
 
-Continuum Calendar — FOSS rolling-week calendar for desktop and Android. Built with agent-project-bootstrap. FOSS MIT.
+Continuum Calendar — FOSS rolling-week calendar for desktop (MIT) and Android (GPL-3.0 Fossify fork). Built with agent-project-bootstrap.
