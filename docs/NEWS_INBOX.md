@@ -25,3 +25,15 @@ A Cursor planning agent should review these items and fold the useful ones into 
 **Tasks for the planning agent**
 
 - [x] Audit the repo for wfx-loot IOCs — Checks for the wfx-docs branch/PR, .ci-*.sh files, build-audit-*.yml workflows and new npm lifecycle hooks, since the campaign steals CI secrets and Cursor credentials. Label: `[AGENT]` · Priority: P1 · https://blog.gitguardian.com/wfx-loot-a-ci-secret-stealer-pushed-with-stolen-github-credentials/ (synced to BUILD_PLAN)
+
+## 2026-11-18
+
+Catch-up for Nov 17–18 (the daily brief did not run those mornings).
+
+**News and updates**
+
+- Compose Multiplatform 1.13.0-rc01 is out (font-cache leak, popup/tooltip crash, iOS per-frame bitmap cost). This repo's KMP track is still on 1.7.3. [source](https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.13.0-rc01)
+
+**Tasks for the planning agent**
+
+- [x] Plan a Compose Multiplatform upgrade from 1.7.3 toward 1.13.0-rc01 — The parallel kmp/ track is several minors behind, and rc01 fixes a font-state leak and a popup disposal crash. Label: `[AGENT]` · Priority: P2 · https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.13.0-rc01 (synced to BUILD_PLAN)
