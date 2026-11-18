@@ -21,14 +21,6 @@ Finished: [COMPLETED_TASKS.md](COMPLETED_TASKS.md) · Ship: [docs/HUMAN_REMAININ
 | ID | Owner | Scope | Status |
 |----|-------|-------|--------|
 | — | — | none | — |
-
-## News inbox (synced)
-
-> Synced daily by News Bot from [docs/NEWS_INBOX.md](docs/NEWS_INBOX.md) (P1/P2 only).
-
-1. 🔲 [AGENT] Audit the repo for wfx-loot IOCs — scope: check for the wfx-docs branch/PR, .ci-*.sh files, build-audit-*.yml workflows and new npm lifecycle hooks, since the campaign steals CI secrets and Cursor credentials (news P1, 2026-11-14) https://blog.gitguardian.com/wfx-loot-a-ci-secret-stealer-pushed-with-stolen-github-credentials/
-2. 🔲 [AGENT] Plan a Compose Multiplatform upgrade from 1.7.3 toward 1.13.0-rc01 — scope: kmp/ (news P2, 2026-11-18) https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.13.0-rc01
-
 ## AUTO
 
 Monday crons + Dependabot. Deferred: glib in desktop Cargo.lock (stay off GTK4).
@@ -52,3 +44,21 @@ _No open Dependabot or Release Please PRs._
 <!-- template-gaps-sync:begin -->
 _No template gaps; .template-version matches upstream (or template maintainer N/A)._
 <!-- template-gaps-sync:end -->
+
+### Local agent (This Computer)
+
+Standing queue for This Computer. Rows: `🔲 [AGENT][LOCAL] … — scope: path`.
+
+<!-- local-agent-lane:begin -->
+1. 🔲 [AGENT][LOCAL] Audit the repo for wfx-loot IOCs — scope: check for the wfx-docs branch/PR, .ci-*.sh files, build-audit-*.yml workflows and new npm lifecycle hooks, since the campaign steals CI secrets and Cursor credentials (news P1, 2026-11-14) https://blog.gitguardian.com/wfx-loot-a-ci-secret-stealer-pushed-with-stolen-github-credentials/
+2. 🔲 [AGENT][LOCAL] Plan a Compose Multiplatform upgrade from 1.7.3 toward 1.13.0-rc01 — scope: kmp/ (news P2, 2026-11-18) https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.13.0-rc01
+<!-- local-agent-lane:end -->
+
+### Cloud agent (Cursor Cloud)
+
+Standing queue for Cursor Cloud. Rows: `🔲 [AGENT][CLOUD] … — scope: path`.
+
+<!-- cloud-agent-lane:begin -->
+_No cloud agent items._
+<!-- cloud-agent-lane:end -->
+
