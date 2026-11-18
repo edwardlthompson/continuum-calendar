@@ -10,13 +10,15 @@
 | Desktop | Tauri 2 + React + Vite + Tailwind + FullCalendar | 1.0.0 | `apps/desktop`; Linux install is `.deb` (`dpkg`) |
 | Mobile | FossifyOrg/Calendar fork (Kotlin) | 1.0.0 / 26 | `apps/mobile` (`org.continuumcalendar.app`); release key `$HOME/keys/continuum-release.jks` |
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
+| KMP | Kotlin 2.1.21 + Compose Multiplatform 1.7.3 | 0.1.0-kmp | Parallel MIT tree `kmp/` (ADR-0006); not shipping yet |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
-| License | MIT | - | Pure FOSS |
+| License | MIT | - | Pure FOSS (`apps/mobile` Fossify fork remains GPL-3) |
 | Bootstrap | agent-project-bootstrap | 0.21.0 | See `bootstrap-manifest.yaml` |
 ## Active Modules
 
 - ✅ Web / desktop UI (`modules/web/MODULE.md` patterns; app in `apps/desktop`)
 - ✅ Android / F-Droid (`modules/android/MODULE.md`; fork docs in `apps/mobile`)
+- ✅ KMP / Compose Multiplatform foundation (`kmp/`; agenda slice compiling)
 - ⬜ Python / Node Golden Path examples retained from template (not primary product paths)
 
 ## Threat Model Checklist
@@ -35,7 +37,7 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ### Public home
 
 - GitHub: https://github.com/edwardlthompson/continuum-calendar
-- Latest tag: shipping `v1.4.1` (Release Please [#68](https://github.com/edwardlthompson/continuum-calendar/pull/68)). Desktop NSIS/Deb bake Google OAuth via Actions secrets; re-run Desktop NSIS with `attach_to_tag=v1.4.1` for a working Sign-in EXE.
+- Latest tag: 2.0.1 on main; next Release Please after CMP/brand ship commit.
 
 ### Key Constraints
 
@@ -49,6 +51,8 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 
 | Date | Sprint/Task | What Worked | What to Improve |
 |------|-------------|-------------|-----------------|
+| 2026-11-16 | /build CMP parity remaining | P1-SYNC Drive overlays; P1-SCHED free-slot; P2-MISC splash/update/crash; gates+smoke PASS; HUMAN iOS backlogged | Deferred P2 hotkeys/ICS/holidays/Tasks/menu stay ⏸ |
+| 2026-11-15 | Sprint KMP foundation | ADR-0006; `kmp/` domain/platform/data/ui + CMP apps; desktopTest + assembleDebug; smoke PASS; archived | Number BUILD_PLAN rows for smoke parser; iOS still `[HUMAN]` macOS |
 | 2026-10-22 | /ship v1.4.1 OAuth bake | CI `.env` inject; RP #68; CodeQL `@v4` revert; sync web/node locks; NSIS → v1.4.1 | Prefer Git Bash + Node PATH on Windows about-gate; rotate GH token if dry-run echoed it |
 | 2026-10-07 | /ship v1.3.2 view default | Day/Week + missing-mode → view; device smoke on debug both phones; skip bad CodeQL bundle pin | Merge RP #62; dispatch signed FOSS APK; sideload -r; Medium glib still deferred |
 | 2026-10-07 | /ship v1.3.1 | Android view card; desktop casing NSIS; web HIGH overrides; RP #59; CodeQL pin revert | Attach EXE/APK to tag; Medium glib still deferred; release keystore not on this Windows host |
@@ -77,5 +81,5 @@ Continuum Calendar — FOSS calendar with rolling week (Today = column 1), expli
 ## Template Provenance
 
 - **Source template:** `edwardlthompson/agent-project-bootstrap`
-- **Template version:** `1.4.1` (see `.template-version`; parent template catch-up is v1.4.0)
+- **Template version:** `2.1.0` (see `.template-version`; parent template catch-up is v1.4.0)
 - **Last update check:** See `.template-update.json`
