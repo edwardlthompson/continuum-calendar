@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [2.1.1](https://github.com/edwardlthompson/continuum-calendar/compare/v2.1.0...v2.1.1) (2026-11-19)
 
 
@@ -22,8 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **kb:** record product README badge contract (KB-042) ([297320b](https://github.com/edwardlthompson/continuum-calendar/commit/297320b85dfa075c565fa600a441270fa06a7de4))
 * **news:** inbox + build plan 2026-11-18 [skip ci] ([2d297b4](https://github.com/edwardlthompson/continuum-calendar/commit/2d297b4310138d68ecebe56afaaca1259d4b555e))
 * **news:** restore wfx-loot audit task to build plan [skip ci] ([ffaa389](https://github.com/edwardlthompson/continuum-calendar/commit/ffaa389f5b6f3fd032010785e5def91350d68969))
-
-## [Unreleased]
 
 ## [2.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v2.0.1...v2.1.0) (2026-11-16)
 
