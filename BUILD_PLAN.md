@@ -30,7 +30,7 @@ Monday crons + Dependabot. Deferred: glib in desktop Cargo.lock (stay off GTK4).
 
 Numbered rows so child `/build` (parse_board_queue) picks them up. **Not** under Archive lanes.
 
-1. 🔲 [AGENT][LOCAL] Cut/update GitHub Release with signed Android APK/AAB — scope: examples/android/
+1. 🔲 [AGENT] Cut/update GitHub Release with signed Android APK/AAB — scope: examples/android/
 
 #### Agent instructions (release row)
 
@@ -63,6 +63,24 @@ No force-push to main. No committing binaries into git.
 Releases: https://github.com/edwardlthompson/continuum-calendar/releases
 <!-- argus-android-release-sprint:end -->
 
+### Local agent (This Computer)
+
+Standing queue for This Computer. Rows: `🔲 [AGENT][LOCAL] … — scope: path`.
+
+<!-- local-agent-lane:begin -->
+1. 🔲 [AGENT] Audit the repo for wfx-loot IOCs — scope: check for the wfx-docs branch/PR, .ci-*.sh files, build-audit-*.yml workflows and new npm lifecycle hooks, since the campaign steals CI secrets and Cursor credentials (news P1, 2026-11-14) https://blog.gitguardian.com/wfx-loot-a-ci-secret-stealer-pushed-with-stolen-github-credentials/
+2. 🔲 [AGENT] Plan a Compose Multiplatform upgrade from 1.7.3 toward 1.13.0-rc01 — scope: kmp/ (news P2, 2026-11-18) https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.13.0-rc01
+<!-- local-agent-lane:end -->
+
+### Cloud agent (Cursor Cloud)
+
+Standing queue for Cursor Cloud. Rows: `🔲 [AGENT][CLOUD] … — scope: path`.
+
+<!-- cloud-agent-lane:begin -->
+_No cloud agent items._
+<!-- cloud-agent-lane:end -->
+
+
 ## Archive
 
 [COMPLETED_TASKS.md](COMPLETED_TASKS.md)
@@ -82,22 +100,5 @@ _No open Dependabot or Release Please PRs._
 <!-- template-gaps-sync:begin -->
 _No template gaps; .template-version matches upstream (or template maintainer N/A)._
 <!-- template-gaps-sync:end -->
-
-### Local agent (This Computer)
-
-Standing queue for This Computer. Rows: `🔲 [AGENT][LOCAL] … — scope: path`.
-
-<!-- local-agent-lane:begin -->
-1. 🔲 [AGENT][LOCAL] Audit the repo for wfx-loot IOCs — scope: check for the wfx-docs branch/PR, .ci-*.sh files, build-audit-*.yml workflows and new npm lifecycle hooks, since the campaign steals CI secrets and Cursor credentials (news P1, 2026-11-14) https://blog.gitguardian.com/wfx-loot-a-ci-secret-stealer-pushed-with-stolen-github-credentials/
-2. 🔲 [AGENT][LOCAL] Plan a Compose Multiplatform upgrade from 1.7.3 toward 1.13.0-rc01 — scope: kmp/ (news P2, 2026-11-18) https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.13.0-rc01
-<!-- local-agent-lane:end -->
-
-### Cloud agent (Cursor Cloud)
-
-Standing queue for Cursor Cloud. Rows: `🔲 [AGENT][CLOUD] … — scope: path`.
-
-<!-- cloud-agent-lane:begin -->
-_No cloud agent items._
-<!-- cloud-agent-lane:end -->
 
 
