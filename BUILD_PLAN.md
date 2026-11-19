@@ -62,3 +62,20 @@ Standing queue for Cursor Cloud. Rows: `🔲 [AGENT][CLOUD] … — scope: path`
 _No cloud agent items._
 <!-- cloud-agent-lane:end -->
 
+<!-- argus-portfolio-chores:start -->
+## Argus portfolio chores
+
+Synced from argus-runner (2026-11-18). Prefer YOLO maintain on the runner; keep these until cleared.
+
+| Status | Venue | Task |
+|--------|-------|------|
+| 🔲 | `[AUTO][CLOUD]` | Clear open Dependabot alerts |
+| 🔲 | `[HUMAN][PC]` | Publish Android release asset (APK or AAB) |
+
+```text
+Repo: edwardlthompson/continuum-calendar
+1) Squash-merge green Dependabot PRs (incl. android-dependencies when green).
+2) Attach signed APK/AAB to GitHub Release.
+Gate: alerts 0; .apk/.aab on release.
+```
+<!-- argus-portfolio-chores:end -->
