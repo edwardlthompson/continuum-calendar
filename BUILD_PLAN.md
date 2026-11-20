@@ -1,7 +1,7 @@
 # Build Plan
 
 <!-- remaining-tally -->
-**Remaining:** AGENT 1 · AUTO 0 · HUMAN 1 · ADB 0 · **2 open**
+**Remaining:** AGENT 5 · AUTO 0 · HUMAN 1 · ADB 0 · **6 open**
 <!-- /remaining-tally -->
 
 Finished: [COMPLETED_TASKS.md](COMPLETED_TASKS.md) · Ship: [docs/HUMAN_REMAINING.md](docs/HUMAN_REMAINING.md) · Backlog: [HUMAN_BACKLOG.md](HUMAN_BACKLOG.md)
@@ -70,6 +70,8 @@ Standing queue for This Computer. Rows: `🔲 [AGENT][LOCAL] … — scope: path
 <!-- local-agent-lane:begin -->
 1. 🔲 [AGENT] Audit the repo for wfx-loot IOCs — scope: check for the wfx-docs branch/PR, .ci-*.sh files, build-audit-*.yml workflows and new npm lifecycle hooks, since the campaign steals CI secrets and Cursor credentials (news P1, 2026-11-14) https://blog.gitguardian.com/wfx-loot-a-ci-secret-stealer-pushed-with-stolen-github-credentials/
 2. 🔲 [AGENT] Plan a Compose Multiplatform upgrade from 1.7.3 toward 1.13.0-rc01 — scope: kmp/ (news P2, 2026-11-18) https://github.com/JetBrains/compose-multiplatform/releases/tag/v1.13.0-rc01
+3. 🔲 [AGENT] Bump the Gradle wrapper 9.6.1 (apps/mobile), 9.7.1 (kmp), 9.9.0 (examples/android) → 9.9.2 and commit the regenerated wrapper jar and distributionSha256Sum (4 High security fixes: SFTP host keys, snapshot dependency verification, TestKit temp dir, daemon registry, also gets the 9.9.1 Critical version-catalog fix) — scope: apps/mobile/gradle/wrapper/,kmp/gradle/wrapper/,examples/android/gradle/wrapper/ (news P2, 2026-11-20) https://docs.gradle.org/9.9.2/release-notes.html
+4. 🔲 [AGENT] Bump tauri 2.11.5 → 2.11.6+ (latest 2.12.7) and smoke the desktop app; High IPC channel-fetch ACL bypass that Dependabot can't see (GHSA-w28w-mhc8-qvjv); also add a cargo entry for apps/desktop/src-tauri to .github/dependabot.yml — scope: apps/desktop/src-tauri/,.github/dependabot.yml (news P2, 2026-11-20) https://github.com/tauri-apps/tauri/security/advisories/GHSA-w28w-mhc8-qvjv
 <!-- local-agent-lane:end -->
 
 ### Cloud agent (Cursor Cloud)
