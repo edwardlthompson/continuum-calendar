@@ -34,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* **fdroid:** mixed MIT/GPL-3.0 licensing map, Fastlane changelog 26, foss OAuth isolation
+* **ci:** wait for Golden Path feedback-copied tag in instrumented copy test
+
 ## [2.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v2.0.1...v2.1.0) (2026-11-16)
 
 

@@ -8,7 +8,7 @@
     "Rolling week from today with explicit Open empty days",
     "Google Calendar sync with peer settings and local-event overlays",
     "CalDAV + ICS import/export alongside Google",
-    "Desktop + Android FOSS apps under MIT",
+    "Desktop MIT app plus Android GPL-3 Fossify Calendar fork",
     "Cyan + purple infinity brand mark \u2014 owned Continuum identity"
   ],
   "quick_start": [
@@ -25,6 +25,7 @@
     "contributing": "CONTRIBUTING.md",
     "security": "SECURITY.md",
     "license": "LICENSE",
+    "licensing": "LICENSING.md",
     "design": "docs/BRAND.md",
     "branding": "branding/BRANDING.md"
   },
@@ -34,6 +35,7 @@
     "license": "2ea043",
     "foss": "656d76"
   },
+  "license_name": "MIT (repo) + GPL-3.0 (Android)",
   "stacks": [
     "web",
     "python",

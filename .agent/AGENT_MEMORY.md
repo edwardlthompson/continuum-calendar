@@ -11,7 +11,7 @@
 | Mobile | FossifyOrg/Calendar fork (Kotlin) | 1.0.0 / 26 | `apps/mobile` (`org.continuumcalendar.app`); release key `$HOME/keys/continuum-release.jks` |
 | Shared | TypeScript types | 0.1.0 | `packages/shared` |
 | Google | Calendar API + People API | REST | Scopes in `docs/GOOGLE_API_SETUP.md` |
-| License | MIT | - | Pure FOSS |
+| License | MIT + GPL-3.0-only | - | Default MIT; `apps/mobile/` Fossify Calendar fork is GPL-3.0-only (`LICENSING.md`) |
 | Bootstrap | agent-project-bootstrap | 0.21.0 | See `bootstrap-manifest.yaml` |
 ## Active Modules
 

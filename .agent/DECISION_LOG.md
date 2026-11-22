@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-11-16 — F-Droid source-side readiness (mixed licenses, foss flavor)
+- **Status:** Accepted (licensing option 1 pending HUMAN review)
+- **Context:** F-Droid audit: `apps/mobile` is a Fossify Calendar GPL-3 fork while root `LICENSE` is MIT; template tags (`v2.1.0`) do not match Android 1.0.0/26; Google OAuth client IDs must not ship in the F-Droid APK.
+- **Decision:** Honest mixed licenses (`LICENSING.md`): MIT default for desktop/KMP/docs; GPL-3.0-only for `apps/mobile/` with Fossify NOTICE. Do **not** relicense Edward’s MIT trees. Isolate Google OAuth BuildConfig + Settings UI to the `gplay` flavor; `foss`/`core` stay empty. Fastlane stays at `apps/mobile/fastlane` (F-Droid `subdir: apps/mobile/app`). Version remains `gradle.properties` 1.0.0/26; Edward tags `android-1.0.0` (do not use `v1.0.0`/`v2.1.0`).
+- **Alternatives considered:** Relicense the whole repo GPL-3 (rejected unless HUMAN chooses); split Android into its own git repo (deferred); copy Golden Path `examples/android/fastlane` to repo root (rejected — wrong app id / stub copy).
+- **Consequences:** GitHub license picker still shows MIT (root file). F-Droid YAML must say `GPL-3.0-only`. `gplay` keeps Custom Tabs OAuth (no GMS). HUMAN must tag `android-1.0.0` and open fdroiddata from a new `fdroid/org.continuumcalendar.app` branch.
+
 ### 2026-11-16 — /ship CMP deferred parity + Continuum brand reclaim
 - **Status:** Accepted
 - **Context:** Post-v2.0.1 main; uncommitted kmp/ deferred P2 and cyan/purple brand kit needed a release train.

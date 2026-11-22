@@ -160,6 +160,12 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         "{{url_contributing}}": _rel_url(urls["contributing"], from_preview=for_preview),
         "{{url_security}}": _rel_url(urls["security"], from_preview=for_preview),
         "{{url_license}}": _rel_url(urls["license"], from_preview=for_preview),
+        "{{url_licensing}}": _rel_url(
+            urls.get("licensing", "LICENSING.md"), from_preview=for_preview
+        ),
+        "{{url_mobile_dir}}": _rel_url("apps/mobile/", from_preview=for_preview),
+        "{{url_mobile_license}}": _rel_url("apps/mobile/LICENSE", from_preview=for_preview),
+        "{{url_mobile_notice}}": _rel_url("apps/mobile/NOTICE", from_preview=for_preview),
         "{{url_branding}}": _rel_url(
             urls.get("branding", "branding/BRANDING.md"), from_preview=for_preview
         ),
@@ -180,7 +186,7 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         "{{url_agents}}": _rel_url("AGENTS.md", from_preview=for_preview),
         "{{url_tour}}": _rel_url("docs/help/TOUR.md", from_preview=for_preview),
         "{{ci_repo}}": str(urls.get("github_repo") or "OWNER/REPO"),
-        "{{license_name}}": "MIT License",
+        "{{license_name}}": str(product.get("license_name") or "MIT License"),
     }
     out = template
     for key, value in replacements.items():

@@ -4,7 +4,10 @@
 
 ## Project License
 
-This project is licensed under the MIT License. See [`LICENSE`](LICENSE).
+Mixed licenses — see [`LICENSING.md`](LICENSING.md).
+
+- Default (desktop, KMP, docs, examples): [MIT](LICENSE)
+- Android app (`apps/mobile/`): [GPL-3.0-only](apps/mobile/LICENSE) (Fossify Calendar fork; [`NOTICE`](apps/mobile/NOTICE))
 
 ## Dependencies
 

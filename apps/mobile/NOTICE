@@ -1,0 +1,34 @@
+Continuum Calendar for Android
+==============================
+
+This directory is a fork of Fossify Calendar, distributed under the
+GNU General Public License version 3 (GPL-3.0-only). See LICENSE in
+this directory.
+
+Upstream
+--------
+
+  Fossify Calendar
+  https://github.com/FossifyOrg/Calendar
+
+  Copyright (c) 2022-2026 Fossify
+  Copyright (c) 2016-2022 Simple Mobile Tools
+
+  Fossify Commons
+  https://github.com/FossifyOrg/Commons
+
+  Simple Calendar (historical lineage)
+  https://github.com/SimpleMobileTools/Simple-Calendar
+
+Continuum modifications
+-----------------------
+
+  Copyright (c) 2026 Edward Thompson
+
+  Branding, application id `org.continuumcalendar.app`, rolling-week
+  behavior, and the `org.fossify.calendar.continuum` sources are
+  modifications of the Fossify Calendar program. They are distributed
+  under the same GPL-3.0-only terms as this combined work.
+
+The rest of the Continuum Calendar git repository (desktop, KMP, docs,
+examples) remains MIT unless a file says otherwise. See /LICENSING.md.
