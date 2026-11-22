@@ -28,9 +28,17 @@ Monday crons + Dependabot. Deferred: glib in desktop Cargo.lock (stay off GTK4).
 <!-- argus-android-release-sprint:begin -->
 ### Sprint 55 — Ship Android GitHub Release
 
+<!-- parallel_exception: single Android release task; no parallel agent rows -->
+
 Numbered rows so child `/build` (parse_board_queue) picks them up. **Not** under Archive lanes.
 
 1. 🔲 [AGENT] Cut/update GitHub Release with signed Android APK/AAB — scope: examples/android/
+
+### Parallel
+
+| ID | Owner | Scope | Status |
+|----|-------|-------|--------|
+| 1 | agent-1 | `examples/android/` | 🔲 |
 
 #### Agent instructions (release row)
 
