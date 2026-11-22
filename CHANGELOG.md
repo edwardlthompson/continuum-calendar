@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1](https://github.com/edwardlthompson/continuum-calendar/compare/v2.1.0...v2.1.1) (2026-11-22)
+
+
+### Fixed
+
+* **deps:** local npm audit fix (apps/mobile/.github/workflows/holiday-generator) ([#101](https://github.com/edwardlthompson/continuum-calendar/issues/101)) ([09f2a0a](https://github.com/edwardlthompson/continuum-calendar/commit/09f2a0a3b450e0d5328772492826de424a6f33f5))
+
+
+### Changed
+
+* **argus:** Add or improve a "What this is not" section ([eba9c8a](https://github.com/edwardlthompson/continuum-calendar/commit/eba9c8a297c03369cda89c5291d167be6fb97af4))
+* **argus:** AGENT Android release chore on BUILD_PLAN ([#97](https://github.com/edwardlthompson/continuum-calendar/issues/97)) ([7e94e85](https://github.com/edwardlthompson/continuum-calendar/commit/7e94e8580a307722ea3c904909f95403857ee193))
+* **argus:** Append missing BUILD_PLAN marker lanes ([59c2d71](https://github.com/edwardlthompson/continuum-calendar/commit/59c2d71daffc62a894ace5ba10c0f3e6613e717e))
+* **argus:** move agent memory/log files into .agent/ ([#100](https://github.com/edwardlthompson/continuum-calendar/issues/100)) ([fb5ba8b](https://github.com/edwardlthompson/continuum-calendar/commit/fb5ba8bac34f4bbdd22b737abbb23894960eaf39))
+* **argus:** move Android release into Product Sprint 55 for /build ([#98](https://github.com/edwardlthompson/continuum-calendar/issues/98)) ([9c1a6ee](https://github.com/edwardlthompson/continuum-calendar/commit/9c1a6ee1eb7d6178b90b7fd5ae2bc47b2936a1ec))
+* **argus:** sync portfolio chores onto BUILD_PLAN ([7fd7239](https://github.com/edwardlthompson/continuum-calendar/commit/7fd72393c3be54be04622fd72fa77ef96ffad5d2))
+
+
+### Documentation
+
+* **build-plan:** move news tasks into /build queue [skip ci] ([abd8379](https://github.com/edwardlthompson/continuum-calendar/commit/abd8379a17cf8daa251cdb50837e8eaf96af12ee))
+* **kb:** record product README badge contract (KB-042) ([297320b](https://github.com/edwardlthompson/continuum-calendar/commit/297320b85dfa075c565fa600a441270fa06a7de4))
+* **news:** inbox + build plan 2026-11-18 [skip ci] ([2d297b4](https://github.com/edwardlthompson/continuum-calendar/commit/2d297b4310138d68ecebe56afaaca1259d4b555e))
+* **news:** inbox + build plan 2026-11-20 [skip ci] ([038860a](https://github.com/edwardlthompson/continuum-calendar/commit/038860acc9bc5ee0fe6a660780b714950c1d3fd1))
+* **news:** restore wfx-loot audit task to build plan [skip ci] ([ffaa389](https://github.com/edwardlthompson/continuum-calendar/commit/ffaa389f5b6f3fd032010785e5def91350d68969))
+
 ## [Unreleased]
 
 ## [2.1.0](https://github.com/edwardlthompson/continuum-calendar/compare/v2.0.1...v2.1.0) (2026-11-16)
