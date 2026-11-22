@@ -1,0 +1,447 @@
+# Decision Log
+
+> Chronological register of major technical trade-offs, accepted architectures, and rejected alternatives.
+> **Treat past entries as immutable history; append only.**
+
+## Format
+
+```markdown
+### YYYY-MM-DD — [Title]
+- **Status:** Accepted | Rejected | Superseded
+- **Context:** ...
+- **Decision:** ...
+- **Alternatives considered:** ...
+- **Consequences:** ...
+
+```
+
+## Entries
+
+### 2026-10-22 — /ship v1.4.1 Desktop OAuth bake in CI
+- **Status:** Accepted
+- **Context:** GitHub Release EXEs failed Sign in with `client_secret is missing` because Desktop NSIS/Deb never wrote `apps/desktop/.env`. `upd --apply` again tried `codeql-action@vcodeql-bundle-*` (reverted to `@v4`). Example web/node lockfiles lagged package.json bumps and broke `npm ci` until synced.
+- **Decision:** Inject `VITE_GOOGLE_CLIENT_ID` / `VITE_GOOGLE_CLIENT_SECRET` via `scripts/ci-write-desktop-oauth-env.py` before `tauri:build` (fail-closed); document Desktop must bake installed-app secret; merge Release Please [#68](https://github.com/edwardlthompson/continuum-calendar/pull/68); attach NSIS to `v1.4.1`.
+- **Alternatives considered:** PKCE-only token exchange without secret (rejected — Google Desktop clients require secret). Ship ID-only Releases (rejected — same user-facing failure).
+- **Consequences:** Maintainers must keep Actions secrets set; re-run Desktop NSIS/Deb after each release tag for Sign-in-capable installers.
+
+### 2026-10-17 — /ship v1.4.0 week hours, preview, last view
+- **Status:** Accepted
+- **Context:** Desktop needed Fit 24h vs Scroll (full 00–24), day arrows, midnight rolling advance, and per-device last main view; Android needed Google-style event preview and last-view restore without widget intents overwriting prefs. `upd --apply` again mis-tagged `codeql-action@vcodeql-bundle-*` (reverted to `@v4`). Local `upd audit --check` failed on Medium `glib` + unmaintained unic; Dependabot Critical/High zero (one Medium `glib`).
+- **Decision:** Ship feature set; filter local audit to HIGH/CRITICAL only (`upd_audit_severity.py`); restore CodeQL `@v4`; fix web axe `label-content-name-mismatch` on App info nav; Windows About restore retries file locks. Merge Release Please [#66](https://github.com/edwardlthompson/continuum-calendar/pull/66) via admin fallback after CI green.
+- **Alternatives considered:** Bump `glib` to 0.20 (rejected — Tauri gtk `^0.18`). Keep `upd audit --check` failing ship on unmaintained (rejected — conflicts with ship HIGH/CRITICAL policy and npm `--audit-level=high`).
+- **Consequences:** Tag `v1.4.0` needs EXE/APK attached by CI. Last view is device-local (not Drive-synced).
+
+### 2026-10-07 — /ship v1.3.2 Android view-mode default
+- **Status:** Accepted
+- **Context:** v1.3.1 still opened day/week taps in edit because those intents omitted `EVENT_DISPLAY_MODE` and EventActivity defaulted missing → edit. Local `upd audit` still Medium `glib` + unmaintained unic (same as v1.3.1); Dependabot Critical/High zero. `upd --apply` tried to pin `codeql-action@vcodeql-bundle-v2.27.1` (reverted — broke prior CI).
+- **Decision:** `shouldOpenExistingAsView` defaults missing extra to view (except ACTION_EDIT/INSERT/duplicate); Day/Week/widget pass `view`; smoke on both phones via debug package; `/ship` → RP [#62](https://github.com/edwardlthompson/continuum-calendar/pull/62); dispatch `android-signed-foss` attach to `v1.3.2` then `adb install -r`.
+- **Alternatives considered:** Uninstall release to install local-keystore APK (rejected — signature must match CI). Rely only on explicit `EVENT_DISPLAY_MODE` without default (rejected — day/week already forgot the flag once).
+- **Consequences:** Production phones stay on v1.3.1 until CI-signed 1.3.2 APK is sideloaded.
+
+### 2026-10-07 — /ship v1.3.1 Android view card
+- **Status:** Accepted
+- **Context:** `/ship` after Android view-first event UX parity and desktop Windows NSIS casing breakage. Local `upd audit` still reports Medium `glib` + unmaintained unic crates; Dependabot Critical/High was zero.
+- **Decision:** Ship Android `EVENT_DISPLAY_MODE=view` (pencil → edit) + OSM preview; rename desktop modules that collided on case-insensitive CI; revert mistaken `codeql-action@vcodeql-bundle-*` pins to `@v4`; refresh `examples/node` lockfile. Merge Release Please [#59](https://github.com/edwardlthompson/continuum-calendar/pull/59) with admin fallback. Keep Medium `glib` deferred (GTK4). Dispatch Android signed FOSS + Desktop NSIS attach to `v1.3.1`.
+- **Alternatives considered:** Bump `glib` to 0.20 (rejected — GTK4). Uninstall phones to sideload local-debug-signed APK (rejected — user required `install -r` with release signature).
+- **Consequences:** Tag `v1.3.1` needs EXE/APK attached by CI. Sideload phones only with release-signed APK from the tag.
+
+### 2026-10-06 — /ship event view + maps chooser
+- **Status:** Accepted
+- **Context:** Desktop needed view-vs-edit for events, clickable description links (including Google HTML anchors), and a maps app chooser; Android needed the system maps picker.
+- **Decision:** EventDetailCard + pencil → EventEditor; calendars list in Settings → Calendar & views; OSM/Google/Apple chooser on desktop; `Intent.createChooser` for Android `geo:` intents. Merged Dependabot rubyzip 3.4.0 (#45) to clear High Trivy/Dependabot before push.
+- **Alternatives considered:** Always-open Google Maps from Map button (rejected — user asked for OSM/Google/Apple choice). Embed Google Maps SDK (rejected — FOSS path).
+- **Consequences:** Release Please will cut the next tag from `feat(desktop)` Conventional Commit. Local tray WIP remains unstaged.
+
+### 2026-09-15 — /ship v1.2.0
+- **Status:** Accepted
+- **Context:** `/ship` after Sprint 4–6. Required CodeQL and Android CI failed on `android-actions/setup-android@v4` because Google removed the legacy SDK `tools` package (`Failed to find package 'tools'`).
+- **Decision:** Install `platform-tools` only. Merge Release Please [#38](https://github.com/edwardlthompson/continuum-calendar/pull/38) with admin fallback (same environment-check stall as #37). Keep Medium `glib` deferred (GTK4). Leave empty `## [Unreleased]` (already present).
+- **Alternatives considered:** Bump `glib` to 0.20 (rejected — GTK4). Skip CodeQL until a later ship (rejected — required check).
+- **Consequences:** Tag `v1.2.0` has notes + SBOMs when Release finishes. Copy current EXE/APK/`.deb` onto that release. See KB-037.
+
+### 2026-09-14 — ADB rolling-week widget glance
+- **Status:** Accepted
+- **Context:** Last open BUILD_PLAN row was `[ADB]` glance today/empty on a phone (no reboot/wipe). Installed release 1.0.0 still showed `0` for empty days.
+- **Decision:** Sideload current FOSS release APK with `adb install -r` (no uninstall/wipe). Place the rolling-week widget on OP13 Launcher3. Confirm today highlight, **Open** vs count, and Settings → Widgets `Rolling week widget starts today`. Keep Launcher3 as HOME; do not set Hermes as default.
+- **Alternatives considered:** Glance the Sept 13 APK as-is (rejected — still printed `0`). Emulator (skipped — no `/dev/kvm`).
+- **Consequences:** Widget remains on OP13 home. Local Tuesday event `GlanceTue` was created for the busy-day check. `Open` wraps to two lines on a 4×1 strip. Sprint 4–6 source is still uncommitted.
+
+### 2026-09-14 — Calendar UX feel (Sprint 4)
+- **Status:** Accepted
+- **Context:** Industry calendars persist grid drag, keep the calendar visible under chrome, and distinguish empty vs busy days. Continuum had `window.prompt`, a full-page editor, and a widget that looked like a count strip.
+- **Decision:** Persist FullCalendar drop/resize via `EventSaveResult` + This/Following/All for series. Settings as overlay, editor as side sheet, in-app dialogs only. Rolling-week widget: today highlight, Open vs count, Settings toggle, English FAQ via Connect Google, About privacy → `docs/PRIVACY.md`. No GCal-style Day view.
+- **Alternatives considered:** Day view (rejected — product is rolling week). Keep `window.prompt` (rejected — blocks chrome). Official Google Calendar / DAVx5 FAQ (rejected — Connect Google is the path).
+- **Consequences:** `[ADB]` must glance the widget on a device. Other-locale FAQ strings still mention DAVx5 until translated. Recurring drag uses the scope dialog.
+
+### 2026-09-13 — Automate post-1.1.1 leftovers
+- **Status:** Accepted
+- **Context:** Three leftovers after `/push`: Google Android OAuth SHA-1, off-box keystore copy, Windows EXE rebuilt to product 1.0.0.
+- **Decision:** Register SHA-1 on existing client **Continuum Calendar Android** (same client ID). Copy `continuum-release.jks` / `.env` / `.sha.txt` to a private Drive folder owned by the maintainer, and keep verifying GitHub `release-signing` secrets. Add informational `desktop-nsis.yml` (`workflow_dispatch`) to build/attach NSIS.
+- **Alternatives considered:** New Android OAuth client for the new SHA-1 (rejected — would force a new client ID bake). Encrypted Drive blob only (rejected — GitHub already stores the decoded keystore; a second private Drive copy is the restore path).
+- **Consequences:** Google may take minutes–hours to honor the SHA-1. Windows EXE lands when the NSIS workflow finishes. Do not share the Drive folder.
+
+### 2026-09-13 — /push cut v1.1.0
+- **Status:** Accepted
+- **Context:** `/push` after Linux `.deb` + signing. Security Scan went green after js-yaml 4.3.2; required CI failed on zizmor (signed-APK tag in `run:`) and REUSE (Gradle wrappers Apache-2.0 with no `LICENSES/Apache-2.0.txt`).
+- **Decision:** Pass `attach_to_tag` via env. Copy Apache-2.0 into `LICENSES/`. Merge Release Please #35 with admin fallback after `--auto` stayed BLOCKED on incomplete PR checks.
+- **Alternatives considered:** Leave CI red and skip the tag (rejected — `/push` requires required checks). Ignore zizmor in `.github/zizmor.yml` (rejected — env interpolation is the real fix).
+- **Consequences:** Tag `v1.1.0` has SBOMs only until installers are attached. Medium `glib` Dependabot stays deferred (GTK4).
+
+### 2026-09-13 — Trivy HIGH js-yaml + Fastlane rubyzip
+- **Status:** Accepted
+- **Context:** Security Scan failed on `main` after v1.1.0 prep: `js-yaml` 4.3.1 (CVE-2026-84375) in holiday-generator, and `rubyzip` 2.4.1 (CVE-2026-85396) via Fastlane.
+- **Decision:** Override `js-yaml` to **4.3.2**. Ignore CVE-2026-85396 in `.trivyignore` because Fastlane still requires `rubyzip >= 2, < 3` and there is no 2.x patch.
+- **Alternatives considered:** Force rubyzip 3.4 in the Gemfile (rejected — Bundler cannot resolve against Fastlane). Drop Fastlane (rejected — metadata still used).
+- **Consequences:** Dependabot High `js-yaml` should close. Revisit rubyzip when Fastlane allows 3.x.
+
+### 2026-09-13 — Linux desktop is a .deb, one instance
+- **Status:** Accepted
+- **Context:** Linux was packaged as an AppImage plus a `~/.local` copy, so two launchers could run. The user asked for a single instance and a `.deb` install.
+- **Decision:** Tauri Linux target is `deb` only (`nsis` stays on Windows). `npm run install:local` runs `dpkg -i` and deletes leftover user-local binaries/desktop files. `SingleMainWindow=true` on the packaged `.desktop`; `tauri-plugin-single-instance` still focuses the running window.
+- **Alternatives considered:** Keep AppImage alongside .deb (rejected — two program files). User-local copy without sudo (rejected — not a .deb install).
+- **Consequences:** In-app updates look for `continuum-calendar_{ver}_amd64.deb`. Attach that asset on the next GitHub Release. `sudo` is required for local Linux install.
+
+### 2026-09-11 — Continuum Android release keystore (new maintainer key)
+- **Status:** Accepted
+- **Context:** The original Continuum release JKS was not on this Linux host. Sideloaded `org.continuumcalendar.app` still used SHA-1 `72:40:1C:C3:82:8B:26:80:6A:D2:C1:F3:B9:97:52:76:13:C0:7F:4F`. Default CI must stay unsigned.
+- **Decision:** Generate a new PKCS12 key at `$HOME/keys/continuum-release.jks` (alias `continuum`). Wire local builds via gitignored `apps/mobile/keystore.properties`. Store the same material as GitHub Environment `release-signing` secrets. Optional signed APKs via `workflow_dispatch` (`.github/workflows/android-signed-foss.yml`), never on required `android-release`.
+- **Alternatives considered:** Reuse Hermes/AstroAlarm keys (rejected — wrong product identity). Attach store passwords to default CI (rejected — `docs/ANDROID_SIGNING.md`).
+- **Consequences:** New SHA-1 `4A:93:68:05:E1:8F:43:28:E0:31:33:B2:CD:8B:E4:AF:71:70:E2:82` must be added to the Google Android OAuth client. Existing release installs cannot upgrade until uninstall. Back up `~/keys/continuum-release.jks` and `continuum-release.env` off-box.
+
+### 2026-09-11 — First stable public release (v1.0.0)
+- **Status:** Accepted
+- **Context:** Continuum on GitHub was still tagged 0.x (`v0.26.0`) while the product was treated as feature-complete for GitHub-only distribution.
+- **Decision:** Graduate to **v1.0.0**. Desktop source (`tauri.conf.json`, Cargo crate, `@continuum/desktop`) is 1.0.0. Android FOSS APK stays **1.10.7** (Fossify lineage) so sideloaded upgrades do not go backwards.
+- **Alternatives considered:** v0.27.0 (still beta). v1.0.0 with Android also renamed 1.0.0 (rejected — would downgrade from 1.10.7).
+- **Consequences:** Next Release Please bump is 1.x. Attached GitHub installers may still be the last Windows/Android CI bits until those hosts rebuild.
+
+### 2026-09-11 — F-003 token vault + EncryptedSharedPreferences
+- **Status:** Accepted
+- **Context:** Desktop tokens lived in WebView `localStorage`; Android used plaintext `SharedPreferences`. F-003 asked to approve OS-backed storage before a public ship.
+- **Decision:** Desktop writes `google-tokens.json` under the Tauri app-config dir with Unix mode `0600` (migrate off `localStorage` once). Android uses `EncryptedSharedPreferences` (`androidx.security:security-crypto`) with a one-time copy from the old prefs file. Not a hardware keychain / Keystore-wrapped OS credential store.
+- **Alternatives considered:** `tauri-plugin-store` (extra plugin; still a file). Defer to v1 (rejected — user asked to automate HUMAN items including F-003).
+- **Consequences:** Sign-in sessions move to the config dir after the next `install:local`. Android debug builds keep the debug Android OAuth client; release builds use `continuum.google.android.release.client.id`.
+
+### 2026-09-11 — F-002 / F-004 OAuth consent + release Android client
+- **Status:** Accepted
+- **Context:** Ship blockers required public Desktop + Android clients, LICENSE copyright, and a Continuum privacy URL on the Google consent screen.
+- **Decision:** Consent is External / In production; Branding already had app name Continuum Calendar and privacy URL `https://github.com/edwardlthompson/continuum-calendar/blob/main/docs/PRIVACY.md`. Rewrote `docs/PRIVACY.md` for Continuum (kept DPIA headings). Created Android OAuth client `Continuum Calendar Android` for `org.continuumcalendar.app` + release SHA-1, custom URI scheme on. Desktop client already existed; `.env` stays gitignored.
+- **Alternatives considered:** GitHub Pages privacy.html as the only URL (added as a Pages mirror; consent keeps the GitHub blob URL). Publishing Contacts/Tasks scopes (rejected — KB-028).
+- **Consequences:** Unverified sensitive-scope cap of 100 users still applies until Google verification. `docs/PRIVACY.md` on `main` updates only after a push. Windows EXE and FOSS APK still need attaching from those build hosts.
+
+### 2026-09-11 — Quarterly ROADMAP review
+- **Status:** Accepted
+- **Context:** ROADMAP still listed Phase 0 as current while desktop 0.17.x and the Android fork had shipped.
+- **Decision:** Mark Phase 0–1 and the mobile fork as shipped; remaining work is packaging, F-003 (now implemented), Tasks/Contacts UI, widget, and CI AppImage.
+- **Alternatives considered:** Keep Phase 0 wording (rejected — misleading).
+- **Consequences:** Next quarterly review ~2026-12.
+
+### 2026-09-11 — Child template catch-up to agent-project-bootstrap v1.4.0
+- **Status:** Accepted
+- **Context:** Continuum was on `.template-version` 0.25.1; upstream latest is v1.4.0. Needed current `/upgrade` and Golden Path gates without overwriting the product app.
+- **Decision:** Copy Canon (commands, rules, skills, scripts, help) and merge Mixed (workflows, gitignore, bootstrap keys). Keep Sacred `AGENTS.md` body (additive project card only), `docs/spec.md`, `examples/`, and `apps/`.
+- **Alternatives considered:** Overwrite `examples/` so new GP tests pass (rejected — Sacred). Rewrite product README/BUILD_PLAN/ADR-0001 for badge/tally/architecture gates (rejected — child wins).
+- **Consequences:** `validate-bootstrap --quick` still fails checks that require Golden Path example slices, product README badges, and START_HERE glossary links. Feature-gate `multi` is blocked by those example/docs checks plus missing local `ruff` for the python example stack.
+
+### 2026-09-11 — Desktop Sign in requests Calendar + Drive App Data
+- **Status:** Accepted
+- **Context:** Calendar-only tokens (KB-028) caused Drive App Data peer sync to 403; Settings painted a red `Drive list failed: 403` dump. Consent is In production for this project.
+- **Decision:** Request Calendar + `drive.appdata` with `include_granted_scopes=true`. Skip Drive API calls (no red error) until the stored token includes that scope; banner + Sign in again upgrades existing sessions. Still omit Contacts, Tasks, and `prompt=consent`.
+- **Alternatives considered:** Keep Calendar-only and hide the error forever (rejected — phone settings never sync). Auto-open OAuth on every launch (rejected — surprising). Add Contacts/Tasks in the same consent (rejected — KB-028).
+- **Consequences:** Users with Calendar-only tokens must Sign in again once. If Testing-mode Continue breaks after adding Drive, revert to Calendar-only and keep the skip path.
+
+### 2026-09-10 — Default calendar MIME + system-browser OAuth only
+- **Status:** Accepted
+- **Context:** Users want Continuum as the Thunderbird-style default calendar app and one-click Google Sign-in without pasting a Client ID. Google blocks OAuth in embedded WebViews (`disallowed_useragent`).
+- **Decision:** Claim `text/calendar`, `application/ics`, `webcal`/`webcals` via `.desktop` + `xdg-mime` (`claim_default_calendar` / `claim-default-calendar.sh`). Keep system browser + loopback OAuth; bake Continuum’s Desktop client with `set-desktop-google-client-id.py` — no end-user paste UX.
+- **Alternatives considered:** In-app WebView OAuth (rejected by Google); Settings paste Client ID as primary path (rejected for product UX).
+- **Consequences:** Sign-in stays broken until a maintainer bakes `.env` and rebuilds. Flatpak portal default-app quirks out of scope for this cut.
+
+### 2026-08-23 — Product install only via tauri build (no localhost EXE)
+- **Status:** Accepted
+- **Context:** Agents used `cargo build --release` + copy, or launched `target\debug\app.exe` for tray A/B. Debug always hits `devUrl` localhost:5173; without Vite the user sees Edge `ERR_CONNECTION_REFUSED` and thinks Continuum is broken (KB-035).
+- **Decision:** Supported local deploy is `npm run install:local` (`tauri build --no-bundle` → `%LOCALAPPDATA%\Continuum Calendar\app.exe`). Debug EXE without Vite shows Continuum HTML via `dev_ui_guard`. Autostart heals Run keys pointing at repo `target\debug` or `target\release` to the AppData install.
+- **Alternatives considered:** Removing `devUrl` (breaks `tauri:dev`). Making `cargo build --release` run Vite (duplicates Tauri’s `beforeBuildCommand`; rejected in favor of one script).
+- **Consequences:** Tray/debug probes must not be mistaken for product installs. `cargo build --release` alone is not the supported install path.
+
+### 2026-08-23 — Tray deep recovery: shell rejects first-time NIM_ADD
+- **Status:** Accepted
+- **Context:** A/B proved installed release, debug `app.exe`, and WinForms `ContinuumTrayTest` never create a Continuum/`ContinuumTrayTest` `NotifyIconSettings` key. Backup + delete `PromotedIconCache` (IconStreams absent on this 24H2 hive) + Explorer restart with Continuum surviving `TaskbarCreated` still left `promote=no-key-yet`. Emptying the catalog lets Discord/Steam re-register; Continuum and the probe do not.
+- **Decision:** Ship MicMute-style baseline/orphan promote + one-shot `retry-add`; keep Tauri tray (no GUID). Treat missing Continuum registry key as shell/injector failure requiring clean-boot triage, not more `Shell_NotifyIcon` stacks (KB-036).
+- **Alternatives considered:** Reintroduce GUID pump (rejected — err 5). Leave Start with Windows on debug EXE (rejected — KB-035). Invent fake NotifyIconSettings hashes (rejected — Explorer ignores).
+- **Consequences:** App logs `retry-add=` / `promote=`; backups under `%LOCALAPPDATA%\org.continuumcalendar.app\logs\NotifyIconSettings-*.reg`. Icon remains invisible until Explorer accepts a real `NIM_ADD`.
+
+### 2026-08-23 — Explorer, not Tauri, is dropping the tray icon
+- **Status:** Accepted
+- **Context:** `Shell_NotifyIcon(NIM_ADD)` returned Access Denied for Continuum, for a dedicated STA tray thread, and for a standalone WinForms test EXE. Clearing 124 NotifyIconSettings keys did not help. Explorer restart while Continuum was exiting deleted any chance of `TaskbarCreated`.
+- **Decision:** Keep Tauri’s tray (bright cyan PNG); prevent process exit except Quit so Explorer restarts can re-register; treat a missing `NotifyIconSettings` `app.exe` key as the source of truth that the icon was never accepted (KB-036).
+- **Alternatives considered:** Custom GUID `NIM_ADD` (failed with the same error 5). Recreate-on-badge (hid the icon). Auto-restart Explorer from the app (too disruptive).
+- **Consequences:** The app can survive an Explorer restart. If this PC’s shell keeps rejecting new icons, no in-app change will make Continuum appear in the overflow.
+
+### 2026-08-23 — Keep a single Windows tray icon
+- **Status:** Accepted
+- **Context:** The running app created a `tray_icon_app` HWND and `tray-status.txt` said `recreate_err=None`, but NotifyIconSettings had no Continuum key and the user could not find the icon.
+- **Decision:** Stop deleting/recreating the tray on each badge tick; update the existing icon; promote the Windows 11 notification-area entry (KB-036).
+- **Alternatives considered:** Keep recreate because `set_icon` once returned OS error 5 off the UI thread (rejected — recreate made the icon invisible). Force-restart Explorer (rejected — too disruptive).
+- **Consequences:** Badge still updates via `NIM_MODIFY`. If that fails, the previous icon stays instead of vanishing.
+
+### 2026-08-23 — Desktop login must not start debug console
+- **Status:** Accepted
+- **Context:** Start with Windows while `tauri:dev` registered `target\debug\app.exe`. That binary is a console app and loads Vite `localhost:5173`, so Windows login opened a terminal and a hung window.
+- **Decision:** Refuse autostart from dev builds; release startup rewrites a stale debug Run key to the installed GUI EXE; always use the Windows GUI subsystem (KB-035).
+- **Alternatives considered:** Leave debug console for `println` (rejected — Explorer/login looked broken). Hidden-to-tray on login (not required to unblock first boot).
+- **Consequences:** `tauri:dev` Settings cannot enable Start with Windows. This machine’s Run key now points at `AppData\Local\Continuum Calendar\app.exe`.
+
+### 2026-08-22 — /ship published v0.25.0
+- **Status:** Accepted
+- **Context:** Expired Google sign-in recovery, Calendar-only Testing-mode OAuth, and Android `invalid_grant` token-clear landed as `feat(desktop)` (KB-033). Release Please #19 tagged **v0.25.0**.
+- **Decision:** Treat **v0.25.0** as the shipped GitHub tag. Fold leftover Unreleased bullets into `## [0.25.0]`, restore a leading empty Unreleased, and copy desktop 0.17.3 EXE + Android 1.10.7 APK from v0.24.0 (product versions unchanged).
+- **Alternatives considered:** Request Drive App Data on desktop sign-in (rejected — KB-028 / Google “something went wrong”). `chore(release)` naming a version (rejected — KB-033).
+- **Consequences:** In-app update prompts still wait for a newer EXE/APK filename. Phone peer Drive sync still needs HUMAN OAuth Testing/publish.
+
+### 2026-08-22 — /ship published v0.24.0
+- **Status:** Accepted
+- **Context:** Desktop editor, views, tray badge, close-to-tray, and Start with Windows landed as `feat(desktop)` (KB-033). Release Please #17 tagged **v0.24.0**.
+- **Decision:** Treat **v0.24.0** as the shipped GitHub tag. Fold leftover Unreleased bullets into `## [0.24.0]`, restore a leading empty Unreleased, and copy desktop 0.17.3 EXE + Android 1.10.7 APK from v0.23.0 (product versions unchanged).
+- **Alternatives considered:** `chore(release)` prep naming a version (rejected — KB-033). Rebuild product binaries for a template-only tag (rejected — desktop/Android version numbers unchanged).
+- **Consequences:** In-app update prompts still wait for a newer EXE/APK filename. ADB smoke rows stay open on BUILD_PLAN.
+
+### 2026-08-21 — /ship published v0.23.0
+- **Status:** Accepted
+- **Context:** Donate + daily GitHub update checks landed as `feat(about)` (KB-033). Release Please #16 tagged **v0.23.0**.
+- **Decision:** Treat **v0.23.0** as the shipped GitHub tag. Fold leftover Unreleased bullets into `## [0.23.0]`, restore a leading empty Unreleased, and copy desktop 0.17.3 EXE + Android 1.10.7 APK from v0.22.1 (product versions unchanged).
+- **Alternatives considered:** Another `chore(release)` prep commit (rejected — last ship became a patch). Rebuild binaries for a template-only tag (rejected — no product version bump).
+- **Consequences:** In-app update prompts wait for a newer EXE/APK filename. Donate reminder appears once after a future product version change.
+
+### 2026-08-20 — /ship published v0.22.1
+- **Status:** Accepted
+- **Context:** `/push` used `chore(release): prepare v0.23.0`. Release Please #14 treated that as a patch and tagged **v0.22.1**. The I1 feature bullets stayed under Unreleased below the new version heading.
+- **Decision:** Treat **v0.22.1** as the shipped GitHub tag. Fold I1 Added/Changed into `## [0.22.1]`, restore a leading empty `## [Unreleased]`, copy desktop 0.17.3 EXE and Android 1.10.7 APK from v0.22.0, and keep product versions unchanged.
+- **Alternatives considered:** Force a v0.23.0 tag (rejected — would rewrite published RP history). Leave features under Unreleased (rejected — changelog gate + honest release notes).
+- **Consequences:** Compare links say 0.22.0…0.22.1 even though the prep commit named 0.23.0. Next `/ship` that wants a minor must land `feat:` commits (not only `chore(release)`).
+
+### 2026-08-20 — /ship published v0.22.0
+- **Status:** Accepted
+- **Context:** Template sync set the RP manifest to 0.21.0; `/ship` added Android high-refresh and merged RP #12.
+- **Decision:** Treat **v0.22.0** as the shipped GitHub tag. Attach desktop 0.17.3 EXE and Android 1.10.7 APK (includes high-refresh). Enable Windows upgrade-sim as a required check.
+- **Alternatives considered:** Leave branch protection unchanged (rejected — new verify-branch-protection gate requires the Windows job).
+- **Consequences:** Compare links mention v0.21.0 without that tag. Next template bump should not pre-write the RP manifest.
+
+### 2026-08-20 — Sync child repo to agent-project-bootstrap v0.21.0
+- **Status:** Accepted
+- **Context:** Child was on template 0.19.0; upstream HEAD is v0.21.0 (first-run backlog, Windows upgrade-sim, Unreleased fold, doc-link/env gates).
+- **Decision:** Cherry-pick Canon (commands, help, scripts, tests) and merge Mixed (workflows, gitignore, env schema). Keep Sacred product paths. Bump `.template-version` / `TEMPLATE_INDEX` / Release Please manifest / `CITATION.cff` together so version-sync gates pass.
+- **Alternatives considered:** Leave the RP manifest at 0.19.0 (rejected — `check-template-version-sync.sh` requires a match).
+- **Consequences:** Next `/ship` may publish **v0.22.0** rather than tagging v0.21.0 (KB-030). Product binaries stay desktop 0.17.3 / Android 1.10.7 until a product bump.
+
+### 2026-08-17 — Release Please published v0.19.0 after a 0.18.3 prep commit
+- **Status:** Accepted
+- **Context:** `/ship` committed `.template-version` 0.18.3 to match upstream bootstrap. Release Please #11 then cut **v0.19.0** (no `v0.18.3` tag).
+- **Decision:** Treat `v0.19.0` as the shipped GitHub tag. Attach the current product binaries (desktop 0.17.3, Android 1.10.7) to that release.
+- **Alternatives considered:** Force a v0.18.3 tag (rejected — would rewrite published RP history).
+- **Consequences:** Compare links may mention v0.18.3 without that tag existing. Next prep should not pre-bump the manifest to a version RP has not tagged.
+
+### 2026-08-16 — Adopt agent-project-bootstrap v0.18.3
+- **Status:** Accepted
+- **Context:** Child repo was on template 0.17.1; upstream latest is v0.18.3 (M34 thin steals, Windows `resolve-python.sh`, Scorecard TokenPermissions, exemplar dep bumps).
+- **Decision:** Cherry-pick Canon/Mixed per `docs/UPGRADING_FROM_TEMPLATE.md`. Keep Sacred product paths (`apps/`, living memory boards, `.env`/keystore). Renumber Continuum KB-012+ so upstream KB-012/013 can land.
+- **Alternatives considered:** Merge upstream `main` wholesale (rejected — would overwrite product BUILD_PLAN and apps); skip examples (rejected — feature-gate runs Golden Path).
+- **Consequences:** Next `/ship` cuts GitHub tag v0.18.3. Desktop stays 0.17.3 and Android 1.10.7 until a product bump.
+
+### 2026-08-16 — Desktop sign-in uses Calendar-only scopes and native token POST
+- **Status:** Accepted
+- **Context:** After the unverified-app Continue step, Google showed “An unknown error has occurred” and the WebView token exchange could fail on CORS. Four sensitive scopes made Testing-mode consent brittle.
+- **Decision:** Request Calendar only for desktop sign-in; exchange the code in Rust (`google_oauth_token` via `ureq`); humanize `access_denied` / missing secret / unknown error. Users still must be OAuth test users while the app is Testing.
+- **Alternatives considered:** Keep Contacts + Calendar scopes (rejected — Continue often dies before a code returns); browser-only token POST (rejected — WebView CORS).
+- **Consequences:** Contacts sync stays off desktop until consent is In production or scopes are re-added. Header must show 0.17.3 so a stale 0.17.0 EXE is obvious.
+
+### 2026-08-16 — Event save must not touch Room on the UI thread
+- **Status:** Accepted
+- **Context:** Overlap confirm hopped to the UI thread (`runOnUiThread { finishSaveEvent() }`); events with no reminders then called `storeEvent()` on main and Room threw.
+- **Decision:** After the UI hop for notification permission, always `ensureBackgroundThread { storeEvent(...) }`.
+- **Alternatives considered:** Allow main-thread Room reads (rejected — Room default forbids it); keep the old path for no-reminder events (rejected — that was the crash).
+- **Consequences:** Save stays async after overlap OK. Pair with FOSS location suggestions (Geocoder, then Photon) — no Play Services SDK.
+
+### 2026-08-15 — Desktop release EXE must include OAuth client secret
+- **Status:** Accepted
+- **Context:** v0.17.0 GitHub EXE opened Google consent, then failed after the unverified-app step. `clientSecret()` returned empty in `PROD` (audit F-001).
+- **Decision:** Bake the Desktop/installed-app client secret into Windows release builds from gitignored `.env`. Android release APKs still omit `client_secret`.
+- **Alternatives considered:** PKCE-only Desktop token exchange (rejected — Google returns `client_secret is missing`); leave secret out of GH artifacts (rejected — Sign in is broken for end users).
+- **Consequences:** Re-upload Continuum-Calendar-0.17.0-x64-setup.exe after rebuild. Never commit `.env`.
+
+### 2026-08-15 — Long event title overflow modes
+- **Status:** Accepted
+- **Context:** In-app titles wider than the row need to stay readable when system animator scale is 0; dual-copy loop overlapped because the cycle used overflow width instead of full text width.
+- **Decision:** Add Settings → Long event titles with bounce, loop (text-width + gap), one-way reset, and shrink-to-fit. Drive the ticker with Choreographer. Keep the widget on end-ellipsis (RemoteViews cannot tick). Store the choice in local Fossify prefs (not peer-synced).
+- **Alternatives considered:** System `ellipsize=marquee` (rejected — frozen when animations are off); ValueAnimator (same); peer-sync the mode (rejected — desktop has no ticker).
+- **Consequences:** Default is bounce. Loop no longer stacks two copies. Users pick the motion in Continuum settings.
+
+_Seed template ADR: `docs/adr/0000-template-baseline.md`. Child repos use `docs/adr/0001-core-architecture.md`._
+
+### 2026-08-12 — Public GitHub home continuum-calendar
+- **Status:** Accepted
+- **Context:** Local tree had no commits and only a `template` remote; `/ship` could not push. Product checklist still pointed at the bootstrap template repo.
+- **Decision:** Create public `edwardlthompson/continuum-calendar`, initial-commit the monorepo, set `origin`, push `main`. Keep `template` remote for upstream bootstrap pulls.
+- **Alternatives considered:** Rename/repurpose `agent-project-bootstrap` (rejected — template stays distinct); private repo (rejected — FOSS public home)
+- **Consequences:** CI/Dependabot/Release Please attach to the new origin; OAuth redirect/package docs should cite this repo URL
+
+### 2026-08-11 — Package id org.continuumcalendar.app
+- **Status:** Accepted
+- **Context:** Public listing and OAuth require a Continuum applicationId; full Kotlin package move of the Fossify fork is high-risk
+- **Decision:** `APP_ID=org.continuumcalendar.app` with debug suffix `.debug`; keep `SOURCE_NAMESPACE=org.fossify.calendar` for AGP/R/imports; Continuum mark replaces Fossify launcher/Tauri icons
+- **Alternatives considered:** Rename entire `org.fossify.calendar` source tree (deferred — large blast radius); keep Fossify applicationId (rejected for store identity)
+- **Consequences:** Debug install id becomes `org.continuumcalendar.app.debug`; [HUMAN] must create a matching Android OAuth client + SHA-1 before peer sync on new installs
+
+### 2026-08-11 — Audit A1 gate and auth durability fixes
+- **Status:** Accepted
+- **Context:** `/audit` found encoding gate scanning Android `app/build` intermediates; expired Google access tokens broke peer sync; desktop reminder keys survived reloads without timers
+- **Decision:** Skip `build`/`.gradle`/`.cxx`/`__pycache__` in `check-file-encoding.py`; implement Android `ensureFreshTokens`; rebuild desktop reminder timers with a serialize chain; use local agenda day keys; exempt composition-root `App.tsx` from 300-line static-data scan
+- **Alternatives considered:** Delete build trees only (insufficient); leave refresh as HUMAN-only (rejected — workers already had refresh tokens)
+- **Consequences:** Local gates green after restoring example deps post-purge; [HUMAN] still owns public OAuth client / no client secret in bundles and secure token storage
+
+### 2026-08-10 — Continuum Calendar monorepo bootstrap
+- **Status:** Accepted
+- **Context:** Need desktop (Tauri) + Android (Fossify fork) sharing product contracts without a single runtime
+- **Decision:** npm workspaces monorepo with `apps/desktop`, `apps/mobile` (docs-first), `packages/shared`; Google REST Calendar + Contacts scopes; FullCalendar rolling week prototype
+- **Alternatives considered:** Electron (heavier); pure PWA-only (no native widget path); immediate Fossify submodule (rejected pending HUMAN approval)
+- **Consequences:** Kotlin reimplements free-slot/widget logic; desktop is contract source of truth in TypeScript
+
+### 2026-08-10 — Ship v0.16.0 (/ship)
+- **Status:** Accepted
+- **Context:** Need third-party review + broader autofix before release; `/ship` should stay one command
+- **Decision:** Codex read-only reviewer (opt-in CI + `/codex-review`) feeds `CODE_REVIEW.md` → Cursor `/fix`; expand `/prerelease` with multi-stack autofix; merge Release Please #51 to **v0.16.0**
+- **Alternatives considered:** Codex writes patches in CI (rejected: destructive-ops / FOSS spend control); chain Codex into every `/maintain` (rejected: API cost)
+- **Consequences:** `/ship` runs autofix + optional Codex + hard gate; enable Codex CI by copying workflow example + `OPENAI_API_KEY`
+
+### 2026-08-01 — Ship v0.15.2 (/ship)
+- **Status:** Accepted
+- **Context:** Plan Mode left risks as open questions; Dependabot High blocked pre-release (js-yaml, then postcss)
+- **Decision:** Require Issue→Resolution Critique in always-applied rules + `/plan`; override patched npm transitive CVEs; merge Release Please #50 to **v0.15.2**
+- **Alternatives considered:** Soft "list risks" Critique (rejected: humans still had to chase resolutions); defer brace-expansion/postcss (rejected: pre-release gate requires zero Critical/High)
+- **Consequences:** Agents must bake mitigations into plan todos; template at 0.15.2 with SBOM release assets
+
+### 2026-07-22 — Ship v0.15.0 (/ship)
+- **Status:** Accepted
+- **Context:** `/ship` after M33 + local-first compute; first CI failed on duplicate `## [Unreleased]`; web tests failed on Node 25+ localStorage stub
+- **Decision:** Polyfill Storage in vitest setup (KB-011); collapse stale Unreleased; merge Release Please #37 to **v0.15.0**
+- **Alternatives considered:** `--no-webstorage` only (rejected: may break older Node CI); leave duplicate Unreleased (rejected: gate hard-fail)
+- **Consequences:** Template at 0.15.0 with Cursor worktrees/permissions/skills/plugin pack and local-first parallelism
+
+### 2026-07-21 — Local-first compute on This Computer
+- **Status:** Accepted
+- **Context:** Agents defaulted toward serial work or Cloud handoff even when the desktop has many cores
+- **Decision:** Ship `local-compute.mdc` + sessionStart CPU reminder; parallelize independent `validate-bootstrap` checks via `run_checks_parallel.py` (`BOOTSTRAP_CHECK_JOBS`); pytest-xdist `-n auto`; Gradle `--parallel`; document `/scope` + worktrees/`/best-of-n` as the local default over Cloud Agents
+- **Alternatives considered:** Always Cloud Agents for parallelism (rejected: wastes local hardware and costs credits); unbounded bash `&` in validate-bootstrap (rejected: harder error aggregation on Windows)
+- **Consequences:** Quick bootstrap checks use all cores (e.g. jobs=CPU count); agents are steered to concurrent Task/worktrees when local
+
+### 2026-07-21 — Cursor 3.9–3.11 FOSS integration (M33)
+- **Status:** Accepted
+- **Context:** Cursor added native worktrees setup, Auto-review `permissions.json`, Skills direction, CLI/GHA, side chats, Design Mode, cloud conversation hooks, Automations, and plugin packaging; registry lagged at 2026-06-30
+- **Decision:** Ship FOSS live `worktrees.json` + fail-soft OS setup, committed `permissions.json` (dual layer with hooks), four new skills + checker atomic update, CLI workflow under `.github/workflow-examples/` (never auto-run), plugin via pack-to-`dist/cursor-plugin` (no repo-root symlink); keep commercial as examples (cloud hooks, Automations recipes, Bugbot Autofix map)
+- **Alternatives considered:** Custom plugin paths into `.cursor/` (rejected: discovery risk); whole-repo plugin symlink (rejected: double-load); `.example.yml` under `workflows/` (rejected: GHA may load it); weaken shell hook for Auto-review (rejected: hooks stay hard FOSS enforcement)
+- **Consequences:** `check-cursor-integrations` requires seven skills + worktrees/permissions; `/best-of-n` documented beside parallel-lock worktrees; Cloud Agents still ignore Run Modes
+
+### 2026-07-12 — Pre-release gate Dependabot counter + FOSS MCP check
+- **Status:** Accepted
+- **Context:** `/push` pre-release `--strict` failed: Dependabot alerts API used unsupported `page=` form; FOSS integrations check failed whenever gitignored `.cursor/mcp.json` existed locally
+- **Decision:** Count alerts via `gh api --paginate` query string; treat live `mcp.json` as OK unless `git ls-files` shows it tracked; multi-stack `--strict` skips missing optional toolchains
+- **Alternatives considered:** Require `security_events` refresh always (rejected: false failures blocked release); ban local MCP (rejected: contradicts CURSOR_INTEGRATIONS activation)
+- **Consequences:** Maintainer gates pass with local MCP enabled; Release Please #36 published v0.14.1
+
+### 2026-07-12 — Dependabot automerge CI gap (M32)
+- **Status:** Accepted
+- **Context:** Merges via `GITHUB_TOKEN` (`app/github-actions`) do not start `push` workflows; `main` tip after Dependabot merges had zero CI runs; weekly health failed waiting for missing runs
+- **Decision:** Prefer optional `AUTOMERGE_TOKEN` PAT for Dependabot/Release Please merge; add `workflow_dispatch` to CodeQL + Security Scan; `check-github-ci.sh --dispatch-if-missing` (weekly health uses it with `actions: write`); prefer Git Bash in `agent-run.py` on Windows
+- **Alternatives considered:** Require PAT only (rejected: blocks FOSS template without secrets); SHA-pin all actions for Scorecard (deferred: conflicts with documented `@vX.Y.Z` policy)
+- **Consequences:** Weekly health can self-heal missing runs; post-merge CI still needs HUMAN required-status-checks + optional PAT for true push triggers
+
+### 2026-07-02 — Quiet agent shell (hooks Python + agent-run)
+- **Status:** Accepted
+- **Context:** Cursor Agent shell execution opened `.sh` hook and script tabs, stealing editor focus while users typed
+- **Decision:** Migrate hooks to Python; add `scripts/agent-run.py` for agent gate invocations; ship `.vscode/settings.json` anti-reveal defaults; document KB-010
+- **Alternatives considered:** Disable hooks globally (rejected: loses destructive-op guard); rewrite all scripts to PowerShell (rejected: scope); `pythonw.exe` for hooks (rejected: breaks stdout JSON)
+- **Consequences:** Agent-facing commands no longer contain `.sh` paths; underlying bash scripts unchanged for CI/humans
+
+### 2026-07-01 — Cursor hook smoke isolation (M31)
+- **Status:** Accepted
+- **Context:** M31 audit found `check-cursor-hooks.sh --smoke` false-pass when `.cursor-session-state.json` already listed `git push` in `destructive_ops_approved`
+- **Decision:** Smoke test clears session approvals before deny assertion; validate hook scripts require shebang on line 1
+- **Alternatives considered:** Ignore local session state in smoke (rejected: hides real deny-path bugs); require empty session file (rejected: breaks dev workflow)
+- **Consequences:** `--smoke` is deterministic in CI and locally; invalid hook scripts fail validate-bootstrap early
+
+### 2026-06-30 — Cursor hooks as enforcement layer (M30)
+- **Status:** Accepted
+- **Context:** M27 rejected `beforeSubmitPrompt` hooks; rules alone cannot block destructive shell commands at runtime
+- **Decision:** Ship FOSS-safe project hooks (`beforeShellExecution`, `afterFileEdit`, `subagentStart`, `sessionStart`, `beforeMCPExecution`); fail-open guards; session `destructive_ops_approved` for `/push`/`/ship`; opt-out via `<!-- cursor-hooks: off -->`
+- **Alternatives considered:** Prompt-rewrite hooks (rejected per M27); broad shell blocklists (rejected: blocks legitimate agent work)
+- **Consequences:** `check-cursor-hooks.sh --smoke` in validate-bootstrap; complements `destructive-ops.mdc` without token bloat
+
+### 2026-06-20 — Repo-wide checklist status markers
+- **Status:** Accepted
+- **Context:** BUILD_PLAN and scattered checklists used mixed ⬜ / `- [ ]` / ✅ formats; inconsistent in Markdown Preview vs source
+- **Decision:** Standardize on 🔲 open · ✅ done · ❌ blocked emoji markers repo-wide; document in `BUILD_PLAN.md` legend and agent read order
+- **Alternatives considered:** GitHub `- [ ]` task lists (rejected: poor Preview readability and agent parsing); keep ⬜ white square (rejected: visually similar to ✅ in some fonts)
+- **Consequences:** All new checklist rows use emoji; `agent-progress.sh` accepts legacy ⬜ for child repos during transition
+
+### 2026-06-18 — Release automation hardening (M29)
+- **Status:** Accepted
+- **Context:** v0.11.0 release lacked SBOM assets (GITHUB_TOKEN cannot chain `release` → `release.yml`); Release Please skipped `extra-files`; `health-check.yml` registered as path name caused 0-job push failures
+- **Decision:** `release-please.yml` runs `sync-template-version.sh` on release PR branches and dispatches `release.yml` on `release_created`; rename workflow to `weekly-health-check.yml`; fix sync script for Windows Git Bash
+- **Alternatives considered:** PAT with workflow scope for release chaining (rejected: secrets management); manual SBOM backfill only (rejected: repeated human step each release)
+- **Consequences:** Release Please needs `actions: write`; future releases should ship SBOM assets without manual dispatch
+
+### 2026-06-17 — Batch instruction templates (M27)
+- **Status:** Accepted
+- **Context:** Agents and child-repo owners needed repeatable shortcuts for bootstrap, verify, build, ship, and maintenance workflows without re-pasting long prompts
+- **Decision:** Ship 25 slash commands in `.cursor/commands/` (20 atomic + 5 super), bare-word expansion via `batch-commands.mdc`, human cheat sheet at `docs/help/BATCH_COMMANDS.md`, registry at `docs/BATCH_COMMANDS.md`; `/push` and `/ship` grant explicit push approval
+- **Alternatives considered:** `beforeSubmitPrompt` hook for bare words (rejected: Cursor API cannot rewrite prompts); single mega-doc for humans and agents (rejected: overwhelms first-time users)
+- **Consequences:** `alwaysApply` rule adds ~25 lines per session; `check-batch-commands.sh` prevents registry drift; child repos cherry-pick via `UPGRADING_FROM_TEMPLATE.md`
+
+### 2026-06-30 — Autonomous /build with grouped human section
+- **Status:** Accepted
+- **Context:** `/build` halted on HUMAN/ADB rows; humans needed a single review block after automation; child repos need scripted attempts before manual follow-up
+- **Decision:** Add `build-sprint-status.sh`, `attempt-build-plan-row.sh`, and `HUMAN_BACKLOG.md` (failure-only); restructure BUILD_PLAN with `#### Human & device (after automation)`; AGENT/AUTO runs first, then automation attempts on grouped human rows
+- **Alternatives considered:** Skip human rows entirely during /build (rejected: loses automation catalog value); keep human rows interleaved in Sequential (rejected: hard to review after automation)
+- **Consequences:** Child repos must place HUMAN/ADB rows in the grouped section; `<!-- no-auto-approve -->` disables autonomous ADR ack
+
+### 2026-06-13 — @lhci/cli npm overrides for transitive CVEs
+- **Status:** Accepted
+- **Context:** Lighthouse CI (`@lhci/cli`) bundles transitive dependencies (`tmp`, `uuid`) with known CVEs; no patched `@lhci/cli` release available at triage time
+- **Decision:** Add npm `overrides` in `examples/web/package.json` forcing `tmp >= 0.2.6` and `uuid >= 11.1.1`; document in KB-007
+- **Alternatives considered:** Dismiss Dependabot alert (rejected: hides real risk); remove Lighthouse CI job (rejected: loses performance gate)
+- **Consequences:** Lockfile must be regenerated after override changes; overrides should be removed when `@lhci/cli` ships fixed dependencies
+
+### 2026-06-13 — Ship all optional ecosystem modules (M3)
+- **Status:** Accepted
+- **Context:** Sprint M3 asked whether to ship Lightroom, Rust, and Go optional modules in the template maintainer repo
+- **Decision:** Ship all three with Golden Path stubs, MODULE.md guides, and path-gated CI jobs (`lightroom`, `rust`, `go`) that skip when child repos remove the directories
+- **Alternatives considered:** Lightroom-only (rejected: Rust/Go stubs are low-cost and popular); defer all optional modules (rejected: COMPLETED_TASKS M3 work already landed)
+- **Consequences:** Template CI runs more jobs on `main`; child repos can delete unused `examples/` folders to skip jobs via `hashFiles` guards
+
+### 2026-08-14 — Android local-delete tombstones
+- **Status:** Accepted
+- **Context:** Deleting local peer events on Android (e.g. Doctor / `mock-3`) vanished for ~2s then Drive merge restored them because `buildLocalPayload` sent empty `deletedIds`.
+- **Decision:** Persist tombstones in `continuum_local_events` prefs, record them before Room delete, include them in the peer payload, and merge them on pull.
+- **Alternatives considered:** Delete-only on Android without Drive tombstones (rejected — desktop copy always wins); wait for desktop-only delete (rejected — phone is the source of truth for that smoke).
+- **Consequences:** Desktop Refresh / next peer poll drops the event; pre-upgrade deletes may need one more delete after install.
+
+### 2026-08-14 — Conflict warnings keyed by occurrence
+- **Status:** Accepted
+- **Context:** Weekly Church inherited a conflict badge on Aug 16 next to an all-day birthday because badges used series `id`, and Fossify all-day is midnight–noon (12h) which missed the 20h heuristic.
+- **Decision:** Key warnings by `id` + start; treat midnight–noon ≥12h blocks as non-busy on Android and in `@continuum/shared`.
+- **Alternatives considered:** Keep id-only badges (rejected — false positives every Sunday); raise the duration cutoff to 12h without midnight check (rejected — would hide real half-day meetings).
+- **Consequences:** Same-day timed overlaps still warn; repeating events only warn on the occurrence that overlaps.
+
+### 2026-08-14 — Conflict day-blocks are fleet-wide (shared + every Android surface)
+- **Status:** Accepted
+- **Context:** The Aug 16 occurrence-key fix was on `main` and in the v0.16.2 APK, but week view still used series-id collisions, day view had no Continuum badges, and VERSION_CODE stayed 21 so a 1.10.3 device could not tell it was stale.
+- **Decision:** One `isTimedBusyEvent` rule (midnight → local noon or later, or ≥20h) in `@continuum/shared` and `ContinuumConflict`; week/day/agenda/widget all use occurrence times; bump Android to 1.10.4 / 22.
+- **Alternatives considered:** Keep 12h-duration-only heuristic (rejected — DST and Fossify noon); leave VERSION_CODE 21 (rejected — other phones keep the old APK).
+- **Consequences:** Install 1.10.4 on every device; same-day timed overlaps still warn.
+
+### 2026-08-14 — Dependabot High: extract-zip and nanoid
+- **Status:** Accepted
+- **Context:** Enabling Dependabot alerts on `continuum-calendar` surfaced High `extract-zip` (CVE-2026-56876, no patch) and `nanoid` < 3.3.18.
+- **Decision:** Dismiss `extract-zip` as `not_used` (LHCI / `@puppeteer/browsers` in `examples/web` only). Bump holiday-generator `nanoid` override to 3.3.18.
+- **Alternatives considered:** Remove `@lhci/cli` (rejected — loses Lighthouse gate); wait for an extract-zip release (none expected).
+- **Consequences:** Revisit extract-zip if LHCI drops the transitive; nanoid alert closes after the lockfile lands on `main`.
