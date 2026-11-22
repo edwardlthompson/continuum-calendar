@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2](https://github.com/edwardlthompson/continuum-calendar/compare/v2.1.1...v2.1.2) (2026-11-22)
+
+
+### Changed
+
+* **fdroid:** mixed licenses and foss oauth isolation ([#91](https://github.com/edwardlthompson/continuum-calendar/issues/91)) ([dda282a](https://github.com/edwardlthompson/continuum-calendar/commit/dda282a1b378f3fd687ec2ffa35ac825a7d37eb4))
+
 ## [2.1.1](https://github.com/edwardlthompson/continuum-calendar/compare/v2.1.0...v2.1.1) (2026-11-22)
 
 
