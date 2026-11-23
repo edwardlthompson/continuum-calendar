@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-2ea043?style=flat-square" alt="MIT" />
   <img src="https://img.shields.io/badge/Android-GPL--3.0-a32d2d?style=flat-square" alt="Android GPL-3.0" />
-  <img src="https://img.shields.io/badge/template-2.1.0-0969da?style=flat-square" alt="Template" />
+  <img src="https://img.shields.io/badge/template-2.1.2-0969da?style=flat-square" alt="Template" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
   <a href="https://github.com/edwardlthompson/continuum-calendar/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/edwardlthompson/continuum-calendar/ci.yml?style=flat-square&label=CI" alt="CI" /></a>
   <img src="https://api.securityscorecards.dev/projects/github.com/edwardlthompson/continuum-calendar/badge" alt="OpenSSF Scorecard" />
