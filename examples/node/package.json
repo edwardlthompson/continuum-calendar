@@ -14,15 +14,15 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hono/node-server": "^2.1.8",
-    "hono": "^4.13.18",
-    "source-map-js": "1.2.2"
+    "@hono/node-server": "^2.1.11",
+    "hono": "^4.13.20",
+    "source-map-js": "1.2.4"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",
     "@types/node": "^26.6.6",
-    "@vitest/coverage-v8": "^5.1.0",
-    "fast-check": "^4.10.2",
+    "@vitest/coverage-v8": "^5.1.1",
+    "fast-check": "^4.11.0",
     "tsx": "^4.23.15",
     "typescript": "~7.0.2",
     "vitest": "^5.1.0"
