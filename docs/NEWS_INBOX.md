@@ -57,3 +57,17 @@ Catch-up for Nov 17–18 (the daily brief did not run those mornings).
 **News and updates**
 
 - Better Stack compared the same desktop chat app built in GPUI (the Rust, GPU-drawn UI framework Discord is moving its desktop app to), Tauri, and Electron, looking at memory, app size, frame rate and CPU. Useful background if this repo is choosing or revisiting a desktop shell; I did not run their comparison. [GPUI](https://gpui.rs) · [Better Stack](https://www.youtube.com/shorts/PbNB0MHO0eA)
+
+## 2026-11-26
+
+**News and updates**
+
+- Kotlin 2.5.0-RC2 (Nov 25) fixes Compose issues: a Kotlin/Native crash where a lambda SAM-converted to a `@Composable` fun interface got no restart group (KT-91414), a cross-module `@JvmField` composable-lambda NoSuchFieldError (KT-91591), and a `Float.fromBits` slowdown (KT-91549). Stable is still 2.4.21 and 2.5.0 final looks close, so this is a heads-up to test on a branch, not to ship. [2.5.0-RC2](https://github.com/JetBrains/kotlin/releases/tag/v2.5.0-RC2) The kmp/ track pins Kotlin 2.1.21.
+
+- Vite 8.4.0 (Nov 26) adds an opt-in `server.fs.strict: 'extended'` for wider dev-server file-access checks, plugin names in hook errors, worker chunks in the manifest, CSS preload retries and compressed wasm in preview. This repo is on `^8.3.x`, so Dependabot will bring it in; no action needed. [v8.4.0](https://github.com/vitejs/vite/releases/tag/v8.4.0) · [support policy](https://vite.dev/releases)
+
+- Conductor moved its agent-workspace desktop app from Tauri to Electron (0.95.0, Nov 16; numbers posted Nov 24), keeping its Rust local server: workspaces open 71% faster, startup-to-render is 4.6x faster and RAM is 35% lower, while the download grew from about 200 MB to about 500 MB. A real-world counterpoint to "Tauri is always lighter": measure cold start and RAM on the real WebView (WebKitGTK on Linux, WebView2 on Windows) rather than assume. [Conductor 0.95.0](https://www.conductor.build/changelog/0.95.0-agents-that-manage-your-local-workspaces) · [X post](https://x.com/charlieholtz/status/2125351294965805147)
+
+**Tasks for the planning agent**
+
+- [ ] Smoke-test kmp/ on Kotlin 2.5.0-RC2 in a branch — The same K/N Compose fixes apply to the KMP track. Label: `[AGENT]` · Priority: P3 · https://github.com/JetBrains/kotlin/releases/tag/v2.5.0-RC2
