@@ -71,3 +71,13 @@ Catch-up for Nov 17–18 (the daily brief did not run those mornings).
 **Tasks for the planning agent**
 
 - [ ] Smoke-test kmp/ on Kotlin 2.5.0-RC2 in a branch — The same K/N Compose fixes apply to the KMP track. Label: `[AGENT]` · Priority: P3 · https://github.com/JetBrains/kotlin/releases/tag/v2.5.0-RC2
+
+## 2026-11-28
+
+**News and updates**
+
+- Gradle [9.9.3](https://github.com/gradle/gradle/releases/tag/v9.9.3) (Nov 27) is a regression-only patch: 9.9.2 failed to start on Windows when GRADLE_USER_HOME sits on an ImDisk RAM disk ([gradle#39909](https://github.com/gradle/gradle/issues/39909)). No new security fixes; 9.9.2's four High fixes are still why the open wrapper-bump row is P2, and Gradle now recommends 9.9.3, so landing on it avoids a second bump. The board row is unchanged. [Release notes](https://docs.gradle.org/9.9.3/release-notes.html)
+
+**Tasks for the planning agent**
+
+- [ ] Use Gradle 9.9.3 rather than 9.9.2 when doing the open wrapper bump — 9.9.3 has the same security fixes plus a Windows startup regression fix, so one bump covers both. Label: `[AGENT]` · Priority: P3 · https://github.com/gradle/gradle/releases/tag/v9.9.3 (BUILD_PLAN row left unchanged)
